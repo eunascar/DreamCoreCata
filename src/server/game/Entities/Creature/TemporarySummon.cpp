@@ -238,6 +238,10 @@ void TempSummon::UnSummon()
     if (owner && owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled)
         owner->ToCreature()->AI()->SummonedCreatureDespawn(this);
 
+    // Don't unsummon corpse if a bot
+    if (owner && owner->GetTypeId() == TYPEID_PLAYER && ((Player*)owner)->HaveBot() && ((Player*)owner)->GetBot()->GetGUID()==this->GetGUID() && this->isDead()) 
+        return; 
+
     AddObjectToRemoveList();
 }
 

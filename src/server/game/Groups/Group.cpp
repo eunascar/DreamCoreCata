@@ -365,6 +365,17 @@ uint32 Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /* = G
 {
     BroadcastGroupUpdate();
 
+    {
+        Player *player = sObjectMgr->GetPlayer(guid);
+
+        //if the player manually removes himself from group, remove npc bot
+        if(player && player->HaveBot())
+        {
+            _removeMember(player->GetBot()->GetGUID());
+            player->SetBotMustDie();
+        }
+    }
+
     sScriptMgr->OnGroupRemoveMember(this, guid, method, kicker, reason);
 
     // Lfg group vote kick handled in scripts
@@ -402,6 +413,12 @@ uint32 Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /* = G
             }
 
             _homebindIfInstance(player);
+        } 
+        //not a valid player and method == 99 mean I'm a bot
+		else if(!player && method == 99)
+		{
+            _removeMember(guid);
+            SendUpdate();
         }
 
         if (leaderChanged)
@@ -411,7 +428,7 @@ uint32 Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /* = G
             BroadcastPacket(&data, true);
         }
 
-        SendUpdate();
+        if (sObjectMgr->GetPlayer(guid)) SendUpdate();
         ResetMaxEnchantingLevel();
     }
     // if group before remove <= 2 disband it
@@ -423,6 +440,24 @@ uint32 Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /* = G
 
 void Group::ChangeLeader(const uint64 &guid)
 {
+    Player *player = sObjectMgr->GetPlayer(guid);
+
+    //keep looping until we find a valid player and not a bot
+    if(!player)
+    {
+        //not a valid leader, trying to find a new leader
+        //search from start
+        for(member_citerator itr = m_memberSlots.begin(); itr != m_memberSlots.end(); ++itr)
+        {
+            if(sObjectMgr->GetPlayer(itr->guid))
+            {
+                _setLeader(itr->guid);
+                return;
+            }
+        }
+        return;
+    }
+
     member_citerator slot = _getMemberCSlot(guid);
 
     if (slot == m_memberSlots.end())
@@ -1027,6 +1062,31 @@ void Group::CountTheRoll(Rolls::iterator rollI, uint32 NumberOfPlayers)
     delete roll;
 }
 
+//
+// Bot changes
+//
+uint64 Group::GetTargetWithIconByGroup(uint64 guid)
+{
+    uint64 targetGUID = 0;
+
+    switch(GetMemberGroup(guid))
+    {
+    case 0: targetGUID = m_targetIcons[STAR]; break;
+    case 1: targetGUID = m_targetIcons[CIRCLE]; break;
+    case 2: targetGUID = m_targetIcons[DIAMOND]; break;
+    case 3: targetGUID = m_targetIcons[TRIANGLE]; break;
+    case 4: targetGUID = m_targetIcons[MOON]; break;
+    case 5: targetGUID = m_targetIcons[SQUARE]; break;
+    case 6: targetGUID = m_targetIcons[CROSS]; break;
+    default: break;
+    }
+
+    // if no target icon, default to star
+    if (targetGUID==0) m_targetIcons[STAR];
+
+   return targetGUID;
+} // end getTargetWithIcon
+
 void Group::SetTargetIcon(uint8 id, uint64 whoGuid, uint64 targetGuid)
 {
     if (id >= TARGETICONCOUNT)
@@ -1092,12 +1152,25 @@ void Group::SendTargetIconList(WorldSession *session)
 
 void Group::SendUpdate()
 {
+    member_citerator prevCitr, citr3;
+    bool foundBot = false;
     Player *player;
+	uint64 value = 0;
+
     for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)
     {
         player = sObjectMgr->GetPlayer(citr->guid);
         if (!player || !player->GetSession() || player->GetGroup() != this)
             continue;
+
+        uint64& botGuid= *((uint64*)&value);
+        if(player->HaveBot())
+        {
+            if(Creature *ci = player->GetBot())
+            {
+                botGuid = (uint64&)ci->GetGUID();
+            }
+        }
 
         WorldPacket data(SMSG_GROUP_LIST, (1+1+1+1+1+4+8+4+4+(GetMembersCount()-1)*(13+8+1+1+1+1)+8+1+8+1+1+1+1));
         data << uint8(m_groupType);                         // group type (flags in 3.3)
@@ -1123,12 +1196,21 @@ void Group::SendUpdate()
             uint8 onlineState = (member) ? MEMBER_STATUS_ONLINE : MEMBER_STATUS_OFFLINE;
             onlineState = onlineState | ((isBGGroup()) ? MEMBER_STATUS_PVP : 0);
 
-            data << citr2->name;
-            data << uint64(citr2->guid);                    // guid
+            /* TESTING NPC Bot*/
+            citr3 = citr2;
+            if (citr2->guid == botGuid)
+            {
+               value = 0;
+               botGuid=*((uint64*)&value); // reset
+            }
+            data << citr3->name;
+            data << uint64(citr3->guid);                    // guid
             data << uint8(onlineState);                     // online-state
             data << uint8(citr2->group);                    // groupid
             data << uint8(citr2->flags);                    // See enum GroupMemberFlags
             data << uint8(citr2->roles);                    // Lfg Roles
+            
+			if(foundBot) foundBot = false;/* TESTING */
         }
 
         data << uint64(m_leaderGuid);                       // leader guid

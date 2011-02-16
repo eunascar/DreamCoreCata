@@ -15,6 +15,9 @@ if( WITH_SQL )
       scripts
       base
       create
+      custom/bots
+      custom/premiumAccounts
+      custom/updates
     DESTINATION
       shared/trinity/sql
   )

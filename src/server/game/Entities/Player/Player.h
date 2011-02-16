@@ -1465,6 +1465,11 @@ class Player : public Unit, public GridObject<Player>
         void setRegenTimerCount(uint32 time) {m_regenTimerCount = time;}
         void setWeaponChangeTimer(uint32 time) {m_weaponChangeTimer = time;}
 
+        void RefreshBot(uint32 p_time);
+        void CreateBot(uint32 botentry, uint8 botrace, uint8 botclass);
+        void CreateNPCBot(uint8 botclass);
+        void GetBotLevelInfo(uint32 race, uint32 class_,uint32 level, PlayerLevelInfo* info) const;
+
         uint32 GetMoney() const { return GetUInt32Value (PLAYER_FIELD_COINAGE); }
         void ModifyMoney(int32 d);
         bool HasEnoughMoney(uint32 amount) const { return (GetMoney() >= amount); }
@@ -1913,6 +1918,68 @@ class Player : public Unit, public GridObject<Player>
         uint16 GetSkillStep(uint16 skill) const;            // 0...6
         bool HasSkill(uint32 skill) const;
         void learnSkillRewardedSpells(uint32 id, uint32 value);
+
+        /*********************************************************/
+        /***                     BOT SYSTEM                    ***/
+        /*********************************************************/
+        bool HaveBot(){ if(m_bot == NULL) return false; else return true; }
+        //CreatureInfo const *GetBotInfo();
+        Player *GetObjPlayer(uint64 guid);
+        Creature *GetBot(){ return m_bot; }
+        void SetBot(Creature *bot){ m_bot = bot; }
+        CommandStates GetBotCommandState() { return m_botCommandState; }
+        void SetBotCommandState(CommandStates st)
+        {
+            m_botCommandState = st;
+            switch(st)
+            {
+                case COMMAND_STAY:
+                    m_bot->StopMoving();
+                    m_bot->GetMotionMaster()->Clear();
+                    m_bot->GetMotionMaster()->MoveIdle();
+                    m_bot->GetCharmInfo()->SetCommandState (COMMAND_STAY);
+                    break;
+                case COMMAND_FOLLOW:
+                    m_bot->GetMotionMaster()->MoveFollow(this, PET_FOLLOW_DIST*urand(1, 2), PET_FOLLOW_ANGLE);
+                    m_bot->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
+                    m_bot->RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+                    break;
+            }
+
+        }
+        void SetBotReactState(ReactStates st){ m_bot->SetReactState(st); }
+        void RemoveBot();
+        void SetBotAI(CreatureAI *ai){ m_bot_ai = ai; }
+        Creature *GetBotsPet (uint32 entry);
+        void SetBotsPetDied();
+        bool m_botHasPet;
+        Creature *m_botsPet;
+        CreatureAI *GetBotAI(){ return m_bot_ai; }
+
+        uint8 GetBotClass(){ return m_bot_class; }
+        uint8 GetBotRace(){ return m_bot_race; }
+        bool GetBotMustBeCreated(){ return m_bot_must_be_created; }
+        bool GetBotMustDie(){ return m_bot_must_die; }
+        uint32 GetBotForm(){ return m_bot_form; }
+
+        void SetBotClass(uint8 botclass){ m_bot_class = botclass; }
+        void SetBotRace(uint8 botrace){ m_bot_race = botrace; }
+        void SetBotMustBeCreated(uint32 m_entry, uint8 m_race, uint8 m_class)
+        {
+            m_bot_must_be_created = true;
+            m_bot_entry_must_be_created = m_entry;
+            m_bot_class_must_be_created = m_class;
+            m_bot_race_must_be_created = m_race;
+            m_bot_ai = NULL;
+        }
+        void SetBotMustDie(){ m_bot_must_die = true; }
+        void SetBotForm(uint32 form){ m_bot_form = form; }
+        void SetBotMustWaitForSpell1(uint32 wait){ m_bot_must_wait_for_spell_1 = wait; }
+        uint32 GetBotMustWaitForSpell1(){ return m_bot_must_wait_for_spell_1; }
+        void SetBotMustWaitForSpell2(uint32 wait){ m_bot_must_wait_for_spell_2 = wait; }
+        uint32 GetBotMustWaitForSpell2(){ return m_bot_must_wait_for_spell_2; }
+        void SetBotMustWaitForSpell3(uint32 wait){ m_bot_must_wait_for_spell_3 = wait; }
+        uint32 GetBotMustWaitForSpell3(){ return m_bot_must_wait_for_spell_3; }
 
         WorldLocation& GetTeleportDest() { return m_teleport_dest; }
         bool IsBeingTeleported() const { return mSemaphoreTeleport_Near || mSemaphoreTeleport_Far; }
@@ -2655,6 +2722,34 @@ class Player : public Unit, public GridObject<Player>
 
         bool isAlwaysDetectableFor(WorldObject const* seer) const;
     private:
+        /*********************************************************/
+        /***                     BOT SYSTEM                    ***/
+        /*********************************************************/
+
+        Creature *m_bot;
+        uint8 m_bot_class;
+        uint8 m_bot_race;
+        uint8 m_SaveOrgLocation;
+        CommandStates m_botCommandState;
+
+        //bool m_bot_am_I; //am I a bot?
+        bool m_bot_must_be_created;
+        bool m_bot_must_die;
+        uint32 m_bot_entry_must_be_created;
+        uint8 m_bot_class_must_be_created;
+        uint8 m_bot_race_must_be_created;
+        CreatureAI *m_bot_ai;
+
+        uint32 m_bot_form; //Only for Druid
+        uint32 m_bot_must_wait_for_spell_1; //in ms
+        uint32 m_bot_must_wait_for_spell_2; //in ms
+        uint32 m_bot_must_wait_for_spell_3; //in ms
+        uint32 m_botTimer;
+        uint32 m_bot_entry;
+        uint8 newbotclass;
+        uint8 newbotrace;
+        bool m_bot_died;
+
         // internal common parts for CanStore/StoreItem functions
         uint8 _CanStoreItem_InSpecificSlot(uint8 bag, uint8 slot, ItemPosCountVec& dest, ItemPrototype const *pProto, uint32& count, bool swap, Item *pSrcItem) const;
         uint8 _CanStoreItem_InBag(uint8 bag, ItemPosCountVec& dest, ItemPrototype const *pProto, uint32& count, bool merge, bool non_specialized, Item *pSrcItem, uint8 skip_bag, uint8 skip_slot) const;

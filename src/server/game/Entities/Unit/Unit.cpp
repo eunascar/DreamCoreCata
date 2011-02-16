@@ -15602,6 +15602,16 @@ void Unit::RemoveCharmedBy(Unit *charmer)
         }
     }
 
+    if(GetTypeId() == TYPEID_UNIT && charmer->GetTypeId() == TYPEID_PLAYER)
+    {
+        if(((Creature*)this)->GetIAmABot())
+        {
+            //don't want to remove the pet action bar if a bot because the player might
+            //actually have a pet ie, hunter or warlock
+            return;
+        }
+    }
+
     //a guardian should always have charminfo
     if (charmer->GetTypeId() == TYPEID_PLAYER && this != charmer->GetFirstControlled())
         charmer->ToPlayer()->SendRemoveControlBar();

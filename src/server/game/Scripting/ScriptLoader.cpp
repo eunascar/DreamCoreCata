@@ -17,6 +17,9 @@
 
 #include "ScriptLoader.h"
 
+//custom
+void AddSC_level_npc();
+void AddSC_gameobject_custom();
 
 //examples
 void AddSC_example_creature();
@@ -76,6 +79,27 @@ void AddSC_npc_innkeeper();
 void AddSC_npcs_special();
 void AddSC_npc_taxi();
 void AddSC_achievement_scripts();
+
+//Bots
+void AddSC_druid_bot();
+void AddSC_priest_bot();
+void AddSC_shaman_bot();
+void AddSC_warrior_bot();
+void AddSC_rogue_bot();
+void AddSC_mage_bot();
+void AddSC_warlock_bot();
+void AddSC_paladin_bot();
+void AddSC_hunter_bot();
+void AddSC_script_bot_giver();
+
+//Emerald Dream
+void AddSC_boss_hyoton();
+void AddSC_boss_firemist();
+void AddSC_boss_krityus();
+void AddSC_boss_umbra();
+void AddSC_npc_emerald_aqua();
+void AddSC_npc_emerald_pyro();
+void AddSC_instance_emerald_dream();
 
 //eastern kingdoms
 void AddSC_alterac_valley();                 //Alterac Valley
@@ -403,6 +427,11 @@ void AddSC_instance_oculus();
 void AddSC_oculus();
 void AddSC_boss_sartharion();            //Obsidian Sanctum
 void AddSC_instance_obsidian_sanctum();
+void AddSC_boss_baltharus();             //Ruby Sanctum
+void AddSC_boss_zarithrian();
+void AddSC_boss_ragefire();
+void AddSC_boss_halion();
+void AddSC_instance_ruby_sanctum();
 void AddSC_boss_bjarngrim();             //Ulduar Halls of Lightning
 void AddSC_boss_loken();
 void AddSC_boss_ionar();
@@ -669,6 +698,27 @@ void AddWorldScripts()
     AddSC_npc_taxi();
     AddSC_achievement_scripts();
     AddSC_chat_log();
+
+    //Bots
+    AddSC_druid_bot();
+    AddSC_priest_bot();
+    AddSC_shaman_bot();
+    AddSC_warrior_bot();
+    AddSC_rogue_bot();
+    AddSC_mage_bot();
+    AddSC_warlock_bot();
+    AddSC_paladin_bot();
+    AddSC_hunter_bot();
+    AddSC_script_bot_giver();
+
+    //Emerald Dream
+    AddSC_boss_hyoton();
+    AddSC_boss_firemist();
+    AddSC_boss_krityus();
+    AddSC_boss_umbra();
+    AddSC_npc_emerald_aqua();
+    AddSC_npc_emerald_pyro();
+    AddSC_instance_emerald_dream();
 #endif
 }
 
@@ -1094,6 +1144,11 @@ void AddNorthrendScripts()
     AddSC_oculus();
     AddSC_boss_sartharion();            //Obsidian Sanctum
     AddSC_instance_obsidian_sanctum();
+    AddSC_boss_baltharus();             //Ruby Sanctum
+    AddSC_boss_zarithrian();
+    AddSC_boss_ragefire();
+    AddSC_boss_halion();
+    AddSC_instance_ruby_sanctum();
     AddSC_boss_bjarngrim();             //Ulduar Halls of Lightning
     AddSC_boss_loken();
     AddSC_boss_ionar();
@@ -1209,7 +1264,7 @@ void AddBattlegroundScripts()
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
-    /* This is where custom scripts should be added. */
-
+    AddSC_level_npc();
+    AddSC_gameobject_custom();
 #endif
 }
