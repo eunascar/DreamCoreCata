@@ -2225,8 +2225,8 @@ void ObjectMgr::LoadItemPrototypes()
             }
 
         }
-        else
-            sLog->outErrorDb("Item (Entry: %u) does not exist in item.dbc! (not correct id?).",i);
+        /*else
+            sLog->outErrorDb("Item (Entry: %u) does not exist in item.dbc! (not correct id?).",i);*/
 
         if (proto->Class >= MAX_ITEM_CLASS)
         {

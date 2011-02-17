@@ -18754,7 +18754,8 @@ InstancePlayerBind* Player::BindToInstance(InstanceSave *save, bool permanent, b
     if (save)
     {
         InstancePlayerBind& bind = m_boundInstances[save->GetDifficulty()][save->GetMapId()];
-        if (bind.save)
+
+        /*if (bind.save)
         {
             // update the save when the group kills a boss
             if (permanent != bind.perm || save != bind.save)
@@ -18763,7 +18764,7 @@ InstancePlayerBind* Player::BindToInstance(InstanceSave *save, bool permanent, b
         }
         else
             if (!load)
-                CharacterDatabase.PExecute("INSERT INTO character_instance (guid, instance, permanent) VALUES ('%u', '%u', '%u')", GetGUIDLow(), save->GetInstanceId(), permanent);
+                CharacterDatabase.PExecute("INSERT INTO character_instance (guid, instance, permanent) VALUES ('%u', '%u', '%u')", GetGUIDLow(), save->GetInstanceId(), permanent);*/
 
         if (bind.save != save)
         {
