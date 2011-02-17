@@ -22,15 +22,16 @@
 #include "ScriptPCH.h"
 #include "ruby_sanctum.h"
 
-enum eTexts
+enum Texts
 {
-    SAY_AGGRO = -1752017,
-    SAY_SLAY1 = -1752018,
-    SAY_SLAY2 = -1752019,
-    SAY_DEATH = -1752020
+    SAY_AGGRO     = 0,
+    SAY_SLAY1     = 1,
+    SAY_SLAY2     = 2,
+    SAY_DEATH     = 3,
+    SAY_SUMMON    = 4
 };
 
-enum eSpells
+enum Spells
 {
     SPELL_CLEAVE_ARMOR          = 74367,
     SPELL_INTIMIDATING_ROAR     = 74384,
@@ -42,7 +43,7 @@ enum eSpells
     SPELL_LAVA_GOUT_25          = 74395
 };
 
-enum eEvents
+enum Events
 {
     EVENT_CAST_CLEAVE_ARMOR         = 1,
     EVENT_CAST_INTIMIDATING_ROAR    = 2,

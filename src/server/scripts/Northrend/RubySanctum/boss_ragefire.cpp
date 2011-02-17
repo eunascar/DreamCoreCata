@@ -22,15 +22,16 @@
 #include "ScriptPCH.h"
 #include "ruby_sanctum.h"
 
-enum eScriptTexts
+enum Texts
 {
-    SAY_AGGRO           = -1752022,
-    SAY_SLAY1           = -1752023,
-    SAY_SLAY2           = -1752024,
-    SAY_DEATH           = -1752025
+    SAY_AGGRO      = 0,
+    SAY_SLAY1      = 1,
+    SAY_SLAY2      = 2,
+    SAY_DEATH      = 3,
+    SAY_SPECIAL    = 4
 };
 
-enum eSpells
+enum Spells
 {
     SPELL_CONFLAGRATION     = 74456,
     SPELL_ENRAGE            = 78722,
@@ -39,7 +40,7 @@ enum eSpells
     SPELL_FLAME_BEACON      = 74453
 };
 
-enum eEvents
+enum Events
 {
     EVENT_CAST_CONFLAGRATION      = 1,
     EVENT_CAST_ENRAGE             = 2,
@@ -79,18 +80,18 @@ class boss_ragefire : public CreatureScript
             void EnterCombat(Unit*)
             {
                 instance->SetBossState(DATA_RAGEFIRE, IN_PROGRESS);
-                DoScriptText(SAY_AGGRO, me);
+                Talk(SAY_AGGRO);
             }
 
             void KilledUnit(Unit* /*victim*/)
             {
-                DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
+                Talk(RAND(SAY_SLAY1,SAY_SLAY2));
             }
 
             void JustDied(Unit*)
             {
                 _JustDied();
-                DoScriptText(SAY_DEATH, me);
+                Talk(SAY_DEATH);
                 instance->SetBossState(DATA_RAGEFIRE, DONE);
                 if (instance->GetBossState(DATA_BALTHARUS) == DONE)
                 {

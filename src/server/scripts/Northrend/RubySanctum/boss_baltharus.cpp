@@ -22,26 +22,27 @@
 #include "ScriptPCH.h"
 #include "ruby_sanctum.h"
 
-enum eScriptTexts
+enum Texts
 {
-    SAY_AGGRO           = -1752001,
-    SAY_SLAY1           = -1752002,
-    SAY_SLAY2           = -1752003,
-    SAY_DEATH           = -1752004,
-    SAY_SUMMON_CLONE    = -1752005,
+    SAY_AGGRO           = 0,
+    SAY_SLAY1           = 1,
+    SAY_SLAY2           = 2,
+    SAY_DEATH           = 3,
+    SAY_SUMMON_CLONE    = 4,
+    SAY_INTRO           = 5,
 
-    SAY_XERESTRASZA_1  = -1752008,
-    SAY_XERESTRASZA_2  = -1752009,
-    SAY_XERESTRASZA_3  = -1752010,
-    SAY_XERESTRASZA_4  = -1752011,
-    SAY_XERESTRASZA_5  = -1752012,
-    SAY_XERESTRASZA_6  = -1752013,
-    SAY_XERESTRASZA_7  = -1752014,
-    SAY_XERESTRASZA_8  = -1752015,
-    SAY_XERESTRASZA_9  = -1752016
+    SAY_XERESTRASZA_1  = 0,
+    SAY_XERESTRASZA_2  = 1,
+    SAY_XERESTRASZA_3  = 2,
+    SAY_XERESTRASZA_4  = 3,
+    SAY_XERESTRASZA_5  = 4,
+    SAY_XERESTRASZA_6  = 5,
+    SAY_XERESTRASZA_7  = 6,
+    SAY_XERESTRASZA_8  = 7,
+    SAY_XERESTRASZA_9  = 8
 };
 
-enum eSpells
+enum Spells
 {
     SPELL_CLEAVE            = 40504,
     SPELL_REPELLING_WAVE    = 74509,
@@ -50,7 +51,7 @@ enum eSpells
     SPELL_SUMMON_CLONE      = 74511
 };
 
-enum eEvents
+enum Events
 {
     EVENT_CAST_CLEAVE           = 1,
     EVENT_CAST_REPELLING_WAVE   = 2,
@@ -70,7 +71,7 @@ enum eEvents
     EVENT_START_PHASE_TWO       = 14
 };
 
-enum ePhases
+enum Phases
 {
     PHASE_ALL = 0,
     PHASE_1   = 1,
@@ -107,7 +108,7 @@ class boss_baltharus : public CreatureScript
             void EnterCombat(Unit*)
             {
                 instance->SetBossState(DATA_BALTHARUS, IN_PROGRESS);
-                DoScriptText(SAY_AGGRO, me);
+                Talk(SAY_AGGRO);
             }
 
             void JustSummoned(Creature *summon)
@@ -117,7 +118,7 @@ class boss_baltharus : public CreatureScript
 
             void KilledUnit(Unit* /*victim*/)
             {
-                DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
+                Talk(RAND(SAY_SLAY1,SAY_SLAY2));
             }
 
             void JustReachedHome()
@@ -128,7 +129,7 @@ class boss_baltharus : public CreatureScript
 
             void JustDied(Unit*)
             {
-                DoScriptText(SAY_DEATH, me);
+                Talk(SAY_DEATH);
                 instance->SetData(DATA_BALTHARUS, DONE);
                 if (GameObject* flame = GetClosestGameObjectWithEntry(me, GO_FIRE_FIELD, 200.0f))
                     flame->RemoveFromWorld();
@@ -161,7 +162,7 @@ class boss_baltharus : public CreatureScript
                             events.ScheduleEvent(EVENT_CAST_CLEAVE, urand(2000,3000));
                             break;
                         case EVENT_START_PHASE_TWO:
-                            DoScriptText(SAY_SUMMON_CLONE, me);
+                            Talk(SAY_SUMMON_CLONE);
                             DoCast(SPELL_SUMMON_CLONE);
                             DoCastAOE(SPELL_REPELLING_WAVE,true);
                             break;
@@ -286,7 +287,7 @@ class npc_xerestrasza : public CreatureScript
             {
                 if (!bIntro)
                 {
-                    DoScriptText(SAY_XERESTRASZA_1, me);
+                    Talk(SAY_XERESTRASZA_1);
                     pInstance->SetData(DATA_XERESTRASZA,NOT_STARTED);
                     bIntro = true;
                 }
@@ -298,7 +299,7 @@ class npc_xerestrasza : public CreatureScript
                 {
                     me->GetMotionMaster()->MovePoint(1, 3153.5490f, 385.53f, 86.33f);
                     pInstance->SetData(DATA_XERESTRASZA,IN_PROGRESS);
-                    DoScriptText(SAY_XERESTRASZA_2, me);
+                    Talk(SAY_XERESTRASZA_2);
                     events.ScheduleEvent(EVENT_XERESTRASZA_3,9000); 
                     events.ScheduleEvent(EVENT_XERESTRASZA_4,20000); 
                     events.ScheduleEvent(EVENT_XERESTRASZA_5,31000); 
@@ -317,31 +318,30 @@ class npc_xerestrasza : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_XERESTRASZA_3:
-                            DoScriptText(SAY_XERESTRASZA_3, me);
+                            Talk(SAY_XERESTRASZA_3);
                             break;
                         case EVENT_XERESTRASZA_4:
-                            DoScriptText(SAY_XERESTRASZA_4, me);
+                            Talk(SAY_XERESTRASZA_4);
                             break;
                         case EVENT_XERESTRASZA_5:
-                            DoScriptText(SAY_XERESTRASZA_5, me);
+                            Talk(SAY_XERESTRASZA_5);
                             break;
                         case EVENT_XERESTRASZA_6:
-                            DoScriptText(SAY_XERESTRASZA_6, me);
+                            Talk(SAY_XERESTRASZA_6);
                             break;
                         case EVENT_XERESTRASZA_7:
-                            DoScriptText(SAY_XERESTRASZA_7, me);
+                            Talk(SAY_XERESTRASZA_7);
                             break;
                         case EVENT_XERESTRASZA_8:
-                            DoScriptText(SAY_XERESTRASZA_8, me);
+                            Talk(SAY_XERESTRASZA_8);
                             break;
                         case EVENT_XERESTRASZA_9:
-                            DoScriptText(SAY_XERESTRASZA_9, me);
+                            Talk(SAY_XERESTRASZA_9);
                             pInstance->SetData(DATA_XERESTRASZA,DONE);
                             break;
                     }
                 }
             }
-
         private:
             bool bIntro;
             EventMap events;

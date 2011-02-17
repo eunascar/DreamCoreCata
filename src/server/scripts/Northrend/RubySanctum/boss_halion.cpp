@@ -22,21 +22,21 @@
 #include "ScriptPCH.h"
 #include "ruby_sanctum.h"
 
-enum eTexts
+enum Texts
 {
-    SAY_SPAWN       = -1752027,
-    SAY_AGGRO       = -1752028,
-    SAY_SLAY1       = -1752029,
-    SAY_SLAY2       = -1752030,
-    SAY_DEATH       = -1752031,
-    SAY_BERSERK     = -1752032,
-    SAY_SPECIAL1    = -1752033,
-    SAY_SPECIAL2    = -1752034,
-    SAY_PHASE2      = -1752035,
-    SAY_PHASE3      = -1752036
+    SAY_SPAWN       = 0,
+    SAY_AGGRO       = 1,
+    SAY_SLAY1       = 2,
+    SAY_SLAY2       = 3,
+    SAY_DEATH       = 4,
+    SAY_BERSERK     = 5,
+    SAY_SPECIAL1    = 6,
+    SAY_SPECIAL2    = 7,
+    SAY_PHASE2      = 8,
+    SAY_PHASE3      = 9
 };
 
-enum eSpells
+enum Spells
 {
     SPELL_FIRE_PILLAR               = 76006,
     SPELL_FIERY_EXPLOSION           = 76010,
@@ -92,7 +92,7 @@ static const SpellsCorporeality sCorporeality[11] =
     {74826, 74826}
 };
 
-enum eEvents
+enum Events
 {
     EVENT_CAST_TWILIGHT_PRECISION   = 1,
     EVENT_CAST_CLEAVE               = 2,
@@ -111,7 +111,7 @@ enum eEvents
     EVENT_FIRE_PILLAR               = 15
 };
 
-enum ePhases
+enum Phases
 {
     PHASE_ALL = 0,
     PHASE_1   = 1,
@@ -196,7 +196,7 @@ class boss_halion : public CreatureScript
                     return;
                 
                 events.ScheduleEvent(EVENT_FLAME_WALL, 3000,0,PHASE_1);
-                DoScriptText(SAY_AGGRO, me);
+                Talk(SAY_AGGRO);
             }
 
             void CastCorporeality()
@@ -285,7 +285,7 @@ class boss_halion : public CreatureScript
 
             void KilledUnit(Unit* /*victim*/)
             {
-                DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
+                Talk(RAND(SAY_SLAY1,SAY_SLAY2));
             }
 
             void JustReachedHome()
@@ -299,7 +299,7 @@ class boss_halion : public CreatureScript
                 _JustDied();
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_AURE_TWILIGHT);
                 RemoveAllGO();
-                DoScriptText(SAY_DEATH, me);
+                Talk(SAY_DEATH);
 
                 switch(instance->instance->GetDifficulty())
                 {
@@ -388,7 +388,7 @@ class boss_halion : public CreatureScript
                 {
                     events.SetPhase(PHASE_2);
                     instance->SetBossState(DATA_HALION, SPECIAL);
-                    DoScriptText(SAY_PHASE2, me);
+                    Talk(SAY_PHASE2);
                     me->SetReactState(REACT_PASSIVE);
                     me->AttackStop();
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -509,7 +509,7 @@ class boss_twilight_halion : public CreatureScript
                 {
                     pInstance->SetData(DATA_DAMAGE, me->GetHealth());
                     events.SetPhase(PHASE_3);
-                    DoScriptText(SAY_PHASE3, me);
+                    Talk(SAY_PHASE3);
                     pHalion->SetReactState(REACT_AGGRESSIVE);
                     pHalion->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                     pHalion->SetVisible(true);
@@ -532,7 +532,7 @@ class boss_twilight_halion : public CreatureScript
 
             void KilledUnit(Unit* /*victim*/)
             {
-                DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
+                Talk(RAND(SAY_SLAY1,SAY_SLAY2));
             }
 
             void JustReachedHome()
