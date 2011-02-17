@@ -1,4 +1,4 @@
--- Creatures calling Script Texts
+-- Ruby Sanctum Creatures
 SET @entry_baltharus      = 39751;
 SET @entry_zarithrian     = 39746;
 SET @entry_ragefire       = 39747;
@@ -48,35 +48,3 @@ INSERT INTO `creature_text` (`entry`, `groupid`, `id`, `text`, `type`, `language
 (@entry_halion, 7, 0, 'Beware the shadow!', 0, 0, 0, 17506, 'Halion - SAY_SPECIAL2'),
 (@entry_halion, 8, 0, 'You will find only suffering within the realm of twilight! Enter if you dare!', 0, 0, 0, 17507, 'Halion - SAY_PHASE2'),
 (@entry_halion, 9, 0, 'I am the light and the darkness! Cower, mortals, before the herald of Deathwing!', 0, 0, 0, 17508, 'Halion - SAY_PHASE3');
-
--- Ruby Sanctum Script Names
-UPDATE `instance_template` SET `script` = 'instance_ruby_sanctum' WHERE `map` = 724;
-UPDATE `creature_template` SET `ScriptName` = 'boss_baltharus' WHERE `entry` = 39751;
-UPDATE `creature_template` SET `ScriptName` = 'boss_baltharus_summon' WHERE `entry` = 39899;
-UPDATE `creature_template` SET `ScriptName` = 'npc_xerestrasza' WHERE `entry` = 40429;
-UPDATE `creature_template` SET `ScriptName` = 'boss_zarithrian' WHERE `entry` = 39746;
-UPDATE `creature_template` SET `ScriptName` = 'boss_ragefire' WHERE `entry` = 39747;
-UPDATE `creature_template` SET `ScriptName` = 'boss_halion' WHERE `entry` = 39863;
-UPDATE `creature_template` SET `ScriptName` = 'boss_twilight_halion' WHERE `entry` = 40142;
-UPDATE `creature_template` SET `ScriptName` = 'npc_onyx_flamecaller' WHERE `entry` = 39814;
-UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_strike', `flags_extra` = 128 WHERE `entry` = 40041;
-UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_flame', `flags_extra` = 128 WHERE `entry` = 40042;
-UPDATE `creature_template` SET `ScriptName` = 'npc_spell_meteor_strike', `flags_extra` = 128 WHERE `entry` = 40029;
-UPDATE `creature_template` SET `name` = 'summon halion', `ScriptName` = 'npc_summon_halion', `flags_extra` = 128 WHERE `entry` = 40044;
-
--- Additional Script Data
-UPDATE `gameobject_template` SET `data10` = 74807 WHERE `entry` = 202794;
-UPDATE `gameobject_template` SET `data10` = 74812 WHERE `entry` = 202796;
-
-DELETE FROM `spell_script_names` WHERE `spell_id` = 74812;
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(74812,'spell_halion_portal');
-
-DELETE FROM `spell_linked_spell` WHERE (`spell_trigger` = -74562) AND (`spell_effect` = 74610);
-DELETE FROM `spell_linked_spell` WHERE (`spell_trigger` = -74792) AND (`spell_effect` = 74800);
-INSERT INTO `spell_linked_spell` VALUES (-74562, 74610, 0, 'Fiery Combustion removed -> Combustion');
-INSERT INTO `spell_linked_spell` VALUES (-74792, 74800, 0, 'Soul Consumption removed -> Consumption');
-
-DELETE FROM `creature` WHERE `id` = 39863 AND `map` = 724;
-INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
-(39863, 724, 15, 1, 0, 0, 3144.93, 527.233, 72.8887, 0.110395, 300, 0, 0, 11156000, 0, 0, 0);
