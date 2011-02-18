@@ -1,4 +1,4 @@
----- Creature Ulduar Data
+-- Creature Ulduar Data
 -- Delete Ulduar Colossus Spawns, now they're handled by the script
 DELETE FROM `creature` WHERE `guid` IN (137479, 137480);
 

@@ -1,4 +1,4 @@
----- Ulduar SmartAI
+-- Ulduar SmartAI
 -- Runeforged Sentry
 UPDATE `creature_template` SET `spell1` = 64852, `spell2` = 64870, `spell3` = 64847, `AIName` = 'SmartAI' WHERE `entry` = 34234;
 UPDATE `creature_template` SET `spell1` = 64852, `spell2` = 64870, `spell3` = 64847 WHERE `entry` = 34235;
@@ -67,13 +67,13 @@ INSERT INTO `smart_scripts` VALUES
 UPDATE `creature_template` SET `spell1` = 65080, `spell2` = 65084, `AIName` = 'SmartAI' WHERE `entry` = 34273;
 UPDATE `creature_template` SET `spell1` = 65104, `spell2` = 65084 WHERE `entry` = 34274;
 DELETE FROM `smart_scripts` WHERE (`entryorguid` = 34273);
-INSERT INTO `smart_scripts` VALUES 
-(34273, 0, 0, 0, 2, 0, 100, 0, 30, 20, 0, 0, 11, 65084, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,'XB-488 Disposalbot - Cast Self Destruct'),
+INSERT INTO `smart_scripts` VALUES
+(34273, 0, 0, 0, 2, 0, 100, 0, 30, 20, 0, 0, 11, 65084, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'XB-488 Disposalbot - Cast Self Destruct'),
 (34273, 0, 1, 0, 0, 0, 100, 2, 2000, 6000, 10000, 15000, 11, 65080, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,'XB-488 Disposalbot - Cast Cut Scrap Metal 10'),
 (34273, 0, 2, 0, 0, 0, 100, 4, 2000, 6000, 10000, 15000, 11, 65104, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,'XB-488 Disposalbot - Cast Cut Scrap Metal 25');
 
 -- Parts Recovery Technician
-UPDATE `creature_template` SET `spell1` = 65071, `spell2` = 65070 `AIName` = 'SmartAI' WHERE `entry` = 34267;
+UPDATE `creature_template` SET `spell1` = 65071, `spell2` = 65070, `AIName` = 'SmartAI' WHERE `entry` = 34267;
 UPDATE `creature_template` SET `spell1` = 65071, `spell2` = 65070 WHERE `entry` = 34268;
 DELETE FROM `smart_scripts` WHERE (`entryorguid` = 34267);
 INSERT INTO `smart_scripts` VALUES 

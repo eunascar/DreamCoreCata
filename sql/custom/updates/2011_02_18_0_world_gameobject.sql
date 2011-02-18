@@ -1,4 +1,4 @@
----- GameObject Ulduar Data
+-- GameObject Ulduar Data
 -- Delete GameObject Chest Spawns (Handled by the Script)
 DELETE FROM `gameobject` WHERE `id` IN (195046, 195047, 194307, 194308);
 
