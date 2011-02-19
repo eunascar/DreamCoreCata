@@ -1,0 +1,1 @@
+DELETE FROM `reference_loot_template` WHERE `entry` IN (12020, 12021, 12022, 34126, 34127, 34128);
