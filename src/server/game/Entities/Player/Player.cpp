@@ -3082,43 +3082,8 @@ void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
         newbot->SetReactState(REACT_DEFENSIVE);
 
     SetBotCommandState(COMMAND_FOLLOW);;
-
-    //If the player have a group, it's possible to add the bot.
-    if(GetGroup())
-    {
-        Group *m_group = GetGroup();
-        
-		if(!m_group->IsFull()) 
-            m_group->AddMember(newbot->GetGUID(), newbot->GetName());
-        else
-            SetBotMustDie();
-
-    }
-    else
-    {
-        Group *m_group = new Group;
-        if(!m_group->Create(GetGUID(), GetName()))
-        {
-            delete m_group;
-            return;
-        }
-
-        sObjectMgr->AddGroup(m_group);
-
-        if(!m_group->IsFull()) 
-            m_group->AddMember(newbot->GetGUID(), newbot->GetName());
-    }
     
 	m_bot_must_die = false;
-
-    //if not in group, go away
-    Group::MemberSlotList const &a =GetGroup()->GetMemberSlots();
-
-    if(GetGroup() == NULL || a.empty())
-    {
-        SetBotMustDie();
-        return;
-    }
 
     m_bot_entry = m_bot->GetEntry();
     newbotclass = GetBotClass();

@@ -409,17 +409,6 @@ bool Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /*= GROU
 {
     BroadcastGroupUpdate();
 
-    {
-        Player *player = sObjectMgr->GetPlayer(guid);
-
-        //if the player manually removes himself from group, remove npc bot
-        if(player && player->HaveBot())
-        {
-            _removeMember(player->GetBot()->GetGUID());
-            player->SetBotMustDie();
-        }
-    }
-
     sScriptMgr->OnGroupRemoveMember(this, guid, method, kicker, reason);
 
     // LFG group vote kick handled in scripts
@@ -462,12 +451,6 @@ bool Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /*= GROU
             player->GetSession()->SendPacket(&data);
 
             _homebindIfInstance(player);
-        } 
-        //not a valid player and method == 99 mean I'm a bot
-		else if(!player && method == 99)
-		{
-            _removeMember(guid);
-            SendUpdate();
         }
 
         // Remove player from group in DB
@@ -538,25 +521,6 @@ bool Group::RemoveMember(const uint64 &guid, const RemoveMethod &method /*= GROU
 
 void Group::ChangeLeader(const uint64 &guid)
 {
-<<<<<<< HEAD
-    Player *player = sObjectMgr->GetPlayer(guid);
-
-    //keep looping until we find a valid player and not a bot
-    if(!player)
-    {
-        //not a valid leader, trying to find a new leader
-        //search from start
-        for(member_citerator itr = m_memberSlots.begin(); itr != m_memberSlots.end(); ++itr)
-        {
-            if(sObjectMgr->GetPlayer(itr->guid))
-            {
-                _setLeader(itr->guid);
-                return;
-            }
-        }
-        return;
-    }
-
     member_witerator slot = _getMemberWSlot(guid);
 
     if (slot == m_memberSlots.end())
