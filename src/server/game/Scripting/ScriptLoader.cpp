@@ -20,6 +20,7 @@
 //custom
 void AddSC_level_npc();
 void AddSC_gameobject_custom();
+void AddSC_donor();
 
 //examples
 void AddSC_example_creature();
@@ -1266,5 +1267,6 @@ void AddCustomScripts()
 #ifdef SCRIPTS
     AddSC_level_npc();
     AddSC_gameobject_custom();
+    AddSC_donor();
 #endif
 }
