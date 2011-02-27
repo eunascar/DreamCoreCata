@@ -684,26 +684,8 @@ void Player::CleanupsBeforeDelete(bool finalCleanup)
     if (m_transport)
         m_transport->RemovePassenger(this);
 
-    if(GetGroup() && HaveBot())
-    {
-         Creature *m_bot = GetBot();
-         Group *m_group = GetGroup();
-
-         //removing bot from group
-         if(m_group->IsMember(m_bot->GetGUID()))
-         {
-             //deleting bot from group
-             if(m_group->RemoveMember(m_bot->GetGUID(), GROUP_REMOVEMETHOD_DEFAULT) < 1) // 99 means I'm a bot
-             {
-                 //no one left in group so deleting group
-                 delete m_group;
-                 sObjectMgr->RemoveGroup(m_group);
-             }
-         }
-         m_bot->SetCharmerGUID(0);
-         m_bot->RemoveFromWorld();
-         RemoveBot();
-    }
+    if (GetGroup() && HaveBot())
+        RemoveBot();
 
     // clean up player-instance binds, may unload some instance saves
     for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
@@ -1504,12 +1486,12 @@ void Player::Update(uint32 p_time)
     }
 
     //Want to refresh bot even if we're dead so it can rez me
-    if(HaveBot() || GetBotMustBeCreated() || m_bot_died)
+    if (HaveBot() || GetBotMustBeCreated() || m_bot_died)
         RefreshBot(p_time);
 
-    if(m_botTimer > 0)
+    if (m_botTimer > 0)
     {
-        if(p_time >= m_botTimer)
+        if (p_time >= m_botTimer)
             m_botTimer = 0;
         else
             m_botTimer -= p_time;
@@ -1956,26 +1938,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         }
     }
 
-     //HACK ELSE CLIENT CRASH WHEN PLAYER IS TELEPORTED
-     if(GetGroup() && HaveBot())
+     if (GetGroup() && HaveBot())
      {
-         Group *m_group = GetGroup();
-         Creature *m_bot = GetBot();
-
-         //removing bot from group
-         if(m_group->IsMember(m_bot->GetGUID()))
-         {
-             //deleting bot from group
-             if(m_group->RemoveMember(m_bot->GetGUID(), GROUP_REMOVEMETHOD_DEFAULT) < 1) // 99 means I'm a bot
-             {
-                 //no one left in group so deleting group
-                 delete m_group;
-                 sObjectMgr->RemoveGroup(m_group);
-             }
-         }
-         m_bot->SetCharmerGUID(0);
-         RemoveBot();
-         SetBotMustBeCreated(m_bot_entry, newbotrace, newbotclass);
+        RemoveBot();
+        SetBotMustBeCreated(m_bot_entry, newbotrace, newbotclass);
      }
 
     // The player was ported to another map and loses the duel immediately.
@@ -2158,15 +2124,11 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     //if I'm dead than need to remove bot manually
     //This means I'm at the graveyard, but the bot or rest of the group
     //finished off the mob
-    if(HaveBot() && m_bot->isAlive() && !isAlive())
+    if (HaveBot() && m_bot->isAlive() && !isAlive())
     {
-        m_bot->SetCharmerGUID(0);
-        m_bot->RemoveFromWorld();
         RemoveBot();
-
-        //recreate it when you are alive again
         SetBotMustBeCreated(m_bot_entry, newbotrace, newbotclass);
-    } //end if bot is alive and I'm not
+    }
 
     return true;
 }
@@ -2294,12 +2256,12 @@ void Player::GetBotLevelInfo(uint32 race, uint32 class_,uint32 level, PlayerLeve
 
 void Player::RefreshBot(uint32 diff)
 {
-    if(m_botTimer != 0)
+    if (m_botTimer != 0)
         return;
 
 	uint32 refreshDelay = 0;
 
-    if(m_bot_died == true && !this->isInCombat() && isAlive())
+    if (m_bot_died == true && !this->isInCombat() && isAlive())
     {
         //recreate bot because it died
         CreateBot(m_bot_entry, newbotrace, newbotclass);
@@ -2311,103 +2273,57 @@ void Player::RefreshBot(uint32 diff)
     {
         if (HaveBot())
         {
-            if (GetGroup())
-            {
-                Group* m_group = GetGroup();
-                Creature* m_bot = GetBot();
-
-                // removing bot from group
-                if (m_group->IsMember(m_bot->GetGUID()))
-                {
-                    if (m_group->RemoveMember(m_bot->GetGUID(), GROUP_REMOVEMETHOD_DEFAULT) <= 1)
-                    {
-                        // deleting group since no one is left
-                        delete m_group;
-                        sObjectMgr->RemoveGroup(m_group);
-                    }
-                }
-            }
-            m_bot->SetCharmerGUID(0);
-            m_bot->RemoveFromWorld();
             RemoveBot();
-
             SetBotMustBeCreated(m_bot_entry, newbotrace, newbotclass);
         }
+
         return;
     }
 
-    if(HaveBot())
+    if (HaveBot())
     {
         Creature *m_bot = GetBot();
 
         //BOT IS DEAD SUPPORT
-        if(GetGroup() && !m_bot->isAlive())
+        if (GetGroup() && !m_bot->isAlive())
         {
-            Group *m_group = GetGroup();
-
             //respawn if master is not in combat and is alive
-            if(!this->isInCombat() && isAlive())
+            if (!this->isInCombat() && isAlive())
             {
                 CreateBot(m_bot_entry, newbotrace, newbotclass);
                 m_bot = GetBot();
-            } else {
-                m_bot_died = true;
             }
+            else
+                m_bot_died = true;
         }
-        //BOT MUST DIE SUPPORT
-        else if(GetBotMustDie())
+        else if (GetBotMustDie() || !GetGroup())
         {
             // dont want to delete from group if dead
-            if(m_bot->isAlive()) 
+            if (m_bot->isAlive()) 
             {
-                if (GetGroup())
-                {
-                    Group *m_group = GetGroup();
-
-                    //removing bot from group
-                    if(m_group->IsMember(m_bot->GetGUID()) && m_group->GetMembersCount() >= 2)
-                    {
-                        //deleting bot from group
-                        if(m_group->RemoveMember(m_bot->GetGUID(), GROUP_REMOVEMETHOD_DEFAULT) < 1) // 99 means I'm a bot
-                        {
-                            //no one left in group so deleting group
-                            delete m_group;
-                            sObjectMgr->RemoveGroup(m_group);
-                        }
-                    }
-                }
-
-                m_bot->SetReactState(REACT_PASSIVE);
-                m_bot->CombatStop();
-
-                m_bot->DeleteThreatList();
-                m_bot->SetCharmerGUID(0);
-                m_bot->RemoveFromWorld();
                 RemoveBot();
-
-                CharacterDatabase.PExecute("DELETE FROM character_npcbot WHERE owner='%u'", this->GetGUIDLow());
             }
         }
     }
 
-    if(HaveBot() && GetBot()->isAlive())
+    if (HaveBot() && GetBot()->isAlive())
     {
         Creature *m_bot = GetBot();
 
-        if(isInCombat())
+        if (isInCombat())
         {
-            if(m_bot->getVictim() > 0)
+            if (m_bot->getVictim() > 0)
             {
-                if(m_bot->getVictim()->IsPolymorphed())
+                if (m_bot->getVictim()->IsPolymorphed())
                 {
                     m_bot->SetReactState(REACT_PASSIVE); //Don't attack sheep
                     m_bot->CombatStop();
                     return; //for now return because can't do anything, need to continue timer though somehow
-                } //end if polymorpth
-            } //end if getVictim > 0
-            else if(getVictim() > 0 && !getVictim()->IsPolymorphed())
+                }
+            }
+            else if (getVictim() > 0 && !getVictim()->IsPolymorphed())
             {
-                if(GetBotClass() == CLASS_PRIEST || GetBotClass() == CLASS_MAGE || GetBotClass() == CLASS_WARLOCK)
+                if (GetBotClass() == CLASS_PRIEST || GetBotClass() == CLASS_MAGE || GetBotClass() == CLASS_WARLOCK)
                     m_bot->SetReactState(REACT_PASSIVE); //casters shouldn't melee
                 else
                     m_bot->SetReactState(REACT_DEFENSIVE);
@@ -2416,57 +2332,38 @@ void Player::RefreshBot(uint32 diff)
             //if I'm in combat but the bot is not, put bot in combat
             //this fixes the case where group member gets initial aggro
             //otherwise the bot wont fight unless I get hit.
-            if(!m_bot->isInCombat() && m_bot->GetReactState() != REACT_PASSIVE)
+            if (!m_bot->isInCombat() && m_bot->GetReactState() != REACT_PASSIVE)
             {
-                if(getVictim() > 0 && m_bot->GetDistance(getVictim())<30) 
+                if (getVictim() > 0 && m_bot->GetDistance(getVictim())<30) 
                 {
                     m_bot->AI()->AttackStart(getVictim());
                     SetBotCommandState(COMMAND_ATTACK);
                 }
             }
-        } //end if isInCombat
+        }
 
         //TELEPORT AND CHANGE ZONE/AREA SUPPORT
-        if(!isInFlight())
+        if (!isInFlight())
         {
             bool tp = false;
             
-            if(GetMapId() != m_bot->GetMapId())
+            if (GetMapId() != m_bot->GetMapId())
                 tp = true;
-            else if(GetZoneId() != m_bot->GetZoneId())
+            else if (GetZoneId() != m_bot->GetZoneId())
                 tp = true;
             //If bot and player not in the same area but around 25
-            else if((GetAreaId() != m_bot->GetAreaId()) && ((abs(m_bot->GetPositionX() - GetPositionX()) > 25) ||  (abs(m_bot->GetPositionY() - GetPositionY()) > 25)) || (abs(m_bot->GetPositionZ() - GetPositionZ()) > 25))
+            else if ((GetAreaId() != m_bot->GetAreaId()) && ((abs(m_bot->GetPositionX() - GetPositionX()) > 25) ||  (abs(m_bot->GetPositionY() - GetPositionY()) > 25)) || (abs(m_bot->GetPositionZ() - GetPositionZ()) > 25))
                 tp = true;
 
             //If player change of zone/area
-            if(tp)
+            if (tp)
             {
-                //HACK ELSE BOT IS DUPLICATED AND CLIENT CRASH
-                if(GetGroup() && GetBot())
-                {
-                    Group *m_group = GetGroup();
-                    Creature *m_bot = GetBot();
-
-                    //removing bot from group
-                    if(m_group->IsMember(m_bot->GetGUID()))
-                    {
-                        //deleting bot from group
-                        if(m_group->RemoveMember(m_bot->GetGUID(), GROUP_REMOVEMETHOD_DEFAULT) < 1) // 99 means I'm a bot
-                        {
-                            //no one left in group so deleting group
-                            delete m_group;
-                            sObjectMgr->RemoveGroup(m_group);
-                        }
-                    }
-                }
+                Creature *m_bot = GetBot();
 
                 //SAVE INFO
                 uint32 entry = m_bot->GetEntry();
 
                 //DESPAWN
-                m_bot->SetCharmerGUID(0);
-                m_bot->RemoveFromWorld();
                 RemoveBot();
 
                 //RESPAWN
@@ -2477,9 +2374,9 @@ void Player::RefreshBot(uint32 diff)
         }
 
         //FLYING MOUNT SUPPORT
-        if((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())
+        if ((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())
         {
-            if(m_bot->GetMountID() != 17759
+            if (m_bot->GetMountID() != 17759
             && m_bot->GetMountID() != 17703
             && m_bot->GetMountID() != 17718
             && m_bot->GetMountID() != 17720
@@ -2488,14 +2385,14 @@ void Player::RefreshBot(uint32 diff)
             {
                 int m_mount = 0;
                 int m_rand = rand()%100;
-                if(m_rand < 33)      m_mount = 1;
-                else if(m_rand > 64) m_mount = 2;
+                if (m_rand < 33)      m_mount = 1;
+                else if (m_rand > 64) m_mount = 2;
                 else                 m_mount = 3;
 
-                if((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70)) m_mount = 0;
-                if((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70)) m_mount = 0;
+                if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70)) m_mount = 0;
+                if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70)) m_mount = 0;
 
-                if(GetBotRace() == RACE_HUMAN || GetBotRace() == RACE_DWARF || GetBotRace() == RACE_NIGHTELF || GetBotRace() == RACE_GNOME || GetBotRace() == RACE_DRAENEI)
+                if (GetBotRace() == RACE_HUMAN || GetBotRace() == RACE_DWARF || GetBotRace() == RACE_NIGHTELF || GetBotRace() == RACE_GNOME || GetBotRace() == RACE_DRAENEI)
                 {
                     switch(m_mount)
                     {
@@ -2505,7 +2402,7 @@ void Player::RefreshBot(uint32 diff)
                         default: break;
                     }
                 }
-                else if(GetBotRace() == RACE_ORC || GetBotRace() == RACE_UNDEAD_PLAYER || GetBotRace() == RACE_TAUREN || GetBotRace() == RACE_TROLL || GetBotRace() == RACE_BLOODELF)
+                else if (GetBotRace() == RACE_ORC || GetBotRace() == RACE_UNDEAD_PLAYER || GetBotRace() == RACE_TAUREN || GetBotRace() == RACE_TROLL || GetBotRace() == RACE_BLOODELF)
                 {
                     switch(m_mount)
                     {
@@ -2516,7 +2413,7 @@ void Player::RefreshBot(uint32 diff)
                     }
                 }
             }
-            if(isInFlight())
+            if (isInFlight())
             {
                 m_bot->HasUnitMovementFlag(MOVEMENTFLAG_FLYING);
                 m_bot->SetSpeed(MOVE_RUN, GetSpeed(MOVE_FLIGHT) + 0.1f, true);
@@ -2528,26 +2425,26 @@ void Player::RefreshBot(uint32 diff)
             }
         }
         //MOUNT SUPPORT
-        else if(IsMounted() && !m_bot->IsMounted())
+        else if (IsMounted() && !m_bot->IsMounted())
         {
             int m_mount = 0;
             int m_rand = rand()%100;
             
-			if(m_rand < 33)
+			if (m_rand < 33)
                 m_mount = 1;
-            else if(m_rand > 64) 
+            else if (m_rand > 64) 
                 m_mount = 2;
             else
                 m_mount = 3;
 
-            if((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60)) m_mount = 0;
-            if((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60)) m_mount = 0;
+            if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60)) m_mount = 0;
+            if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60)) m_mount = 0;
 
             switch(GetBotRace())
             {
                 case RACE_HUMAN:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2571,7 +2468,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_ORC:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2595,7 +2492,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_DWARF:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2619,7 +2516,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_NIGHTELF:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2643,7 +2540,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_UNDEAD_PLAYER:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2667,7 +2564,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_TAUREN:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2691,7 +2588,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_GNOME:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2715,7 +2612,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_TROLL:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2739,7 +2636,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_BLOODELF:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2763,7 +2660,7 @@ void Player::RefreshBot(uint32 diff)
                 }
                 case RACE_DRAENEI:
                 {
-                    if(getLevel() < 60)
+                    if (getLevel() < 60)
                     {
                         switch(m_mount)
                         {
@@ -2788,7 +2685,7 @@ void Player::RefreshBot(uint32 diff)
             }
             m_bot->SetSpeed(MOVE_RUN, GetSpeed(MOVE_WALK) - 0.1f, true);
         }
-        else if(!IsMounted() && m_bot->IsMounted())
+        else if (!IsMounted() && m_bot->IsMounted())
         {
             m_bot->Unmount();
             CreatureInfo const *cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
@@ -2796,29 +2693,27 @@ void Player::RefreshBot(uint32 diff)
             m_bot->HasUnitMovementFlag(MOVEMENTFLAG_NONE);
         }
 
-        //if low on mana, take a drink (only check for classes with custom AI)
-        //because they are the only ones currently using mana
-        if(GetBotClass() == CLASS_SHAMAN || GetBotClass() == CLASS_DRUID || GetBotClass() == CLASS_PRIEST || GetBotClass() == CLASS_MAGE || GetBotClass() == CLASS_HUNTER || GetBotClass() == CLASS_WARLOCK || GetBotClass() == CLASS_PALADIN)
+        //if low on mana, take a drink (only check for classes with custom AI) because they are the only ones currently using mana
+        if (GetBotClass() == CLASS_SHAMAN || GetBotClass() == CLASS_DRUID || GetBotClass() == CLASS_PRIEST || GetBotClass() == CLASS_MAGE || GetBotClass() == CLASS_HUNTER || GetBotClass() == CLASS_WARLOCK || GetBotClass() == CLASS_PALADIN)
         {
-            if(m_bot->GetPower(POWER_MANA)*100/m_bot->GetMaxPower(POWER_MANA) < 80 && !m_bot->HasAura(1137) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
+            if (m_bot->GetPower(POWER_MANA)*100/m_bot->GetMaxPower(POWER_MANA) < 80 && !m_bot->HasAura(1137) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
             {
                 m_bot->CastSpell(m_bot, 1137, true);
                 SetBotMustWaitForSpell3(1000);
                 m_bot->SetStandState(1);
-                m_botTimer = 5000; //set longer delay so it wont stand up right away
+                m_botTimer = 5000;
                 return;
             }
         }
 
-        //if drinking, have to fake mana regen because charmed NPCs
-        //do not regen mana
-        if(m_bot->HasAura(1137))
+        //if drinking, have to fake mana regen because charmed NPCs do not regen mana
+        if (m_bot->HasAura(1137))
         {
             uint32 addvalue = 0;
             uint32 maxValue = m_bot->GetMaxPower(POWER_MANA);
             uint32 curValue = m_bot->GetPower(POWER_MANA);
 
-            if(curValue <= maxValue)
+            if (curValue <= maxValue)
             {
                 addvalue = maxValue/20;
                 m_bot->ModifyPower(POWER_MANA, addvalue);
@@ -2826,48 +2721,46 @@ void Player::RefreshBot(uint32 diff)
             }
         }
 
-        if(m_bot->HasAura(1137) && m_bot->GetPower(POWER_MANA) >= m_bot->GetMaxPower(POWER_MANA))
+        if (m_bot->HasAura(1137) && m_bot->GetPower(POWER_MANA) >= m_bot->GetMaxPower(POWER_MANA))
             m_bot->RemoveAurasDueToSpell(1137);
 
         //eat
-        if(m_bot->GetHealth()*100 / m_bot->GetMaxHealth() < 80 && !m_bot->HasAura(10256) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
+        if (m_bot->GetHealth()*100 / m_bot->GetMaxHealth() < 80 && !m_bot->HasAura(10256) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
         {
             SetBotMustWaitForSpell3(1000);
             m_bot->CastSpell(m_bot, 10256, true);
             m_bot->SetStandState(1);
-            m_botTimer = 5000; //set longer delay so it wont stand up right away
+            m_botTimer = 5000;
             return;
         }
 
-        //if eating, have to fake regen because charmed NPCs
-        //do not regen
-        if(m_bot->HasAura(10256))
+        //if eating, have to fake regen because charmed NPCs do not regen
+        if (m_bot->HasAura(10256))
         {
             uint32 addvalue = 0;
             uint32 maxValue = m_bot->GetMaxHealth();
             uint32 curValue = m_bot->GetHealth();
 
-            if(curValue <= maxValue)
+            if (curValue <= maxValue)
             {
                 addvalue = maxValue/20;
                 m_bot->SetHealth(curValue + addvalue);
-                //return;
             }
         }
 
-        if(m_bot->GetHealth() == m_bot->GetMaxHealth() && m_bot->HasAura(10256))
+        if (m_bot->GetHealth() == m_bot->GetMaxHealth() && m_bot->HasAura(10256))
             m_bot->RemoveAurasDueToSpell(10256);
 
         //if bot stands up for some reason, ie goes into combat,
         //remove the food and drink affect
-        if(m_bot->isInCombat() /*|| !m_bot->IsStopped()*/ || m_bot->IsStandState())
+        if (m_bot->isInCombat() /*|| !m_bot->IsStopped()*/ || m_bot->IsStandState())
         {
-            if(m_bot->HasAura(10256)) m_bot->RemoveAurasDueToSpell(10256);
-            if(m_bot->HasAura(1137)) m_bot->RemoveAurasDueToSpell(1137);
+            if (m_bot->HasAura(10256)) m_bot->RemoveAurasDueToSpell(10256);
+            if (m_bot->HasAura(1137)) m_bot->RemoveAurasDueToSpell(1137);
         }
 
         //if done drinking and eating, stand up
-        if(!isInCombat() && m_bot->IsSitState() && !m_bot->HasAura(1137) && !m_bot->HasAura(10256))
+        if (!isInCombat() && m_bot->IsSitState() && !m_bot->HasAura(1137) && !m_bot->HasAura(10256))
             m_bot->SetStandState(UNIT_STAND_STATE_STAND);
 
         //SPELL AI CUSTOM SUPPORT
@@ -2875,20 +2768,20 @@ void Player::RefreshBot(uint32 diff)
         {
             case CLASS_DRUID: //DRUID FORM SUPPORT
             {
-                if(!m_bot->isAlive()) break;
+                if (!m_bot->isAlive()) break;
 
                 CreatureInfo const *cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
 
                 uint32 m_old_bot_form = m_bot->GetDisplayId();
-                if((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())
+                if ((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())
                 {
                     //flight form
-                    if((((IsMounted()) && (m_bot->getLevel() >= 70)) || (GetShapeshiftForm() == FORM_FLIGHT) || (GetShapeshiftForm() == FORM_FLIGHT_EPIC)))
+                    if ((((IsMounted()) && (m_bot->getLevel() >= 70)) || (GetShapeshiftForm() == FORM_FLIGHT) || (GetShapeshiftForm() == FORM_FLIGHT_EPIC)))
                     {
-                        if((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 21243))
+                        if ((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 21243))
                             m_bot->SetDisplayId(21243);
 
-                        if((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 21244))
+                        if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 21244))
                             m_bot->SetDisplayId(21244);
 
                         m_bot->Unmount();
@@ -2896,78 +2789,78 @@ void Player::RefreshBot(uint32 diff)
                         SetBotMustWaitForSpell1(3000);
                     }
                 }
-                else if((GetBotMustWaitForSpell1() == 0) && (m_bot->IsInWater()) && (!isInFlight()))
+                else if ((GetBotMustWaitForSpell1() == 0) && (m_bot->IsInWater()) && (!isInFlight()))
                 {
                     //Removed this because it turns into a seal in Booty Bay
                     //seal form
                     /*
-                    if((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 2428))
+                    if ((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 2428))
                         m_bot->SetDisplayId(2428);
-                    if((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 2428))
+                    if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 2428))
                         m_bot->SetDisplayId(2428);
                     SetBotForm(m_bot->GetDisplayId());
                     SetBotMustWaitForSpell1(3000);
                     */
                 }
-                else if((GetBotMustWaitForSpell1() == 0) && (m_bot->isInCombat()) && (!m_bot->isInFlight()))
+                else if ((GetBotMustWaitForSpell1() == 0) && (m_bot->isInCombat()) && (!m_bot->isInFlight()))
                 {
                     //combat form is now handled in AI
                 }
-                else if((GetBotMustWaitForSpell1() == 0) && (((IsMounted()) && (m_bot->getLevel() < 60)) || (GetShapeshiftForm() == FORM_TRAVEL)) && (!m_bot->isInFlight()))
+                else if ((GetBotMustWaitForSpell1() == 0) && (((IsMounted()) && (m_bot->getLevel() < 60)) || (GetShapeshiftForm() == FORM_TRAVEL)) && (!m_bot->isInFlight()))
                 {
                     //travel form
-                    if((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 632))
+                    if ((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 632))
                         m_bot->SetDisplayId(632);
 
-                    if((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 632))
+                    if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 632))
                         m_bot->SetDisplayId(632);
 
                     SetBotForm(m_bot->GetDisplayId());
                     SetBotMustWaitForSpell1(3000);
                 }
-                else if((GetBotMustWaitForSpell1() == 0) && (GetShapeshiftForm() == FORM_CAT) && (!m_bot->isInFlight()))
+                else if ((GetBotMustWaitForSpell1() == 0) && (GetShapeshiftForm() == FORM_CAT) && (!m_bot->isInFlight()))
                 {
                     //cat form
-                    if((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 892))
+                    if ((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 892))
                         m_bot->SetDisplayId(892);
 
-                    if((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 8571))
+                    if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 8571))
                         m_bot->SetDisplayId(8571);
                     SetBotForm(m_bot->GetDisplayId());
                 }
-                else if((GetBotMustWaitForSpell1() == 0) && (GetShapeshiftForm() == FORM_BEAR) && (!m_bot->isInFlight()))
+                else if ((GetBotMustWaitForSpell1() == 0) && (GetShapeshiftForm() == FORM_BEAR) && (!m_bot->isInFlight()))
                 {
                     //bear form
-                    if((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 2281)) 
+                    if ((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 2281)) 
                         m_bot->SetDisplayId(2281);
 
-                    if((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 2289)) 
+                    if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 2289)) 
                         m_bot->SetDisplayId(2289);
                     
 					SetBotForm(m_bot->GetDisplayId());
                 }
 
-                if(m_old_bot_form != GetBotForm())
+                if (m_old_bot_form != GetBotForm())
                 {
                     //change stats based on forms
                     m_bot->SetSpeed(MOVE_SWIM, cinfo->speed_run, true); m_bot->SetSpeed(MOVE_RUN, cinfo->speed_run, true);
-                    if(GetBotForm() == 2428)
+                    if (GetBotForm() == 2428)
                         m_bot->SetSpeed(MOVE_SWIM, cinfo->speed_run * 1.50f, true);
-                    else if(GetBotForm() == 632) //travel form
+                    else if (GetBotForm() == 632) //travel form
                         m_bot->SetSpeed(MOVE_RUN, GetSpeed(MOVE_RUN) - 0.1f, true);
                 }
 
                 //RESET FORMS
-                if((!m_bot->isInFlight()) && (!m_bot->IsInWater())  &&  (!m_bot->isInCombat())  && (!IsMounted()) && (GetShapeshiftForm() != FORM_TRAVEL) && (GetShapeshiftForm() != FORM_CAT))
+                if ((!m_bot->isInFlight()) && (!m_bot->IsInWater())  &&  (!m_bot->isInCombat())  && (!IsMounted()) && (GetShapeshiftForm() != FORM_TRAVEL) && (GetShapeshiftForm() != FORM_CAT))
                 {
                     //don't reset if bear or cat because it costs too much mana
-                    if(m_bot->HasAura(9634) || m_bot->HasAura(768) || m_bot->HasAura(16591))
+                    if (m_bot->HasAura(9634) || m_bot->HasAura(768) || m_bot->HasAura(16591))
                         return;
 
-                    if((GetBotRace() == 4) && (m_bot->GetDisplayId() != cinfo->Modelid1))
+                    if ((GetBotRace() == 4) && (m_bot->GetDisplayId() != cinfo->Modelid1))
                         m_bot->SetDisplayId(cinfo->Modelid1);
 
-                    if((GetBotRace() == 6) && (m_bot->GetDisplayId() != cinfo->Modelid3))
+                    if ((GetBotRace() == 6) && (m_bot->GetDisplayId() != cinfo->Modelid3))
                         m_bot->SetDisplayId(cinfo->Modelid3);
 
                     m_bot->SetSpeed(MOVE_SWIM, cinfo->speed_run, true);
@@ -2980,7 +2873,7 @@ void Player::RefreshBot(uint32 diff)
                 break;
             }
 
-        }//END SWITCH
+        }
 
         if (!m_bot->isInCombat() && m_bot->GetCharmInfo()->GetCommandState() != COMMAND_STAY && GetDistance(m_bot) > 60 && !IsBeingTeleported())
         {
@@ -2993,27 +2886,27 @@ void Player::RefreshBot(uint32 diff)
         else
             m_bot->SetStandState(UNIT_STAND_STATE_STAND);
     }
-    else if(GetBotMustBeCreated() && isAlive())
+    else if (GetBotMustBeCreated() && isAlive())
     {
         CreateBot(m_bot_entry_must_be_created, m_bot_race_must_be_created, m_bot_class_must_be_created);
     }
 
-    if(GetBotMustWaitForSpell1() > 0)
+    if (GetBotMustWaitForSpell1() > 0)
         SetBotMustWaitForSpell1(GetBotMustWaitForSpell1() - refreshDelay > 0 ? refreshDelay : 10);
 
-    if(GetBotMustWaitForSpell2() > 0)
+    if (GetBotMustWaitForSpell2() > 0)
         SetBotMustWaitForSpell2(GetBotMustWaitForSpell2() - refreshDelay > 0 ? refreshDelay : 10);
 
-    if(GetBotMustWaitForSpell3() > 0)
+    if (GetBotMustWaitForSpell3() > 0)
         SetBotMustWaitForSpell3(GetBotMustWaitForSpell3() - refreshDelay > 0 ? refreshDelay : 10);
 
     m_botTimer = refreshDelay;
 
-} //end Player::RefreshBot
+}
 
 void Player::RemoveBot()
 {
-    if(m_botHasPet && m_botsPet != NULL)
+    if (m_botHasPet && m_botsPet != NULL)
     {
         m_botsPet->SetCharmerGUID(0);
         m_botsPet->CombatStop();
@@ -3024,30 +2917,33 @@ void Player::RemoveBot()
     m_botsPet = NULL;
     m_botHasPet = false;
 
+    m_bot->SetReactState(REACT_PASSIVE);
     m_bot->CombatStop();
-    m_bot->DeleteFromDB();
+    m_bot->DeleteThreatList();
+    m_bot->SetCharmerGUID(0);
     m_bot->CleanupsBeforeDelete();
-    m_bot->SetIAmABot(false); //this HAS to come after CleanupsBeforeDelete
+    //m_bot->DeleteFromDB();
+    m_bot->SetIAmABot(false);
     m_bot->AddObjectToRemoveList();
+    m_bot->RemoveFromWorld();
+    CharacterDatabase.PExecute("DELETE FROM character_npcbot WHERE owner='%u'", this->GetGUIDLow());
 
     m_bot = NULL; m_bot_class = 0; m_bot_race = 0; m_bot_form = 0;
     m_bot_must_wait_for_spell_1 = 0; m_bot_must_wait_for_spell_2 = 0;
     m_bot_must_wait_for_spell_3 = 0; m_bot_must_be_created = false;
 
-    if(m_bot_ai)
-    {
-        //delete m_bot_ai;
+    if (m_bot_ai)
         m_bot_ai = NULL;
-    }
+
     m_bot_must_die = false;
 
 
-} //end RemoveBot
+}
 
 void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
 {
      //Being teleported so don't create bot yet
-    if(IsBeingTeleported())
+    if (IsBeingTeleported())
         return;
 
     //Don't create while fighting or dead
@@ -3061,72 +2957,74 @@ void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
         return;
     }
 
-    Creature *newbot = SummonCreature(botentry, GetPositionX()-2, GetPositionY()-2, GetPositionZ(), GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN, 0);
-
-    SetBot(newbot);
-    SetBotClass(botclass);
-    SetBotRace(botrace);
-
-    newbot->SetIAmABot(true);
-    newbot->SetCharmerGUID(GetGUID());
-    newbot->CombatStop();
-    newbot->DeleteThreatList();
-    newbot->AIM_Initialize();
-
-    CharmInfo *charmInfonewbot = newbot->InitCharmInfo();
-    newbot->setFaction(getFaction());
-    
-	if(botclass == CLASS_PRIEST || botclass == CLASS_MAGE || botclass == CLASS_WARLOCK)
-        newbot->SetReactState(REACT_PASSIVE); //casters shouldn't melee
-    else
-        newbot->SetReactState(REACT_DEFENSIVE);
-
-    SetBotCommandState(COMMAND_FOLLOW);;
-    
-	m_bot_must_die = false;
-
-    m_bot_entry = m_bot->GetEntry();
-    newbotclass = GetBotClass();
-    newbotrace = GetBotRace();
-
-    //Set the race. This is so when the druid shapeshifts
-    //it wont get an error about not finding correct race
-    GetBot()->SetByteValue(UNIT_FIELD_BYTES_0, 0, newbotrace);
-
-    if(GetBotAI()) 
-        GetBotAI()->JustRespawned();
-
-    SetBotMustWaitForSpell1(0);
-    SetBotMustWaitForSpell2(0);
-    SetBotMustWaitForSpell3(0); //eating and drinking
-
-    CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(getLevel(), newbot->GetCreatureInfo()->unit_class);
-    newbot->SetArmor(stats->BaseArmor);
-    newbot->SetMaxHealth((getLevel() * newbot->GetMaxHealth()) / newbot->getLevel()); //set health based of level
-    newbot->SetMaxHealth(newbot->GetMaxHealth() - newbot->GetMaxHealth() * urand(1, 25) / 100); // insert some randomness
-    newbot->SetHealth(newbot->GetMaxHealth());
-
-    if(botclass != CLASS_WARRIOR && botclass != CLASS_ROGUE && botclass != CLASS_DEATH_KNIGHT)
+    if (this->GetGroup())
     {
-        newbot->SetPower(POWER_MANA, m_bot->GetMaxPower(POWER_MANA));
-        newbot->SetMaxPower(POWER_MANA, (getLevel() * m_bot->GetMaxPower(POWER_MANA)) / m_bot->getLevel()); //set mana based of level
-        newbot->SetMaxPower(POWER_MANA, m_bot->GetMaxPower(POWER_MANA) - newbot->GetMaxPower(POWER_MANA) * urand(1, 20) / 100); // insert some randomness
+        Creature *newbot = SummonCreature(botentry, GetPositionX()-2, GetPositionY()-2, GetPositionZ(), GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN, 0);
+
+        SetBot(newbot);
+        SetBotClass(botclass);
+        SetBotRace(botrace);
+
+        newbot->SetIAmABot(true);
+        newbot->SetCharmerGUID(GetGUID());
+        newbot->CombatStop();
+        newbot->DeleteThreatList();
+        newbot->AIM_Initialize();
+
+        CharmInfo *charmInfonewbot = newbot->InitCharmInfo();
+        newbot->setFaction(getFaction());
+    
+	    if (botclass == CLASS_PRIEST || botclass == CLASS_MAGE || botclass == CLASS_WARLOCK)
+            newbot->SetReactState(REACT_PASSIVE); //casters shouldn't melee
+        else
+            newbot->SetReactState(REACT_DEFENSIVE);
+
+        SetBotCommandState(COMMAND_FOLLOW);;
+    
+	    m_bot_must_die = false;
+
+        m_bot_entry = m_bot->GetEntry();
+        newbotclass = GetBotClass();
+        newbotrace = GetBotRace();
+
+        //Set the race. This is so when the druid shapeshifts
+        //it wont get an error about not finding correct race
+        GetBot()->SetByteValue(UNIT_FIELD_BYTES_0, 0, newbotrace);
+
+        if(GetBotAI()) 
+            GetBotAI()->JustRespawned();
+
+        SetBotMustWaitForSpell1(0);
+        SetBotMustWaitForSpell2(0);
+        SetBotMustWaitForSpell3(0); //eating and drinking
+
+        CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(getLevel(), newbot->GetCreatureInfo()->unit_class);
+        newbot->SetArmor(stats->BaseArmor);
+        newbot->SetMaxHealth((getLevel() * newbot->GetMaxHealth()) / newbot->getLevel()); //set health based of level
+        newbot->SetMaxHealth(newbot->GetMaxHealth() - newbot->GetMaxHealth() * urand(1, 25) / 100); // insert some randomness
+        newbot->SetHealth(newbot->GetMaxHealth());
+
+        if (botclass != CLASS_WARRIOR && botclass != CLASS_ROGUE && botclass != CLASS_DEATH_KNIGHT)
+        {
+            newbot->SetPower(POWER_MANA, m_bot->GetMaxPower(POWER_MANA));
+            newbot->SetMaxPower(POWER_MANA, (getLevel() * m_bot->GetMaxPower(POWER_MANA)) / m_bot->getLevel()); //set mana based of level
+            newbot->SetMaxPower(POWER_MANA, m_bot->GetMaxPower(POWER_MANA) - newbot->GetMaxPower(POWER_MANA) * urand(1, 20) / 100); // insert some randomness
+        }
+
+        newbot->setFaction(getFaction());
+
+        //remove any entries, just in case it didnt get cleaned up earlier
+	    CharacterDatabase.PExecute("DELETE FROM character_npcbot WHERE owner = '%u'", this->GetGUIDLow());
+
+        //add the new bot
+        CharacterDatabase.PExecute("INSERT INTO character_npcbot (owner,entry,race,class) VALUES ('%u','%u','%u','%u')", this->GetGUIDLow(), botentry, botrace, botclass);
+
+        m_botsPet = NULL;
+        m_botHasPet = false;
+
+        newbot->SetLevel(getLevel());
+        newbot->AI()->Reset();
     }
-
-    //newbot->SetFaction(getFaction());
-    newbot->setFaction(getFaction());
-
-    //remove any entries, just in case it didnt get cleaned up earlier
-	CharacterDatabase.PExecute("DELETE FROM character_npcbot WHERE owner = '%u'", this->GetGUIDLow());
-
-    //add the new bot
-    CharacterDatabase.PExecute("INSERT INTO character_npcbot (owner,entry,race,class) VALUES ('%u','%u','%u','%u')", this->GetGUIDLow(), botentry, botrace, botclass);
-
-    m_botsPet = NULL;
-    m_botHasPet = false;
-
-    newbot->SetLevel(getLevel());
-    newbot->AI()->Reset();
 } //end Player::CreateBot
 
 Creature *Player::GetBotsPet(uint32 entry)
@@ -3137,7 +3035,7 @@ Creature *Player::GetBotsPet(uint32 entry)
 
     result = WorldDatabase.PQuery("SELECT hp, mana, armor, str, agi FROM pet_levelstats WHERE creature_entry = 1860 AND level=%u", this->getLevel());
 
-    if(result)
+    if (result)
     {
         Field *fields = result->Fetch();
         uint32 hp = fields[0].GetUInt32();
@@ -3163,7 +3061,7 @@ Creature *Player::GetBotsPet(uint32 entry)
 
 void Player::SetBotsPetDied()
 {
-    if(m_botHasPet && m_botsPet != NULL)
+    if (m_botHasPet && m_botsPet != NULL)
     {
         m_botsPet->SetCharmerGUID(0);
         m_botsPet->CombatStop();
@@ -3182,39 +3080,39 @@ void Player::CreateNPCBot(uint8 bot_class)
     uint32 entry = 0;
     uint32 bot_race = 0;
 
-    if(!this->HaveBot())
+    if (!this->HaveBot())
     {
         QueryResult result;
 
-        if(this->GetTeam() == ALLIANCE)
+        if (this->GetTeam() == ALLIANCE)
         {
-            if(bot_class == CLASS_ROGUE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_PRIEST) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_DRUID) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_SHAMAN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_MAGE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_WARLOCK) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_WARRIOR) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_PALADIN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if(bot_class == CLASS_HUNTER) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            if (bot_class == CLASS_ROGUE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_PRIEST) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_DRUID) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_SHAMAN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_MAGE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_WARLOCK) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_WARRIOR) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_PALADIN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_HUNTER) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
             else result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='script_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
         }
-        else if(this->GetTeam() == HORDE)
+        else if (this->GetTeam() == HORDE)
         {
-            if(bot_class == CLASS_ROGUE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_PRIEST) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_SHAMAN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_MAGE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_WARLOCK) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_WARRIOR) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_DRUID) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_PALADIN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if(bot_class == CLASS_HUNTER) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            if (bot_class == CLASS_ROGUE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_PRIEST) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_SHAMAN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_MAGE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_WARLOCK) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_WARRIOR) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_DRUID) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_PALADIN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_HUNTER) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
             else result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='script_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
         }
 
         //randomly select one of NPCs
-        if(result)
+        if (result)
         {
             uint64 m_rand = urand(1, result->GetRowCount());
             uint64 tmp_rand = 0;
@@ -3224,7 +3122,7 @@ void Player::CreateNPCBot(uint8 bot_class)
                 entry = fields[0].GetUInt32();
                 bot_race = fields[1].GetUInt32();
                 ++tmp_rand;
-                if(tmp_rand == m_rand)
+                if (tmp_rand == m_rand)
                     break;
             } while(result->NextRow());
            // delete result;
@@ -7641,7 +7539,7 @@ void Player::CheckAreaExploreAndOutdoor()
                     XP = uint32(sObjectMgr->GetBaseXP(p->area_level)*sWorld->getRate(RATE_XP_EXPLORE));
                 }
 
-                if(GetSession()->IsPremium())
+                if (GetSession()->IsPremium())
                     XP *= sWorld->getRate(RATE_XP_EXPLORE_PREMIUM);
 
                 GiveXP(XP, NULL);
@@ -8019,7 +7917,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
             uint32 itemId = sWorld->getIntConfig(CONFIG_PVP_TOKEN_ID);
             int32 count = sWorld->getIntConfig(CONFIG_PVP_TOKEN_COUNT);
 
-            if(AddItem(itemId, count))
+            if (AddItem(itemId, count))
                 ChatHandler(this).PSendSysMessage("You have been awarded a token for slaying another player.");
         }
     }
@@ -8702,7 +8600,7 @@ void Player::_ApplyItemBonuses(ItemPrototype const *proto, uint8 slot, bool appl
         attType = OFF_ATTACK;
     }
 
-    if(CanUseAttackType(attType))
+    if (CanUseAttackType(attType))
         _ApplyWeaponDamage(slot, proto, ssv, apply);
 
     int32 extraDPS = ssv->getDPSMod(proto->ScalingStatValue);
@@ -11945,7 +11843,7 @@ uint8 Player::CanStoreItems(Item **pItems,int count) const
             for (int t = KEYRING_SLOT_START; t < KEYRING_SLOT_END; ++t)
             {
                 pItem2 = GetItemByPos( INVENTORY_SLOT_BAG_0, t );
-                if( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_keys[t-KEYRING_SLOT_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
+                if ( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_keys[t-KEYRING_SLOT_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
                 {
                     inv_keys[t-KEYRING_SLOT_START] += pItem->GetCount();
                     b_found = true;
@@ -11957,7 +11855,7 @@ uint8 Player::CanStoreItems(Item **pItems,int count) const
             for (int t = CURRENCYTOKEN_SLOT_START; t < CURRENCYTOKEN_SLOT_END; ++t)
             {
                 pItem2 = GetItemByPos(INVENTORY_SLOT_BAG_0, t);
-                if( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_tokens[t-CURRENCYTOKEN_SLOT_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
+                if ( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_tokens[t-CURRENCYTOKEN_SLOT_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
                 {
                     inv_tokens[t-CURRENCYTOKEN_SLOT_START] += pItem->GetCount();
                     b_found = true;
@@ -11969,7 +11867,7 @@ uint8 Player::CanStoreItems(Item **pItems,int count) const
             for (int t = INVENTORY_SLOT_ITEM_START; t < INVENTORY_SLOT_ITEM_END; ++t)
             {
                 pItem2 = GetItemByPos(INVENTORY_SLOT_BAG_0, t);
-                if( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_slot_items[t-INVENTORY_SLOT_ITEM_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
+                if ( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_slot_items[t-INVENTORY_SLOT_ITEM_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
                 {
                     inv_slot_items[t-INVENTORY_SLOT_ITEM_START] += pItem->GetCount();
                     b_found = true;
@@ -11986,7 +11884,7 @@ uint8 Player::CanStoreItems(Item **pItems,int count) const
                     for (uint32 j = 0; j < pBag->GetBagSize(); j++)
                     {
                         pItem2 = GetItemByPos(t, j);
-                        if( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_bags[t-INVENTORY_SLOT_BAG_START][j] + pItem->GetCount() <= pProto->GetMaxStackSize())
+                        if ( pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_bags[t-INVENTORY_SLOT_BAG_START][j] + pItem->GetCount() <= pProto->GetMaxStackSize())
                         {
                             inv_bags[t-INVENTORY_SLOT_BAG_START][j] += pItem->GetCount();
                             b_found = true;
@@ -13140,7 +13038,7 @@ void Player::DestroyItem(uint8 bag, uint8 slot, bool update)
     {
         sLog->outDebug(LOG_FILTER_PLAYER_ITEMS, "STORAGE:  DestroyItem bag = %u, slot = %u, item = %u", bag, slot, pItem->GetEntry());
         // Also remove all contained items if the item is a bag.
-        // This if() prevents item saving crashes if the condition for a bag to be empty before being destroyed was bypassed somehow.
+        // This if () prevents item saving crashes if the condition for a bag to be empty before being destroyed was bypassed somehow.
         if (pItem->IsBag() && !((Bag*)pItem)->IsEmpty())
         {
             for (uint8 i = 0; i < MAX_BAG_SIZE; ++i)
@@ -14311,7 +14209,7 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
 
     // If we're dealing with a gem inside a prismatic socket we need to check the prismatic socket requirements
     // rather than the gem requirements itself. If the socket has no color it is a prismatic socket.
-    if((slot == SOCK_ENCHANTMENT_SLOT || slot == SOCK_ENCHANTMENT_SLOT_2 || slot == SOCK_ENCHANTMENT_SLOT_3)
+    if ((slot == SOCK_ENCHANTMENT_SLOT || slot == SOCK_ENCHANTMENT_SLOT_2 || slot == SOCK_ENCHANTMENT_SLOT_3)
         && !item->GetProto()->Socket[slot-SOCK_ENCHANTMENT_SLOT].Color)
     {
         // Check if the requirements for the prismatic socket are met before applying the gem stats
@@ -19177,16 +19075,7 @@ void Player::SaveToDB()
         _SaveStats(trans);
 
     if (m_session->isLogingOut() && HaveBot())
-    {
-        m_bot->SetReactState(REACT_PASSIVE);
-        m_bot->CombatStop();
-        m_bot->DeleteThreatList();
-        m_bot->SetCharmerGUID(0);
-        m_bot->RemoveFromWorld();
         RemoveBot();
-
-        CharacterDatabase.PExecute("DELETE FROM character_npcbot WHERE owner='%u'", this->GetGUIDLow());
-    }
 
     CharacterDatabase.CommitTransaction(trans);
 
@@ -25380,7 +25269,7 @@ bool Player::AddItem(uint32 itemId, uint32 count)
     }
 
     Item* item = StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
-    if(item)
+    if (item)
         SendNewItem(item,count,true,false);
     else
         return false;

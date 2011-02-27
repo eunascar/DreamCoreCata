@@ -19,100 +19,119 @@
 #include <cstring>
 #include "Group.h"
 
+#define GOSSIP_NO_GROUP    "Antes de utilizar un bot, debes tener un grupo"
+
 //This function is called when the player opens the gossip menubool
 class script_bot_giver : public CreatureScript
 {
-	public:
+    public:
 
-		script_bot_giver()
+        script_bot_giver()
             : CreatureScript("script_bot_giver")
         {
         }
 
-		bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action)
-		{
-			switch(sender)
-			{
-				case 6006: SendCreateNPCBotMenu(player, creature, action); break;
-				case 6001: SendCreateNPCBot(player, creature, action); break;
-			}
-			return true;
-		}
-
-		bool OnGossipHello(Player *player, Creature *creature)
-		{
-			WorldSession *session = player->GetSession();
-			uint8 count = 0;
-
-			if (player->HaveBot())
-				player->ADD_GOSSIP_ITEM(0, "Deseas abandonar tu bot?", 6001, GOSSIP_ACTION_INFO_DEF + 101);
-            else
-				player->ADD_GOSSIP_ITEM(0, "Reclutar un Bot", 6006, GOSSIP_ACTION_INFO_DEF + 2);
-
-			player->PlayerTalkClass->SendGossipMenu(907, creature->GetGUID());
-			return true;
-		}
-
-		void SendCreateNPCBot(Player *player, Creature *creature, uint32 action)
-		{
-			uint8 bot_class = 0;
-			if (action == GOSSIP_ACTION_INFO_DEF + 101) //abandon bot
-			{
-				if (player->HaveBot())
-					player->SetBotMustDie();
-				player->CLOSE_GOSSIP_MENU();
-				return;
-			}
-			else if (action == GOSSIP_ACTION_INFO_DEF + 2)
-				bot_class = CLASS_WARRIOR;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 3)
-				bot_class = CLASS_HUNTER;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 4)
-				bot_class = CLASS_PALADIN;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 5)
-				bot_class = CLASS_SHAMAN;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 6)
-				bot_class = CLASS_ROGUE;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 7)
-				bot_class = CLASS_DRUID;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 8)
-				bot_class = CLASS_MAGE;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 9)
-				bot_class = CLASS_PRIEST;
-			else if (action == GOSSIP_ACTION_INFO_DEF + 10)
-				bot_class = CLASS_WARLOCK;
-			//else if (action == GOSSIP_ACTION_INFO_DEF + 11)
-				//bot_class = CLASS_DEATH_KNIGHT;
-
-			if (bot_class > 0)
-			{
-				//sLog->outError("script_bot_giver.SendCreateNPCBot class = %u", bot_class);
-				player->CreateNPCBot(bot_class);
-			}
-			//else
-				//creature->Say("Invalid selection.", LANG_UNIVERSAL, NULL);
-			player->CLOSE_GOSSIP_MENU();
-			return;
-		}
-
-		void SendCreateNPCBotMenu(Player *player, Creature *creature, uint32 action)
-		{
+        bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action)
+        {
             player->PlayerTalkClass->ClearMenus();
-			player->ADD_GOSSIP_ITEM(9, "Reclutar un Guerrero", 6001, GOSSIP_ACTION_INFO_DEF + 2);
-			player->ADD_GOSSIP_ITEM(9, "Reclutar un Cazador", 6001, GOSSIP_ACTION_INFO_DEF + 3);
-			player->ADD_GOSSIP_ITEM(9, "Reclutar un Paladin", 6001, GOSSIP_ACTION_INFO_DEF + 4);
-			player->ADD_GOSSIP_ITEM(9, "Reclutar un Chaman", 6001, GOSSIP_ACTION_INFO_DEF + 5);
-			player->ADD_GOSSIP_ITEM(9, "Reclutar un Picaro", 6001, GOSSIP_ACTION_INFO_DEF + 6);
-			player->ADD_GOSSIP_ITEM(3, "Reclutar un Druida", 6001, GOSSIP_ACTION_INFO_DEF + 7);
-			player->ADD_GOSSIP_ITEM(3, "Reclutar un Mago", 6001, GOSSIP_ACTION_INFO_DEF + 8);
-			player->ADD_GOSSIP_ITEM(3, "Reclutar un Sacerdote", 6001, GOSSIP_ACTION_INFO_DEF + 9);
-			player->ADD_GOSSIP_ITEM(3, "Reclutar un Brujo", 6001, GOSSIP_ACTION_INFO_DEF + 10);
-			//player->ADD_GOSSIP_ITEM(9, "Recruit a Death Knight", 1, GOSSIP_ACTION_INFO_DEF + 11);
-			player->SEND_GOSSIP_MENU(907, creature->GetGUID());
-		} //end SendCreateNPCBotMenu
+
+            switch (action)
+            {
+                case GOSSIP_ACTION_INFO_DEF + 1:
+                    player->CLOSE_GOSSIP_MENU(); 
+                    break;
+            }
+
+            switch (sender)
+            {
+                case 6006: SendCreateNPCBotMenu(player, creature, action); break;
+                case 6001: SendCreateNPCBot(player, creature, action); break;
+            }
+
+            return true;
+        }
+
+        bool OnGossipHello(Player *player, Creature *creature)
+        {
+            WorldSession *session = player->GetSession();
+            uint8 count = 0;
+
+            if (player->GetGroup())
+            { 
+                if (player->HaveBot())
+                    player->ADD_GOSSIP_ITEM(0, "Deseas abandonar tu bot?", 6001, GOSSIP_ACTION_INFO_DEF + 101);
+                else
+                    player->ADD_GOSSIP_ITEM(0, "Reclutar un Bot", 6006, GOSSIP_ACTION_INFO_DEF + 2);
+
+                player->PlayerTalkClass->SendGossipMenu(907, creature->GetGUID());
+            }
+            else
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_GROUP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            }
+
+            return true;
+        }
+
+        void SendCreateNPCBot(Player *player, Creature *creature, uint32 action)
+        {
+            uint8 bot_class = 0;
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 101) //abandon bot
+            {
+                if (player->HaveBot())
+                    player->SetBotMustDie();
+
+                player->CLOSE_GOSSIP_MENU();
+
+                return;
+            }
+            else if (action == GOSSIP_ACTION_INFO_DEF + 2)
+                bot_class = CLASS_WARRIOR;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 3)
+                bot_class = CLASS_HUNTER;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 4)
+                bot_class = CLASS_PALADIN;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 5)
+                bot_class = CLASS_SHAMAN;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 6)
+                bot_class = CLASS_ROGUE;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 7)
+                bot_class = CLASS_DRUID;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 8)
+                bot_class = CLASS_MAGE;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 9)
+                bot_class = CLASS_PRIEST;
+            else if (action == GOSSIP_ACTION_INFO_DEF + 10)
+                bot_class = CLASS_WARLOCK;
+            //else if (action == GOSSIP_ACTION_INFO_DEF + 11)
+                //bot_class = CLASS_DEATH_KNIGHT;
+
+            if (bot_class > 0)
+                player->CreateNPCBot(bot_class);
+
+            player->CLOSE_GOSSIP_MENU();
+            return;
+        }
+
+        void SendCreateNPCBotMenu(Player *player, Creature *creature, uint32 action)
+        {
+            player->PlayerTalkClass->ClearMenus();
+            player->ADD_GOSSIP_ITEM(9, "Reclutar un Guerrero", 6001, GOSSIP_ACTION_INFO_DEF + 2);
+            player->ADD_GOSSIP_ITEM(9, "Reclutar un Cazador", 6001, GOSSIP_ACTION_INFO_DEF + 3);
+            player->ADD_GOSSIP_ITEM(9, "Reclutar un Paladin", 6001, GOSSIP_ACTION_INFO_DEF + 4);
+            player->ADD_GOSSIP_ITEM(9, "Reclutar un Chaman", 6001, GOSSIP_ACTION_INFO_DEF + 5);
+            player->ADD_GOSSIP_ITEM(9, "Reclutar un Picaro", 6001, GOSSIP_ACTION_INFO_DEF + 6);
+            player->ADD_GOSSIP_ITEM(3, "Reclutar un Druida", 6001, GOSSIP_ACTION_INFO_DEF + 7);
+            player->ADD_GOSSIP_ITEM(3, "Reclutar un Mago", 6001, GOSSIP_ACTION_INFO_DEF + 8);
+            player->ADD_GOSSIP_ITEM(3, "Reclutar un Sacerdote", 6001, GOSSIP_ACTION_INFO_DEF + 9);
+            player->ADD_GOSSIP_ITEM(3, "Reclutar un Brujo", 6001, GOSSIP_ACTION_INFO_DEF + 10);
+            //player->ADD_GOSSIP_ITEM(9, "Recruit a Death Knight", 1, GOSSIP_ACTION_INFO_DEF + 11);
+            player->SEND_GOSSIP_MENU(907, creature->GetGUID());
+        }
 };
 
-//This function is called when the player clicks an option on the gossip menu
 void AddSC_script_bot_giver()
 {
     new script_bot_giver();
