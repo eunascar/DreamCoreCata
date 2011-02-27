@@ -104,10 +104,10 @@ enum Items
     ITEM_MAGIC_WALL           = 53937  // Sh
 };
 
-class npc_donor_item_change : public CreatureScript
+class npc_donor_service : public CreatureScript
 {
 public:
-    npc_donor_item_change() : CreatureScript("npc_donor_item_change") { }
+    npc_donor_service() : CreatureScript("npc_donor_service") { }
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
     {
@@ -942,6 +942,5 @@ public:
 
 void AddSC_donor()
 {
-    new npc_donor_item_change();
-    //new npc_donor_premium_accounts();
+    new npc_donor_service();
 }

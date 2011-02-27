@@ -91,12 +91,12 @@ class boss_zarithrian : public CreatureScript
             void EnterCombat(Unit*)
             {
                 instance->SetBossState(DATA_ZARITHRIAN, IN_PROGRESS);
-                DoScriptText(SAY_AGGRO, me);
+                Talk(SAY_AGGRO);
             }
 
             void KilledUnit(Unit* /*victim*/)
             {
-                DoScriptText(RAND(SAY_SLAY1,SAY_SLAY2), me);
+                Talk(RAND(SAY_SLAY1,SAY_SLAY2));
             }
 
             void JustSummoned(Creature *summon)
@@ -114,7 +114,7 @@ class boss_zarithrian : public CreatureScript
             {
                 _JustDied();
                 instance->SetBossState(DATA_ZARITHRIAN, DONE);
-                DoScriptText(SAY_DEATH, me);
+                Talk(SAY_DEATH);
             }
 
             void UpdateAI(const uint32 diff)
