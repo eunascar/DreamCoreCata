@@ -223,6 +223,10 @@ enum GameObjectsIds
     // Valithria Dreamwalker
     GO_GREEN_DRAGON_BOSS_ENTRANCE           = 201375,
     GO_GREEN_DRAGON_BOSS_EXIT               = 201374,
+    GO_DREAMWALKER_CACHE_10N                = 201959,
+    GO_DREAMWALKER_CACHE_25N                = 202338,
+    GO_DREAMWALKER_CACHE_10H                = 202339,
+    GO_DREAMWALKER_CACHE_25H                = 202340,
 
     // Sindragosa
     GO_SINDRAGOSA_ENTRANCE_DOOR             = 201373,

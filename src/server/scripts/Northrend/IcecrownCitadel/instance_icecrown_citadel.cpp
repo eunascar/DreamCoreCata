@@ -92,6 +92,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                 memset(bloodCouncil, 0, 3*sizeof(uint64));
                 bloodCouncilController = 0;
                 bloodQueenLanaThel = 0;
+                dreamwalkerCache = 0;
                 sindragosa = 0;
                 spinestalker = 0;
                 rimefang = 0;
@@ -296,6 +297,12 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_DEATHBRINGER_S_CACHE_10H:
                     case GO_DEATHBRINGER_S_CACHE_25H:
                         deathbringersCache = go->GetGUID();
+                        break;
+                    case GO_DREAMWALKER_CACHE_10N:
+                    case GO_DREAMWALKER_CACHE_25N:
+                    case GO_DREAMWALKER_CACHE_10H:
+                    case GO_DREAMWALKER_CACHE_25H:
+                        dreamwalkerCache = go->GetGUID();
                         break;
                     case GO_SCOURGE_TRANSPORTER_SAURFANG:
                         saurfangTeleport = go->GetGUID();
@@ -515,6 +522,11 @@ class instance_icecrown_citadel : public InstanceMapScript
                         HandleGameObject(bloodwingSigil, state != DONE);
                         break;
                     case DATA_VALITHRIA_DREAMWALKER:
+                        switch (state)
+                        {
+                            case DONE:
+                                DoRespawnGameObject(dreamwalkerCache, 7*DAY);
+                        }
                         break;
                     case DATA_SINDRAGOSA:
                         HandleGameObject(frostwingSigil, state != DONE);
@@ -830,6 +842,7 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 bloodCouncil[3];
             uint64 bloodCouncilController;
             uint64 bloodQueenLanaThel;
+            uint64 dreamwalkerCache;
             uint64 sindragosa;
             uint64 spinestalker;
             uint64 rimefang;
