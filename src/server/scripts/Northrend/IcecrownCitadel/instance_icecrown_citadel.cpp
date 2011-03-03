@@ -732,8 +732,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                             return false;
                         // no break
                     case DATA_SINDRAGOSA:
-                        //if (GetBossState(DATA_VALITHRIA_DREAMWALKER) != DONE)
-                        //    return false;
+                        if (GetBossState(DATA_VALITHRIA_DREAMWALKER) != DONE)
+                            return false;
                         break;
                     default:
                         break;

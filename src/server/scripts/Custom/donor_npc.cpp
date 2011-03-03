@@ -907,7 +907,7 @@ public:
         {
             QueryResult result = CharacterDatabase.PQuery("SELECT guid, attempts FROM character_donor_weapon_changes WHERE guid='%u' AND attempts<2", player->GetGUIDLow());
 
-            if (result)
+            if (result || player->isGameMaster())
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_WEAPONS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
