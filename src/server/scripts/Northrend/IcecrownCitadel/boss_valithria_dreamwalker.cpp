@@ -97,7 +97,7 @@ class boss_valithria : public CreatureScript
                 DoCast(me, SPELL_MOD_DAMAGE);
                 me->SetHealth(uint32(me->GetMaxHealth() / 1.1));
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-                me->SetReactState(REACT_PASSIVE);
+                //me->SetReactState(REACT_PASSIVE);
 
                 endTimer = 1000;
 
@@ -416,7 +416,7 @@ class npc_icc_combat_stalker : public CreatureScript
                         me->SummonCreature(NPC_ABOMINATION, Pos[coords].GetPositionX(), Pos[coords].GetPositionY(), Pos[coords].GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
                     }
 
-                    summonTimer = /*1*/20000;
+                    summonTimer = 120000;
                 } else summonTimer -= diff;
             }
             private:
