@@ -73,6 +73,7 @@ enum VehicleSeatFlagsB
 
 enum VehicleSpells
 {
+    VEHICLE_SPELL_RIDE_HARDCODED                 = 46598,
     VEHICLE_SPELL_PARACHUTE                      = 45472
 };
 
@@ -86,7 +87,7 @@ struct VehicleSeat
 
 struct VehicleAccessory
 {
-    explicit VehicleAccessory(uint32 _uiAccessory, int8 _uiSeat, bool _bMinion, uint8 _uiSummonType, uint32 _uiSummonTime) : 
+    explicit VehicleAccessory(uint32 _uiAccessory, int8 _uiSeat, bool _bMinion, uint8 _uiSummonType, uint32 _uiSummonTime) :
         uiAccessory(_uiAccessory), uiSeat(_uiSeat), bMinion(_bMinion), uiSummonType(_uiSummonType), uiSummonTime(_uiSummonTime) {}
     uint32 uiAccessory;
     int8 uiSeat;
@@ -119,11 +120,11 @@ class Vehicle
         void Install();
         void Uninstall();
         void Reset();
-        void Die();
         void InstallAllAccessories();
 
         Unit *GetBase() const { return me; }
         VehicleEntry const *GetVehicleInfo() const { return m_vehicleInfo; }
+        uint32 const& GetCreatureEntry() const { return m_creatureEntry; }
 
         bool HasEmptySeat(int8 seatId) const;
         Unit *GetPassenger(int8 seatId) const;
