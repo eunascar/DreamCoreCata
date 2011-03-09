@@ -274,10 +274,14 @@ class warrior_bot : public CreatureScript
                 {
                     me->AttackStop();
                     me->SetReactState(REACT_PASSIVE);
+                    DoCast(me, SPELL_PETRIFY);
                 }
 
                 if (emote == TEXTEMOTE_ROAR)
-        	        me->SetReactState(REACT_AGGRESSIVE);
+                {
+                    me->RemoveAurasDueToSpell(SPELL_PETRIFY);
+                    me->SetReactState(REACT_AGGRESSIVE);
+                }
 
                 if (emote == TEXTEMOTE_WAVE)
                     player->SetBotCommandState(COMMAND_FOLLOW);

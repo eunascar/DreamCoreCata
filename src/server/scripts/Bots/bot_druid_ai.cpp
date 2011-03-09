@@ -632,16 +632,18 @@ class druid_bot : public CreatureScript
                 {
                     me->AttackStop();
                     me->SetReactState(REACT_PASSIVE);
+                    DoCast(me, SPELL_PETRIFY);
                 }
 
                 if (emote == TEXTEMOTE_ROAR)
+                {
+                    me->RemoveAurasDueToSpell(SPELL_PETRIFY);
                     me->SetReactState(REACT_AGGRESSIVE);
-
-                if (emote == TEXTEMOTE_WAVE)
-                    player->SetBotCommandState(COMMAND_FOLLOW);
+                }
 
                 if (emote == TEXTEMOTE_WAVE)
                 {
+                    player->SetBotCommandState(COMMAND_FOLLOW);
                     ((bot_druid_ai*)me->AI())->removeFeralForm((Player*) me->GetCharmer());
                     ((bot_druid_ai*)me->AI())->doCast(player, SPELL_THORNS, true );
                     ((bot_druid_ai*)me->AI())->doCast(player, SPELL_MARK_OF_THE_WILD, false );

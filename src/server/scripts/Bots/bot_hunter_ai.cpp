@@ -223,30 +223,17 @@ class hunter_bot : public CreatureScript
                 {
                     me->AttackStop();
                     me->SetReactState(REACT_PASSIVE);
+                    DoCast(me, SPELL_PETRIFY);
                 }
 
                 if (emote == TEXTEMOTE_ROAR)
+                {
+                    me->RemoveAurasDueToSpell(SPELL_PETRIFY);
                     me->SetReactState(REACT_AGGRESSIVE);
+                }
 
                 if (emote == TEXTEMOTE_WAVE)
                     player->SetBotCommandState(COMMAND_FOLLOW);
-
-                if (emote == TEXTEMOTE_BONK)
-                    ((hunter_botAI*)me->AI())->listAuras(me);
-
-                if (emote == TEXTEMOTE_SALUTE)
-                    ((hunter_botAI*)me->AI())->listAuras(player);
-
-                if (emote == TEXTEMOTE_STAND)
-                {    
-                    if (me->GetCharmerGUID() != player->GetGUID())
-                    {
-                        me->HandleEmoteCommand(TEXTEMOTE_RUDE);
-                        return;
-                    }
-
-                    player->SetBotCommandState(COMMAND_STAY);
-                }
             }
 
             void UpdateAI(const uint32 diff)
