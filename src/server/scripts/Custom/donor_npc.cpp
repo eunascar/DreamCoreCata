@@ -18,6 +18,7 @@
 
 #include "ScriptPCH.h"
 
+#define GOSSIP_ACTIVATION      "Activar Cuenta Premium"
 #define GOSSIP_NO_ITEM         "No se han Encontrado Items de Donacion"
 #define GOSSIP_NO_AVAILABLE    "Has alcanzado el Maximo de intentos para realizar esta accion"
 #define GOSSIP_ITEM_WEAPONS    "Cambiar Items"
@@ -85,7 +86,7 @@
 #define GOSSIP_2H_SWORD_TO_VENGEFUL_MACE              "*Savage Sword* => *Vengeful Mace*"
 #define GOSSIP_2H_SWORD_TO_BRUTAL_AXE                 "*Savage Sword* => *Brutal Axe*"
 
-enum Items
+enum Weapons
 {
     ITEM_BRUTAL_AXE           = 49886, // 2h
     ITEM_DEVASTATION_AXE      = 49774, // 1h
@@ -102,6 +103,46 @@ enum Items
     ITEM_SAVAGE_SWORD         = 49984, // 2h
     ITEM_JUSTICE_WALL         = 53938, // Sh
     ITEM_MAGIC_WALL           = 53937  // Sh
+};
+
+enum DeathKnightArmor
+{
+};
+
+enum DruidArmor
+{
+};
+
+enum HunterArmor
+{
+};
+
+enum MageArmor
+{
+};
+
+enum PaladinArmor
+{
+};
+
+enum PriestArmor
+{
+};
+
+enum RogueArmor
+{
+};
+
+enum ShamanArmor
+{
+};
+
+enum WarlockArmor
+{
+};
+
+enum WarriorArmor
+{
 };
 
 class npc_donor_service : public CreatureScript
@@ -894,6 +935,10 @@ public:
                     break;
                 }
             case GOSSIP_ACTION_INFO_DEF + 51:
+                LoginDatabase.PExecute("INSERT INTO account_premium (id, active) VALUES ('%u','1')", player->GetSession()->GetAccountId());
+                player->CLOSE_GOSSIP_MENU(); 
+                break;
+            case GOSSIP_ACTION_INFO_DEF + 52:
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
         }
@@ -903,7 +948,9 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature)
     {
-        if (player->HasItemCount(ITEM_MAGIC_SWORD, 1) || player->HasItemCount(ITEM_FORTIFIED_SWORD, 1) || player->HasItemCount(ITEM_DEVASTATION_AXE, 1) || player->HasItemCount(ITEM_DEVASTATION_SWORD, 1) || player->HasItemCount(ITEM_SPECTRUM_DAGGER, 1) || player->HasItemCount(ITEM_MAGIC_WALL, 1) || player->HasItemCount(ITEM_JUSTICE_WALL, 1) || player->HasItemCount(ITEM_MIRKWOOD_BOW_R, 1) || player->HasItemCount(ITEM_VENGEFUL_MACE, 1) || player->HasItemCount(ITEM_GREATEST_STAFF, 1) || player->HasItemCount(ITEM_FERAL_STAFF, 1) || player->HasItemCount(ITEM_BRUTAL_AXE, 1) || player->HasItemCount(ITEM_SAVAGE_SWORD, 1) || player->HasItemCount(ITEM_DARK_MACE, 1) || player->HasItemCount(ITEM_ROSARIO_GUN_R, 1))
+        QueryResult result = LoginDatabase.PQuery("SELECT id FROM account_premium WHERE id='%u' AND active=1", player->GetSession()->GetAccountId());
+
+        if (result)
         {
             QueryResult result = CharacterDatabase.PQuery("SELECT guid, attempts FROM character_donor_weapon_changes WHERE guid='%u' AND attempts<2", player->GetGUIDLow());
 
@@ -918,22 +965,34 @@ public:
 
                 if (result)
                 {
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_AVAILABLE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 51);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_AVAILABLE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 52);
                     player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 }
                 else
                 {
-                    CharacterDatabase.PExecute("INSERT INTO character_donor_weapon_changes (guid, attempts) VALUES ('%u','0')", player->GetGUIDLow());
+                    if (player->HasItemCount(ITEM_MAGIC_SWORD, 1) || player->HasItemCount(ITEM_FORTIFIED_SWORD, 1) || player->HasItemCount(ITEM_DEVASTATION_AXE, 1) || player->HasItemCount(ITEM_DEVASTATION_SWORD, 1) || player->HasItemCount(ITEM_SPECTRUM_DAGGER, 1) || player->HasItemCount(ITEM_MAGIC_WALL, 1) || player->HasItemCount(ITEM_JUSTICE_WALL, 1) || player->HasItemCount(ITEM_MIRKWOOD_BOW_R, 1) || player->HasItemCount(ITEM_VENGEFUL_MACE, 1) || player->HasItemCount(ITEM_GREATEST_STAFF, 1) || player->HasItemCount(ITEM_FERAL_STAFF, 1) || player->HasItemCount(ITEM_BRUTAL_AXE, 1) || player->HasItemCount(ITEM_SAVAGE_SWORD, 1) || player->HasItemCount(ITEM_DARK_MACE, 1) || player->HasItemCount(ITEM_ROSARIO_GUN_R, 1))
+                    {
+                        CharacterDatabase.PExecute("INSERT INTO character_donor_weapon_changes (guid, attempts) VALUES ('%u','0')", player->GetGUIDLow());
 
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_WEAPONS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                    player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_WEAPONS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                        player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                    }
                 }
             }
         }
         else
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 51);
-            player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            //Weapons
+            if (player->HasItemCount(ITEM_MAGIC_SWORD, 1) || player->HasItemCount(ITEM_FORTIFIED_SWORD, 1) || player->HasItemCount(ITEM_DEVASTATION_AXE, 1) || player->HasItemCount(ITEM_DEVASTATION_SWORD, 1) || player->HasItemCount(ITEM_SPECTRUM_DAGGER, 1) || player->HasItemCount(ITEM_MAGIC_WALL, 1) || player->HasItemCount(ITEM_JUSTICE_WALL, 1) || player->HasItemCount(ITEM_MIRKWOOD_BOW_R, 1) || player->HasItemCount(ITEM_VENGEFUL_MACE, 1) || player->HasItemCount(ITEM_GREATEST_STAFF, 1) || player->HasItemCount(ITEM_FERAL_STAFF, 1) || player->HasItemCount(ITEM_BRUTAL_AXE, 1) || player->HasItemCount(ITEM_SAVAGE_SWORD, 1) || player->HasItemCount(ITEM_DARK_MACE, 1) || player->HasItemCount(ITEM_ROSARIO_GUN_R, 1))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ACTIVATION, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 51);
+                player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            }
+            else
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 52);
+                player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            }
         }
 
         return true;
