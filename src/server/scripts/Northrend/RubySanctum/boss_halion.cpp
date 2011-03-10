@@ -183,7 +183,7 @@ class boss_halion : public CreatureScript
             void MeteorStrike()
             {
                 float x,y,z;
-                Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0);
+                Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM,0);
 
                 if (pTarget)
                 {
@@ -376,7 +376,7 @@ class boss_halion : public CreatureScript
                                 events.ScheduleEvent(EVENT_DPS, 5000,0,PHASE_3);
                                 break;
                             case EVENT_CAST_FIERY_COMBUSTION:
-                                Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0);
+                                Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM,0);
 
                                 if (pTarget && !pTarget->HasAura(SPELL_FIERY_COMBUSTION))
                                     DoCast(pTarget, SPELL_FIERY_COMBUSTION);

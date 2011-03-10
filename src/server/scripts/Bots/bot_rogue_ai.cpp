@@ -191,7 +191,7 @@ class rogue_bot : public CreatureScript
                 if (IAmDead())
                     return;
 
-                opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 
                 if (!opponent && !me->getVictim())
                 {

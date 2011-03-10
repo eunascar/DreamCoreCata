@@ -391,7 +391,7 @@ class warrior_bot : public CreatureScript
                     uiNoggenfogger_Timer = 6000; //10 minutes
                 }
 
-                Unit *opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                Unit *opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 
                 if (!opponent && !me->getVictim())
                 {

@@ -524,7 +524,7 @@ class druid_bot : public CreatureScript
                 }
 
                 //The rest is combat stuff, so if not in combat just return
-                opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 
                 if (!opponent && !me->getVictim())
                 {

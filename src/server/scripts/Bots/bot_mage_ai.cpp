@@ -141,7 +141,7 @@ class mage_bot : public CreatureScript
 
             void Armour(const uint32 diff)
             {
-                Unit *opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                Unit *opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 
                 if (!castedArmor && (opponent->getClass() == CLASS_MAGE || opponent->getClass() == CLASS_PRIEST || opponent->getClass() == CLASS_WARLOCK) && isTimerReady(uiGc_Timer))
                 {
@@ -554,7 +554,7 @@ class mage_bot : public CreatureScript
 
                 oom_spam = false;
                 ScriptedAI::UpdateAI(diff);
-                opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 
                 if (!opponent && !me->getVictim())
                 {

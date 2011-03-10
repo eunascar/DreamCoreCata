@@ -304,7 +304,7 @@ class warlock_bot : public CreatureScript
 
                 ScriptedAI::UpdateAI(diff);
 
-                opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 			
                 if (!opponent && !me->getVictim())
                 {

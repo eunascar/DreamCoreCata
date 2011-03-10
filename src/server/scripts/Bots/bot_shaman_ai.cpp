@@ -199,7 +199,7 @@ class shaman_bot : public CreatureScript
                 HealTarget (me, me->GetHealth() * 100 / me->GetMaxHealth());
 
                 //the rest are combat so return if not fighting
-                opponent = SelectUnit(SELECT_TARGET_TOPAGGRO, 0);
+                opponent = SelectTarget(SELECT_TARGET_TOPAGGRO, 0);
 
                 if (!opponent && !me->getVictim())
                 {

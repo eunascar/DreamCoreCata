@@ -105,7 +105,7 @@ enum Weapons
     ITEM_MAGIC_WALL           = 53937  // Sh
 };
 
-enum DeathKnightArmor
+/*enum DeathKnightArmor
 {
 };
 
@@ -143,7 +143,7 @@ enum WarlockArmor
 
 enum WarriorArmor
 {
-};
+};*/
 
 class npc_donor_service : public CreatureScript
 {
@@ -982,8 +982,34 @@ public:
         }
         else
         {
-            //Weapons
-            if (player->HasItemCount(ITEM_MAGIC_SWORD, 1) || player->HasItemCount(ITEM_FORTIFIED_SWORD, 1) || player->HasItemCount(ITEM_DEVASTATION_AXE, 1) || player->HasItemCount(ITEM_DEVASTATION_SWORD, 1) || player->HasItemCount(ITEM_SPECTRUM_DAGGER, 1) || player->HasItemCount(ITEM_MAGIC_WALL, 1) || player->HasItemCount(ITEM_JUSTICE_WALL, 1) || player->HasItemCount(ITEM_MIRKWOOD_BOW_R, 1) || player->HasItemCount(ITEM_VENGEFUL_MACE, 1) || player->HasItemCount(ITEM_GREATEST_STAFF, 1) || player->HasItemCount(ITEM_FERAL_STAFF, 1) || player->HasItemCount(ITEM_BRUTAL_AXE, 1) || player->HasItemCount(ITEM_SAVAGE_SWORD, 1) || player->HasItemCount(ITEM_DARK_MACE, 1) || player->HasItemCount(ITEM_ROSARIO_GUN_R, 1))
+                //Weapons
+            if (player->HasItemCount(ITEM_MAGIC_SWORD, 1) || player->HasItemCount(ITEM_FORTIFIED_SWORD, 1) || player->HasItemCount(ITEM_DEVASTATION_AXE, 1) || player->HasItemCount(ITEM_DEVASTATION_SWORD, 1) || player->HasItemCount(ITEM_SPECTRUM_DAGGER, 1) || player->HasItemCount(ITEM_MAGIC_WALL, 1) || player->HasItemCount(ITEM_JUSTICE_WALL, 1) || player->HasItemCount(ITEM_MIRKWOOD_BOW_R, 1) || player->HasItemCount(ITEM_VENGEFUL_MACE, 1) || player->HasItemCount(ITEM_GREATEST_STAFF, 1) || player->HasItemCount(ITEM_FERAL_STAFF, 1) || player->HasItemCount(ITEM_BRUTAL_AXE, 1) || player->HasItemCount(ITEM_SAVAGE_SWORD, 1) || player->HasItemCount(ITEM_DARK_MACE, 1) || player->HasItemCount(ITEM_ROSARIO_GUN_R, 1) ||
+                // Armor
+                player->HasItemCount(200000, 1) || player->HasItemCount(200001, 1) || player->HasItemCount(200002, 1) || player->HasItemCount(200003, 1) || player->HasItemCount(200004, 1) || player->HasItemCount(200005, 1) || player->HasItemCount(200006, 1) || player->HasItemCount(200007, 1) ||
+                player->HasItemCount(200008, 1) || player->HasItemCount(200009, 1) || player->HasItemCount(200010, 1) || player->HasItemCount(200011, 1) || player->HasItemCount(200012, 1) || player->HasItemCount(200013, 1) || player->HasItemCount(200014, 1) || player->HasItemCount(200015, 1) ||
+                player->HasItemCount(200016, 1) || player->HasItemCount(200017, 1) || player->HasItemCount(200018, 1) || player->HasItemCount(200019, 1) || player->HasItemCount(200020, 1) || player->HasItemCount(200021, 1) || player->HasItemCount(200022, 1) || player->HasItemCount(200023, 1) ||
+                player->HasItemCount(200024, 1) || player->HasItemCount(200025, 1) || player->HasItemCount(200026, 1) || player->HasItemCount(200027, 1) || player->HasItemCount(200028, 1) || player->HasItemCount(200029, 1) || player->HasItemCount(200030, 1) || player->HasItemCount(200031, 1) ||
+                player->HasItemCount(200032, 1) || player->HasItemCount(200033, 1) || player->HasItemCount(200034, 1) || player->HasItemCount(200035, 1) || player->HasItemCount(200036, 1) || player->HasItemCount(200037, 1) || player->HasItemCount(200038, 1) || player->HasItemCount(200039, 1) ||
+                player->HasItemCount(200040, 1) || player->HasItemCount(200041, 1) || player->HasItemCount(200042, 1) || player->HasItemCount(200043, 1) || player->HasItemCount(200044, 1) || player->HasItemCount(200045, 1) || player->HasItemCount(200046, 1) || player->HasItemCount(200047, 1) ||
+                player->HasItemCount(200048, 1) || player->HasItemCount(200049, 1) || player->HasItemCount(200050, 1) || player->HasItemCount(200051, 1) || player->HasItemCount(200052, 1) || player->HasItemCount(200053, 1) || player->HasItemCount(200054, 1) || player->HasItemCount(200055, 1) ||
+                player->HasItemCount(200056, 1) || player->HasItemCount(200057, 1) || player->HasItemCount(200058, 1) || player->HasItemCount(200059, 1) || player->HasItemCount(200060, 1) || player->HasItemCount(200061, 1) || player->HasItemCount(200062, 1) || player->HasItemCount(200063, 1) ||
+                player->HasItemCount(200064, 1) || player->HasItemCount(200065, 1) || player->HasItemCount(200066, 1) || player->HasItemCount(200067, 1) || player->HasItemCount(200068, 1) || player->HasItemCount(200069, 1) || player->HasItemCount(200070, 1) || player->HasItemCount(200071, 1) ||
+                player->HasItemCount(200072, 1) || player->HasItemCount(200073, 1) || player->HasItemCount(200074, 1) || player->HasItemCount(200075, 1) || player->HasItemCount(200076, 1) || player->HasItemCount(200077, 1) || player->HasItemCount(200078, 1) || player->HasItemCount(200079, 1) ||
+                player->HasItemCount(200080, 1) || player->HasItemCount(200081, 1) || player->HasItemCount(200082, 1) || player->HasItemCount(200083, 1) || player->HasItemCount(200084, 1) || player->HasItemCount(200085, 1) || player->HasItemCount(200086, 1) || player->HasItemCount(200087, 1) ||
+                player->HasItemCount(200088, 1) || player->HasItemCount(200089, 1) || player->HasItemCount(200090, 1) || player->HasItemCount(200091, 1) || player->HasItemCount(200092, 1) || player->HasItemCount(200093, 1) || player->HasItemCount(200094, 1) || player->HasItemCount(200095, 1) ||
+                player->HasItemCount(200096, 1) || player->HasItemCount(200097, 1) || player->HasItemCount(200098, 1) || player->HasItemCount(200099, 1) || player->HasItemCount(200100, 1) || player->HasItemCount(200101, 1) || player->HasItemCount(200102, 1) || player->HasItemCount(200103, 1) ||
+                player->HasItemCount(200104, 1) || player->HasItemCount(200105, 1) || player->HasItemCount(200106, 1) || player->HasItemCount(200107, 1) || player->HasItemCount(200108, 1) || player->HasItemCount(200109, 1) || player->HasItemCount(200110, 1) || player->HasItemCount(200111, 1) ||
+                player->HasItemCount(200112, 1) || player->HasItemCount(200113, 1) || player->HasItemCount(200114, 1) || player->HasItemCount(200115, 1) || player->HasItemCount(200116, 1) || player->HasItemCount(200117, 1) || player->HasItemCount(200118, 1) || player->HasItemCount(200119, 1) ||
+                player->HasItemCount(200120, 1) || player->HasItemCount(200121, 1) || player->HasItemCount(200122, 1) || player->HasItemCount(200123, 1) || player->HasItemCount(200124, 1) || player->HasItemCount(200125, 1) || player->HasItemCount(200126, 1) || player->HasItemCount(200127, 1) ||
+                player->HasItemCount(200128, 1) || player->HasItemCount(200129, 1) || player->HasItemCount(200130, 1) || player->HasItemCount(200131, 1) || player->HasItemCount(200132, 1) || player->HasItemCount(200133, 1) || player->HasItemCount(200134, 1) || player->HasItemCount(200135, 1) ||
+                player->HasItemCount(200136, 1) || player->HasItemCount(200137, 1) || player->HasItemCount(200138, 1) || player->HasItemCount(200139, 1) || player->HasItemCount(200140, 1) || player->HasItemCount(200141, 1) || player->HasItemCount(200142, 1) || player->HasItemCount(200143, 1) ||
+                player->HasItemCount(200144, 1) || player->HasItemCount(200145, 1) || player->HasItemCount(200146, 1) || player->HasItemCount(200147, 1) || player->HasItemCount(200148, 1) || player->HasItemCount(200149, 1) || player->HasItemCount(200150, 1) || player->HasItemCount(200151, 1) ||
+                // Accesories
+                player->HasItemCount(200500, 1) || player->HasItemCount(200501, 1) || player->HasItemCount(200502, 1) || player->HasItemCount(200503, 1) || player->HasItemCount(200504, 1) || player->HasItemCount(200505, 1) || player->HasItemCount(200506, 1) || player->HasItemCount(200507, 1) ||
+                player->HasItemCount(200508, 1) || player->HasItemCount(200509, 1) || player->HasItemCount(200510, 1) || player->HasItemCount(200511, 1) || player->HasItemCount(200512, 1) || player->HasItemCount(200513, 1) || player->HasItemCount(200514, 1) || player->HasItemCount(200515, 1) ||
+                player->HasItemCount(200516, 1) || player->HasItemCount(200517, 1) || player->HasItemCount(200518, 1) || player->HasItemCount(200519, 1) || player->HasItemCount(200520, 1) || player->HasItemCount(200521, 1) || player->HasItemCount(200522, 1) || player->HasItemCount(200523, 1) ||
+                player->HasItemCount(200524, 1) || player->HasItemCount(200525, 1) || player->HasItemCount(200526, 1) || player->HasItemCount(200527, 1) || player->HasItemCount(200528, 1) || player->HasItemCount(200529, 1) || player->HasItemCount(200530, 1) || player->HasItemCount(200531, 1) ||
+                player->HasItemCount(200532, 1) || player->HasItemCount(200600, 1))
             {
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ACTIVATION, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 51);
                 player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
