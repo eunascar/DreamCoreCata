@@ -48,6 +48,30 @@ enum eTypes
     // Kologarn:
     DATA_LEFT_ARM,
     DATA_RIGHT_ARM,
+
+    // Freya
+    DATA_BRIGHTLEAF,
+    DATA_IRONBRANCH,
+    DATA_STONEBARK,
+
+    // Mimiron
+    DATA_LEVIATHAN_MK_II,
+    DATA_VX_001,
+    DATA_AERIAL_UNIT,
+    DATA_MAGNETIC_CORE,
+    DATA_MIMIRON_ELEVATOR,
+
+    // Hodir
+    DATA_HODIR_RARE_CHEST,
+
+	// Thorim
+    DATA_RUNIC_COLOSSUS,
+    DATA_RUNE_GIANT,
+    DATA_RUNIC_DOOR,
+    DATA_STONE_DOOR,
+
+    // Instance Tram
+    DATA_CALL_TRAM,
 };
 
 enum eNPCs
@@ -75,6 +99,15 @@ enum eNPCs
     NPC_VEZAX                   = 33271,
     NPC_YOGGSARON               = 33288,
     NPC_ALGALON                 = 32871,
+    NPC_BRIGHTLEAF              = 32915,
+    NPC_IRONBRANCH              = 32913,
+    NPC_STONEBARK               = 32914,
+    NPC_LEVIATHAN_MK_II         = 33432,
+    NPC_VX_001                  = 33651,
+    NPC_AERIAL_UNIT             = 33670,
+    NPC_MAGNETIC_CORE           = 34068,
+    NPC_RUNIC_COLOSSUS          = 32872,
+    NPC_RUNE_GIANT              = 32873
 };
 
 enum eTowerEvents
