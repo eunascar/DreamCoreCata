@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `account_premium`;
 CREATE TABLE IF NOT EXISTS `account_premium` (
   `id` int(11) NOT NULL default '0' COMMENT 'Account id',
   `setdate` bigint(40) NOT NULL default '0',
