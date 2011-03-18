@@ -97,12 +97,22 @@ class instance_icecrown_citadel : public InstanceMapScript
                 spinestalker = 0;
                 rimefang = 0;
                 tirion = 0;
+                lichKing = 0;
+                terenasFighter = 0;
+                spiritWarden = 0;
                 frostwyrms = 0;
                 spinestalkerTrash = 0;
                 rimefangTrash = 0;
                 necroticStack = 0;
                 beenWaiting = 0;
                 neckDeep = 0;
+                iceShard1 = 0;
+                iceShard2 = 0;
+                iceShard3 = 0;
+                iceShard4 = 0;
+                frostyEdgeInner = 0;
+                frostyEdgeOuter = 0;
+                edgeDestroyWarning = 0;
                 isBonedEligible = true;
                 isOozeDanceEligible = true;
                 isNauseaEligible = true;
@@ -217,6 +227,18 @@ class instance_icecrown_citadel : public InstanceMapScript
                         rimefang = creature->GetGUID();
                         if (!creature->isDead())
                             ++frostwyrms;
+                        break;
+                    case NPC_THE_LICH_KING:
+                        lichKing = creature->GetGUID();
+                        break;
+                    case NPC_TIRION:
+                        tirion = creature->GetGUID();
+                        break;
+                    case NPC_TERENAS_FIGHTER:
+                        terenasFighter = creature->GetGUID();
+                        break;
+                    case NPC_SPIRIT_WARDEN:
+                        spiritWarden = creature->GetGUID();
                         break;
                     default:
                         break;
@@ -388,6 +410,34 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_ICE_WALL:
                         AddDoor(go, false);
                         break;
+                    case GO_ICE_SHARD_1:
+                        iceShard1 = go->GetGUID();
+                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_ICE_SHARD_2:     
+                        iceShard2 = go->GetGUID();
+                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_ICE_SHARD_3:
+                        iceShard3 = go->GetGUID();
+                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_ICE_SHARD_4:
+                        iceShard4 = go->GetGUID();
+                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_FROSTY_EDGE_OUTER:
+                        frostyEdgeOuter = go->GetGUID();
+                        go->SetGoState(GO_STATE_ACTIVE);
+                        break;
+                    case GO_FROSTY_EDGE_INNER:
+                        frostyEdgeInner = go->GetGUID();
+                        go->SetGoState(GO_STATE_READY);
+                        break;
+                    case GO_EDGE_DESTROY_WARNING:
+                        edgeDestroyWarning = go->GetGUID();
+                        go->SetGoState(GO_STATE_READY);
+                        break;
                     default:
                         break;
                 }
@@ -448,14 +498,34 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return spinestalker;
                     case DATA_RIMEFANG:
                         return rimefang;
-                    case DATA_BEEN_WAITING:
+                    case DATA_THE_LICH_KING:
+                        return lichKing;
+                    case DATA_BEEN_WAITING_ACHIEVEMENT:
                         return beenWaiting;
-                    case DATA_NECK_DEEP:
+                    case DATA_NECK_DEEP_ACHIEVEMENT:
                         return neckDeep;
                     case DATA_TIRION:
                         return tirion;
                     case DATA_NECROTIC_STACK:
                         return necroticStack;
+					case DATA_TERENAS_FIGHTER:
+                        return terenasFighter;
+					case DATA_SPIRIT_WARDEN:
+                        return spiritWarden;
+                    case DATA_ICE_SHARD_1:
+                        return iceShard1;
+                    case DATA_ICE_SHARD_2:
+                        return iceShard2;
+                    case DATA_ICE_SHARD_3:
+                        return iceShard3;
+                    case DATA_ICE_SHARD_4:
+                        return iceShard4;
+                    case DATA_FROSTY_EDGE_OUTER:
+                        return frostyEdgeOuter;
+                    case DATA_FROSTY_EDGE_INNER:
+                        return frostyEdgeInner;
+                    case DATA_EDGE_DESTROY_WARNING:
+                        return edgeDestroyWarning;
                     default:
                         break;
                 }
@@ -859,6 +929,16 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 spinestalker;
             uint64 rimefang;
             uint64 tirion;
+            uint64 lichKing;
+            uint64 terenasFighter;
+            uint64 spiritWarden;
+            uint64 iceShard1;
+            uint64 iceShard2;
+            uint64 iceShard3;
+            uint64 iceShard4;
+            uint64 frostyEdgeInner;
+            uint64 frostyEdgeOuter;
+            uint64 edgeDestroyWarning;
             std::set<uint64> coldflameJets;
             uint32 teamInInstance;
             uint8 coldflameJetsState;
@@ -879,6 +959,84 @@ class instance_icecrown_citadel : public InstanceMapScript
             return new instance_icecrown_citadel_InstanceMapScript(map);
         }
 };
+
+uint32 GetPhase(const EventMap &em)
+{
+    switch (em.GetPhaseMask())
+    {
+        case 0x01: return 0;
+        case 0x02: return 1;
+        case 0x04: return 2;
+        case 0x08: return 3;
+        case 0x10: return 4;
+        case 0x20: return 5;
+        case 0x40: return 6;
+        case 0x80: return 7;
+        default:
+            return 0;
+    }
+}
+
+void LeaveOnlyPlayers(std::list<Unit*> &unitList)
+{
+    for (std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end();)
+    {
+        if ((*itr)->GetTypeId() != TYPEID_PLAYER)
+            unitList.erase(itr++);
+        else
+            ++itr;
+    }
+
+    std::list<Unit*>::iterator itr = unitList.begin();
+    std::advance(itr, urand(0, unitList.size()-1));
+    Unit* target = *itr;
+    unitList.clear();
+    unitList.push_back(target);
+}
+
+class TeleportToFrozenThrone : public BasicEvent
+{
+    public:
+        TeleportToFrozenThrone(Player *player, uint8 attempts): pPlayer(player), attemptsLeft(attempts) { }
+
+        bool Execute(uint64 /*eventTime*/, uint32 /*updateTime*/)
+        {
+            pPlayer->CastSpell(pPlayer, FROZEN_THRONE_TELEPORT, true);
+            if (--attemptsLeft)
+                pPlayer->m_Events.AddEvent(new TeleportToFrozenThrone(pPlayer, attemptsLeft), pPlayer->m_Events.CalculateTime(uint64(1500)));
+            return true;
+        }
+    private:
+        Player *pPlayer;
+        uint8 attemptsLeft;
+};
+
+void TeleportPlayerToFrozenThrone(Player *player)
+{
+    player->m_Events.AddEvent(new TeleportToFrozenThrone(player, 2), player->m_Events.CalculateTime(uint64(5000)));
+}
+
+TPlayerList GetPlayersInTheMap(Map *pMap)
+{
+    TPlayerList players;
+    const Map::PlayerList &PlayerList = pMap->GetPlayers();
+    if (!PlayerList.isEmpty())
+        for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+            if (Player* player = i->getSource())
+                players.push_back(player);
+    return players;
+}
+
+TPlayerList GetAttackablePlayersInTheMap(Map *pMap)
+{
+    TPlayerList players = GetPlayersInTheMap(pMap);
+    for (TPlayerList::iterator it = players.begin(); it != players.end();)
+        if (!(*it)->isTargetableForAttack())
+            players.erase(it++);
+        else
+            ++it;
+    return players;
+}
 
 void AddSC_instance_icecrown_citadel()
 {

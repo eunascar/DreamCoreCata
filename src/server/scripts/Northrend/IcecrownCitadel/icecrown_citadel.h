@@ -73,11 +73,21 @@ enum DataTypes
     DATA_SPINESTALKER               = 23,
     DATA_RIMEFANG                   = 24,
     DATA_COLDFLAME_JETS             = 25,
-    DATA_BEEN_WAITING               = 26,
-    DATA_NECK_DEEP                  = 27,
+    DATA_BEEN_WAITING_ACHIEVEMENT   = 26,
+    DATA_NECK_DEEP_ACHIEVEMENT      = 27,
     DATA_TIRION                     = 28,
     DATA_NECROTIC_STACK             = 29,
-    
+    DATA_TERENAS_FIGHTER            = 30,
+    DATA_SPIRIT_WARDEN              = 31,
+
+    // Go Data
+    DATA_ICE_SHARD_1                = 32,
+    DATA_ICE_SHARD_2                = 33,
+    DATA_ICE_SHARD_3                = 34,
+    DATA_ICE_SHARD_4                = 35,
+    DATA_FROSTY_EDGE_OUTER          = 36,
+    DATA_FROSTY_EDGE_INNER          = 37,
+    DATA_EDGE_DESTROY_WARNING       = 38,
 };
 
 #define MAX_ENCOUNTER 12
@@ -184,6 +194,8 @@ enum CreaturesIds
     NPC_ICE_TOMB                                = 36980,
 
     // The Lich King
+    NPC_THE_LICH_KING                           = 36597,
+    NPC_TIRION                                  = 38995,
     NPC_ICE_SPHERE                              = 36633,
     NPC_DRUDGE_GHOUL                            = 37695,
     NPC_SHAMBLING_HORROR                        = 37698,
@@ -193,7 +205,10 @@ enum CreaturesIds
     NPC_TRIGGER                                 = 38667,
     NPC_VILE_SPIRIT                             = 37799,
     NPC_FROSTMOURNE_TRIGGER                     = 38584,
-    NPC_MENETHIL                                = 38579
+    NPC_TERENAS_MENETHIL                        = 38579,
+    NPC_TERENAS_FIGHTER                         = 36823,
+    NPC_SPIRIT_WARDEN                           = 36824,
+    NPC_PLATFORM_DESTRUCTIBLE_EDGE_STALKER      = 22515,
 };
 
 enum GameObjectsIds
@@ -252,6 +267,15 @@ enum GameObjectsIds
     GO_ICE_WALL                             = 202396,
     GO_ICE_BLOCK                            = 201722,
     GO_SIGIL_OF_THE_FROSTWING               = 202181,
+
+    // The Lich King
+    GO_ICE_SHARD_1                          = 202141,
+    GO_ICE_SHARD_2                          = 202142,
+    GO_ICE_SHARD_3                          = 202143,
+    GO_ICE_SHARD_4                          = 202144,
+    GO_FROSTY_EDGE_OUTER                    = 202188,
+    GO_FROSTY_EDGE_INNER                    = 202189,
+    GO_EDGE_DESTROY_WARNING                 = 202190,
 };
 
 enum AchievementCriteriaIds
@@ -312,5 +336,10 @@ enum SharedActions
 
 // Declaration
 extern Position const SindragosaSpawnPos;
-
+uint32 GetPhase(const EventMap &em);
+void TeleportPlayerToFrozenThrone(Player* player);
+void LeaveOnlyPlayers(std::list<Unit*> &unitList);
+typedef std::list<Player*> TPlayerList;
+TPlayerList GetPlayersInTheMap(Map* pMap);
+TPlayerList GetAttackablePlayersInTheMap(Map* pMap);
 #endif // DEF_ICECROWN_CITADEL_H
