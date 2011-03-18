@@ -451,6 +451,11 @@ void AddSC_boss_razorscale();
 void AddSC_boss_xt002();
 void AddSC_boss_kologarn();
 void AddSC_boss_assembly_of_iron();
+void AddSC_boss_auriaya();
+void AddSC_boss_freya();
+void AddSC_boss_hodir();
+void AddSC_boss_mimiron();
+void AddSC_boss_thorim();
 void AddSC_boss_general_vezax();
 void AddSC_ulduar_teleporter();
 void AddSC_instance_ulduar();
@@ -1171,6 +1176,11 @@ void AddNorthrendScripts()
     AddSC_boss_general_vezax();
     AddSC_boss_assembly_of_iron();
     AddSC_boss_kologarn();
+    AddSC_boss_auriaya();
+    AddSC_boss_freya();
+    AddSC_boss_hodir();
+    AddSC_boss_mimiron();
+    AddSC_boss_thorim();
     AddSC_ulduar_teleporter();
     AddSC_instance_ulduar();
     AddSC_boss_keleseth();              //Utgarde Keep
