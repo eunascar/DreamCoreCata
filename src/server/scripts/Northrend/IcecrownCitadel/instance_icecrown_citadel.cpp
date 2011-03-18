@@ -96,9 +96,13 @@ class instance_icecrown_citadel : public InstanceMapScript
                 sindragosa = 0;
                 spinestalker = 0;
                 rimefang = 0;
+                tirion = 0;
                 frostwyrms = 0;
                 spinestalkerTrash = 0;
                 rimefangTrash = 0;
+                necroticStack = 0;
+                beenWaiting = 0;
+                neckDeep = 0;
                 isBonedEligible = true;
                 isOozeDanceEligible = true;
                 isNauseaEligible = true;
@@ -444,6 +448,14 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return spinestalker;
                     case DATA_RIMEFANG:
                         return rimefang;
+                    case DATA_BEEN_WAITING:
+                        return beenWaiting;
+                    case DATA_NECK_DEEP:
+                        return neckDeep;
+                    case DATA_TIRION:
+                        return tirion;
+                    case DATA_NECROTIC_STACK:
+                        return necroticStack;
                     default:
                         break;
                 }
@@ -846,12 +858,16 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 sindragosa;
             uint64 spinestalker;
             uint64 rimefang;
+            uint64 tirion;
             std::set<uint64> coldflameJets;
             uint32 teamInInstance;
             uint8 coldflameJetsState;
             uint8 frostwyrms;
             uint8 spinestalkerTrash;
             uint8 rimefangTrash;
+            uint8 beenWaiting;
+            uint8 neckDeep;
+            uint8 necroticStack;
             bool isBonedEligible;
             bool isOozeDanceEligible;
             bool isNauseaEligible;

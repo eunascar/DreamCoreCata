@@ -73,6 +73,11 @@ enum DataTypes
     DATA_SPINESTALKER               = 23,
     DATA_RIMEFANG                   = 24,
     DATA_COLDFLAME_JETS             = 25,
+    DATA_BEEN_WAITING               = 26,
+    DATA_NECK_DEEP                  = 27,
+    DATA_TIRION                     = 28,
+    DATA_NECROTIC_STACK             = 29,
+    
 };
 
 #define MAX_ENCOUNTER 12
@@ -177,6 +182,18 @@ enum CreaturesIds
     NPC_ICY_BLAST                               = 38223,
     NPC_FROST_BOMB                              = 37186,
     NPC_ICE_TOMB                                = 36980,
+
+    // The Lich King
+    NPC_ICE_SPHERE                              = 36633,
+    NPC_DRUDGE_GHOUL                            = 37695,
+    NPC_SHAMBLING_HORROR                        = 37698,
+    NPC_VALKYR                                  = 36609,
+    NPC_DEFILE                                  = 38757,
+    NPC_RAGING_SPIRIT                           = 36701,
+    NPC_TRIGGER                                 = 38667,
+    NPC_VILE_SPIRIT                             = 37799,
+    NPC_FROSTMOURNE_TRIGGER                     = 38584,
+    NPC_MENETHIL                                = 38579
 };
 
 enum GameObjectsIds
