@@ -1275,8 +1275,8 @@ class npc_tirion_icc : public CreatureScript
                             break;
                         case 9:
                         {
-                            if(Creature* lich = Unit::GetCreature(*me, uiLichKingGUID))
-                                lich->CastSpell(me, SPELL_ICEBLOCK_TRIGGER, true);
+                            if(Creature* tirion = Unit::GetCreature(*me, uiTirionGUID))
+                                tirion->CastSpell(me, SPELL_ICEBLOCK_TRIGGER, true);
                             uiIntroTimer = 2000;
                             break;
                         }
