@@ -763,7 +763,7 @@ class ScriptMgr
     friend class ScriptObject;
 
     ScriptMgr();
-    ~ScriptMgr();
+    virtual ~ScriptMgr();
 
     uint32 _scriptCount;
 
@@ -777,6 +777,9 @@ class ScriptMgr
 
         void IncrementScriptCount() { ++_scriptCount; }
         uint32 GetScriptCount() const { return _scriptCount; }
+
+    public: /* Unloading */
+        void Unload();
 
     public: /* SpellScriptLoader */
 
