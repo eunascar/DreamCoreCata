@@ -1460,7 +1460,7 @@ class npc_tirion_icc : public CreatureScript
         }
 };
 
-class npc_valkyr_icc : public CreatureScript
+class npc_valkyr_shadowguard : public CreatureScript
 {
 
 enum eEvents
@@ -1474,11 +1474,11 @@ enum eEvents
 static const float Z_FLY;
 
     public:
-        npc_valkyr_icc() : CreatureScript("npc_valkyr_icc") { }
+        npc_valkyr_shadowguard() : CreatureScript("npc_valkyr_shadowguard") { }
 
-        struct npc_valkyr_iccAI : public ScriptedAI
+        struct npc_valkyr_shadowguardAI : public ScriptedAI
         {
-            npc_valkyr_iccAI(Creature* creature) : ScriptedAI(creature), vehicle(creature->GetVehicleKit()), m_victimGuid(0)
+            npc_valkyr_shadowguardAI(Creature* creature) : ScriptedAI(creature), vehicle(creature->GetVehicleKit()), m_victimGuid(0)
             {
                 ASSERT(vehicle);
             }
@@ -1728,13 +1728,13 @@ static const float Z_FLY;
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_valkyr_iccAI(creature);
+            return new npc_valkyr_shadowguardAI(creature);
         }
 };
 
-const float npc_valkyr_icc::Z_FLY = 1045.0f;
+const float npc_valkyr_shadowguard::Z_FLY = 1045.0f;
 
-class npc_vile_spirit_icc : public CreatureScript
+class npc_vile_spirit : public CreatureScript
 {
 
 enum eEvents
@@ -1752,11 +1752,11 @@ enum ePoints
 
     public:
         static const float Z_VILE_SPIRIT;
-        npc_vile_spirit_icc() : CreatureScript("npc_vile_spirit_icc") { }
+        npc_vile_spirit() : CreatureScript("npc_vile_spirit") { }
 
-        struct npc_vile_spirit_iccAI : public ScriptedAI
+        struct npc_vile_spiritAI : public ScriptedAI
         {
-            npc_vile_spirit_iccAI(Creature* creature) : ScriptedAI(creature) { }
+            npc_vile_spiritAI(Creature* creature) : ScriptedAI(creature) { }
 
             void Reset()
             {
@@ -1768,7 +1768,7 @@ enum ePoints
                 me->SetFlying(true);
                 float x, y, z;
                 me->GetPosition(x, y, z);
-                me->SetPosition(x, y, npc_vile_spirit_icc::Z_VILE_SPIRIT, true);
+                me->SetPosition(x, y, npc_vile_spirit::Z_VILE_SPIRIT, true);
                 Position randomPos;
                 float dist = 1.0f * rand_norm() * 10.0f;
                 me->GetRandomNearPosition(randomPos, dist);
@@ -1881,13 +1881,13 @@ enum ePoints
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_vile_spirit_iccAI(creature);
+        return new npc_vile_spiritAI(creature);
     }
 };
 
-const float npc_vile_spirit_icc::Z_VILE_SPIRIT = 1050.0f;
+const float npc_vile_spirit::Z_VILE_SPIRIT = 1050.0f;
 
-class npc_shambling_horror_icc: public CreatureScript
+class npc_shambling_horror: public CreatureScript
 {
     enum eEvents
     {
@@ -1903,11 +1903,11 @@ class npc_shambling_horror_icc: public CreatureScript
     };
 
     public:
-        npc_shambling_horror_icc(): CreatureScript("npc_shambling_horror_icc") { }
+        npc_shambling_horror(): CreatureScript("npc_shambling_horror") { }
 
-        struct npc_shambling_horror_iccAI: public ScriptedAI
+        struct npc_shambling_horrorAI: public ScriptedAI
         {
-            npc_shambling_horror_iccAI(Creature* creature): ScriptedAI(creature)
+            npc_shambling_horrorAI(Creature* creature): ScriptedAI(creature)
             {
                 instance = creature->GetInstanceScript();
             }
@@ -1971,11 +1971,11 @@ class npc_shambling_horror_icc: public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_shambling_horror_iccAI(creature);
+        return new npc_shambling_horrorAI(creature);
     }
 };
 
-class npc_raging_spirit_icc: public CreatureScript
+class npc_raging_spirit: public CreatureScript
 {
     enum eEvents
     {
@@ -1988,11 +1988,11 @@ class npc_raging_spirit_icc: public CreatureScript
     };
 
     public:
-        npc_raging_spirit_icc(): CreatureScript("npc_raging_spirit_icc") { }
+        npc_raging_spirit(): CreatureScript("npc_raging_spirit") { }
 
-        struct npc_raging_spirit_iccAI: public ScriptedAI
+        struct npc_raging_spiritAI: public ScriptedAI
         {
-            npc_raging_spirit_iccAI(Creature* creature): ScriptedAI(creature) { }
+            npc_raging_spiritAI(Creature* creature): ScriptedAI(creature) { }
 
             void EnterCombat(Unit* who)
             {
@@ -2033,11 +2033,11 @@ class npc_raging_spirit_icc: public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_raging_spirit_iccAI(creature);
+        return new npc_raging_spiritAI(creature);
     }
 };
 
-class npc_ice_sphere_icc : public CreatureScript
+class npc_ice_sphere : public CreatureScript
 {
     enum eEvents
     {
@@ -2046,11 +2046,11 @@ class npc_ice_sphere_icc : public CreatureScript
     };
 
     public:
-        npc_ice_sphere_icc() : CreatureScript("npc_ice_sphere_icc") { }
+        npc_ice_sphere() : CreatureScript("npc_ice_sphere") { }
 
-        struct npc_ice_sphere_iccAI : public ScriptedAI
+        struct npc_ice_sphereAI : public ScriptedAI
         {
-            npc_ice_sphere_iccAI(Creature* creature) : ScriptedAI(creature), m_victimGuid(0) { }
+            npc_ice_sphereAI(Creature* creature) : ScriptedAI(creature), m_victimGuid(0) { }
 
             void Reset()
             {
@@ -2150,18 +2150,18 @@ class npc_ice_sphere_icc : public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_ice_sphere_iccAI(creature);
+        return new npc_ice_sphereAI(creature);
     }
 };
 
-class npc_defile_icc : public CreatureScript
+class npc_defile : public CreatureScript
 {
     public:
-        npc_defile_icc() : CreatureScript("npc_defile_icc") { }
+        npc_defile() : CreatureScript("npc_defile") { }
 
-        struct npc_defile_iccAI : public Scripted_NoMovementAI
+        struct npc_defileAI : public Scripted_NoMovementAI
         {
-            npc_defile_iccAI(Creature* creature) : Scripted_NoMovementAI(creature), alreadyReset(false), m_hitNumber(0) { }
+            npc_defileAI(Creature* creature) : Scripted_NoMovementAI(creature), alreadyReset(false), m_hitNumber(0) { }
 
             void JustRespawned()
             {
@@ -2210,11 +2210,11 @@ class npc_defile_icc : public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_defile_iccAI(creature);
+        return new npc_defileAI(creature);
     }
 };
 
-class npc_spirit_warden_icc : public CreatureScript
+class npc_spirit_warden : public CreatureScript
 {
 enum eEvents
 {
@@ -2224,11 +2224,11 @@ enum eEvents
 };
 
     public:
-        npc_spirit_warden_icc() : CreatureScript("npc_spirit_warden_icc") { }
+        npc_spirit_warden() : CreatureScript("npc_spirit_warden") { }
 
-        struct npc_spirit_warden_iccAI : public ScriptedAI
+        struct npc_spirit_wardenAI : public ScriptedAI
         {
-            npc_spirit_warden_iccAI(Creature* creature) : ScriptedAI(creature) {}
+            npc_spirit_wardenAI(Creature* creature) : ScriptedAI(creature) {}
 
             void Reset()
             {
@@ -2342,11 +2342,11 @@ enum eEvents
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_spirit_warden_iccAI(creature);
+            return new npc_spirit_wardenAI(creature);
         }
 };
 
-class npc_terenas_fighter_icc : public CreatureScript
+class npc_terenas_menethil : public CreatureScript
 {
 enum eEvents
 {
@@ -2357,11 +2357,11 @@ enum eEvents
 };
 
     public:
-        npc_terenas_fighter_icc() : CreatureScript("npc_terenas_fighter_icc") { }
+        npc_terenas_menethil() : CreatureScript("npc_terenas_menethil") { }
 
-        struct npc_terenas_fighter_iccAI : public ScriptedAI
+        struct npc_terenas_menethilAI : public ScriptedAI
         {
-            npc_terenas_fighter_iccAI(Creature* creature) : ScriptedAI(creature) {}
+            npc_terenas_menethilAI(Creature* creature) : ScriptedAI(creature) {}
 
             void Reset()
             {
@@ -2458,7 +2458,7 @@ enum eEvents
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_terenas_fighter_iccAI(creature);
+            return new npc_terenas_menethilAI(creature);
         }
 };
 
@@ -3088,7 +3088,7 @@ class spell_lich_king_vile_spirit_summon : public SpellScriptLoader
 
                 Position pos;
                 caster->GetRandomNearPosition(pos, 13.0f);
-                pos.m_positionZ = npc_vile_spirit_icc::Z_VILE_SPIRIT;
+                pos.m_positionZ = npc_vile_spirit::Z_VILE_SPIRIT;
                 uint32 triggeredSpell = aurEff->GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
                 caster->CastSpell(pos.m_positionX, pos.m_positionY, pos.m_positionZ, triggeredSpell, true);
             }
@@ -3125,7 +3125,7 @@ class spell_lich_king_vile_spirit_summon_visual : public SpellScriptLoader
 
                 Position pos;
                 caster->GetRandomNearPosition(pos, 13.0f);
-                pos.m_positionZ = npc_vile_spirit_icc::Z_VILE_SPIRIT;
+                pos.m_positionZ = npc_vile_spirit::Z_VILE_SPIRIT;
                 uint32 triggeredSpell = aurEff->GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
                 caster->CastSpell(pos.m_positionX, pos.m_positionY, pos.m_positionZ, triggeredSpell, true);
             }
@@ -3649,18 +3649,18 @@ class spell_lich_king_harvest_soul : public SpellScriptLoader
         }
 };
 
-void AddSC_boss_lichking()
+void AddSC_boss_the_lich_king()
 {
     new boss_the_lich_king();
     new npc_tirion_icc();
-    new npc_valkyr_icc();
-    new npc_vile_spirit_icc();
-    new npc_shambling_horror_icc();
-    new npc_raging_spirit_icc();
-    new npc_ice_sphere_icc();
-    new npc_defile_icc();
-    new npc_spirit_warden_icc();
-    new npc_terenas_fighter_icc();
+    new npc_valkyr_shadowguard();
+    new npc_vile_spirit();
+    new npc_shambling_horror();
+    new npc_raging_spirit();
+    new npc_ice_sphere();
+    new npc_defile();
+    new npc_spirit_warden();
+    new npc_terenas_menethil();
     new spell_lich_king_necrotic_plague();
     new spell_lich_king_infection();
     new spell_lich_king_valkyr_summon();
