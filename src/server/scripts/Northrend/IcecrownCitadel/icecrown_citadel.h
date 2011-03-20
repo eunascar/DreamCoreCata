@@ -103,6 +103,8 @@ enum DataTypes
     DATA_FROSTY_EDGE_OUTER          = 41,
     DATA_FROSTY_EDGE_INNER          = 42,
     DATA_EDGE_DESTROY_WARNING       = 43,
+    DATA_FROZEN_LAVAMAN             = 44,
+    DATA_LAVAMAN_PILLARS            = 45,
 };
 
 enum CreaturesIds
@@ -293,6 +295,11 @@ enum GameObjectsIds
     // Valithria Dreamwalker
     GO_GREEN_DRAGON_BOSS_ENTRANCE           = 201375,
     GO_GREEN_DRAGON_BOSS_EXIT               = 201374,
+    GO_VALITHRIA_ROOST_DOOR_1               = 201380,
+    GO_VALITHRIA_ROOST_DOOR_2               = 201381,
+    GO_VALITHRIA_ROOST_DOOR_3               = 201382,
+    GO_VALITHRIA_ROOST_DOOR_4               = 201383,
+    GO_VALITHRIA_ELEVATOR                   = 202234,
     GO_DREAMWALKER_CACHE_10N                = 201959,
     GO_DREAMWALKER_CACHE_25N                = 202338,
     GO_DREAMWALKER_CACHE_10H                = 202339,
@@ -314,6 +321,8 @@ enum GameObjectsIds
     GO_FROSTY_EDGE_OUTER                    = 202188,
     GO_FROSTY_EDGE_INNER                    = 202189,
     GO_EDGE_DESTROY_WARNING                 = 202190,
+    GO_FROZEN_LAVAMAN                       = 202436,
+    GO_LAVAMAN_PILLARS                      = 202437,
 };
 
 enum AchievementCriteriaIds

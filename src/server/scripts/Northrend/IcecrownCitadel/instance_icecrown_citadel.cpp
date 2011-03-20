@@ -103,6 +103,11 @@ class instance_icecrown_citadel : public InstanceMapScript
                 valithriaDreamwalker  = 0;
                 valithriaAlternative  = 0;
                 greenDragonCombatTrigger = 0;
+                valithriaRoostDoor1 = 0;
+                valithriaRoostDoor2 = 0;
+                valithriaRoostDoor3 = 0;
+                valithriaRoostDoor4 = 0;
+                valithriaElevator = 0;
                 lichKing = 0;
                 tirion = 0;
                 terenasFighter = 0;
@@ -120,6 +125,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                 frostyEdgeInner = 0;
                 frostyEdgeOuter = 0;
                 edgeDestroyWarning = 0;
+                frozenLavaman = 0;
+                lavamanPillars = 0;
                 isBonedEligible = true;
                 isOozeDanceEligible = true;
                 isNauseaEligible = true;
@@ -362,12 +369,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_DEATHBRINGER_S_CACHE_25H:
                         deathbringersCache = go->GetGUID();
                         break;
-                    case GO_DREAMWALKER_CACHE_10N:
-                    case GO_DREAMWALKER_CACHE_25N:
-                    case GO_DREAMWALKER_CACHE_10H:
-                    case GO_DREAMWALKER_CACHE_25H:
-                        dreamwalkerCache = go->GetGUID();
-                        break;
                     case GO_SCOURGE_TRANSPORTER_SAURFANG:
                         saurfangTeleport = go->GetGUID();
                         break;
@@ -418,6 +419,61 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_DRINK_ME:
                         putricideTable = go->GetGUID();
                         break;
+                    case GO_DREAMWALKER_CACHE_10N:
+                    case GO_DREAMWALKER_CACHE_25N:
+                    case GO_DREAMWALKER_CACHE_10H:
+                    case GO_DREAMWALKER_CACHE_25H:
+                        dreamwalkerCache = go->GetGUID();
+                        break;
+                    case GO_VALITHRIA_ROOST_DOOR_1:
+                        valithriaRoostDoor1 = go->GetGUID();
+                        break;
+                    case GO_VALITHRIA_ROOST_DOOR_2:
+                        valithriaRoostDoor2 = go->GetGUID();
+                        break;
+                    case GO_VALITHRIA_ROOST_DOOR_3:
+                        valithriaRoostDoor3 = go->GetGUID();
+                        break;
+                    case GO_VALITHRIA_ROOST_DOOR_4:
+                        valithriaRoostDoor4 = go->GetGUID();
+                        break;
+                    case GO_VALITHRIA_ELEVATOR:
+                        valithriaElevator = go->GetGUID();
+                        break;
+                    case GO_FROZEN_LAVAMAN:
+                        frozenLavaman = go->GetGUID();
+                        break;
+                    case GO_LAVAMAN_PILLARS:
+                        lavamanPillars = go->GetGUID();
+                        break;
+                    case GO_ICE_SHARD_1:
+                        iceShard1 = go->GetGUID();
+                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_ICE_SHARD_2:     
+                        iceShard2 = go->GetGUID();
+                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_ICE_SHARD_3:
+                        iceShard3 = go->GetGUID();
+                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_ICE_SHARD_4:
+                        iceShard4 = go->GetGUID();
+                        go->SetGoState(GetBossState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
+                        break;
+                    case GO_FROSTY_EDGE_OUTER:
+                        frostyEdgeOuter = go->GetGUID();
+                        go->SetGoState(GO_STATE_ACTIVE);
+                        break;
+                    case GO_FROSTY_EDGE_INNER:
+                        frostyEdgeInner = go->GetGUID();
+                        go->SetGoState(GO_STATE_READY);
+                        break;
+                    case GO_EDGE_DESTROY_WARNING:
+                        edgeDestroyWarning = go->GetGUID();
+                        go->SetGoState(GO_STATE_READY);
+                        break;
                     default:
                         break;
                 }
@@ -447,34 +503,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                     case GO_SINDRAGOSA_SHORTCUT_EXIT_DOOR:
                     case GO_ICE_WALL:
                         AddDoor(go, false);
-                        break;
-                    case GO_ICE_SHARD_1:
-                        iceShard1 = go->GetGUID();
-                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_ICE_SHARD_2:     
-                        iceShard2 = go->GetGUID();
-                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_ICE_SHARD_3:
-                        iceShard3 = go->GetGUID();
-                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_ICE_SHARD_4:
-                        iceShard4 = go->GetGUID();
-                        go->SetGoState(EncounterState(DATA_THE_LICH_KING) == DONE ? GO_STATE_ACTIVE : GO_STATE_READY);
-                        break;
-                    case GO_FROSTY_EDGE_OUTER:
-                        frostyEdgeOuter = go->GetGUID();
-                        go->SetGoState(GO_STATE_ACTIVE);
-                        break;
-                    case GO_FROSTY_EDGE_INNER:
-                        frostyEdgeInner = go->GetGUID();
-                        go->SetGoState(GO_STATE_READY);
-                        break;
-                    case GO_EDGE_DESTROY_WARNING:
-                        edgeDestroyWarning = go->GetGUID();
-                        go->SetGoState(GO_STATE_READY);
                         break;
                     default:
                         break;
@@ -562,6 +590,10 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return terenasFighter;
                     case DATA_SPIRIT_WARDEN:
                         return spiritWarden;
+                    case DATA_FROZEN_LAVAMAN:
+                        return frozenLavaman;
+                    case DATA_LAVAMAN_PILLARS:
+                        return lavamanPillars;
                     case DATA_ICE_SHARD_1:
                         return iceShard1;
                     case DATA_ICE_SHARD_2:
@@ -679,7 +711,38 @@ class instance_icecrown_citadel : public InstanceMapScript
                         switch (state)
                         {
                             case DONE:
-                                DoRespawnGameObject(dreamwalkerCache, 7*DAY);
+                                DoRespawnGameObject(dreamwalkerCache, 7 * DAY);
+
+                                if (GameObject* go = instance->GetGameObject(valithriaElevator))
+                                {
+                                    go->SetUInt32Value(GAMEOBJECT_LEVEL, 0);
+                                    go->SetGoState(GO_STATE_READY);
+                                }
+                                break;
+							case IN_PROGRESS:
+                                HandleGameObject(valithriaRoostDoor2, true);
+                                HandleGameObject(valithriaRoostDoor3, true);
+
+                                if (instance->GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL || instance->GetDifficulty() == RAID_DIFFICULTY_25MAN_HEROIC)
+                                {
+                                    HandleGameObject(valithriaRoostDoor1, true);
+                                    HandleGameObject(valithriaRoostDoor4, true);
+                                }
+                                break;
+                            case FAIL:
+                                HandleGameObject(valithriaRoostDoor1, false);
+                                HandleGameObject(valithriaRoostDoor2, false);
+                                HandleGameObject(valithriaRoostDoor3, false);
+                                HandleGameObject(valithriaRoostDoor4, false);
+                                break;
+                            case NOT_STARTED:
+                                HandleGameObject(valithriaRoostDoor1, false);
+                                HandleGameObject(valithriaRoostDoor2, false);
+                                HandleGameObject(valithriaRoostDoor3, false);
+                                HandleGameObject(valithriaRoostDoor4, false);
+                                break;
+                            default:
+                                break;
                         }
                         break;
                     case DATA_SINDRAGOSA:
@@ -697,6 +760,20 @@ class instance_icecrown_citadel : public InstanceMapScript
                         }
                         break;
                     case DATA_THE_LICH_KING:
+                        if (state == NOT_STARTED)
+                        {
+                            if (GameObject* go = instance->GetGameObject(frozenLavaman))
+                                go->SetPhaseMask(2, true);
+                        }
+
+                        if (state == DONE)
+                        {
+                            if (GameObject* go = instance->GetGameObject(frozenLavaman))
+                                go->SetPhaseMask(1, true);
+
+                            if (GameObject* go = instance->GetGameObject(lavamanPillars))
+                                go->SetPhaseMask(2, true);
+                        }
                         break;
                     default:
                         break;
@@ -1083,6 +1160,11 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 valithriaDreamwalker;
             uint64 valithriaAlternative;
             uint64 greenDragonCombatTrigger;
+            uint64 valithriaRoostDoor1;
+            uint64 valithriaRoostDoor2;
+            uint64 valithriaRoostDoor3;
+            uint64 valithriaRoostDoor4;
+            uint64 valithriaElevator;
             uint64 lichKing;
             uint64 tirion;
             uint64 terenasFighter;
@@ -1094,6 +1176,8 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 frostyEdgeInner;
             uint64 frostyEdgeOuter;
             uint64 edgeDestroyWarning;
+            uint64 frozenLavaman;
+            uint64 lavamanPillars;
             uint32 teamInInstance;
             uint32 bloodQuickeningTimer;
             uint32 coldflameJetsState;
