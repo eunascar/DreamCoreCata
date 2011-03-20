@@ -100,8 +100,11 @@ class instance_icecrown_citadel : public InstanceMapScript
                 sindragosa = 0;
                 spinestalker = 0;
                 rimefang = 0;
-                tirion = 0;
+                valithriaDreamwalker  = 0;
+                valithriaAlternative  = 0;
+                greenDragonCombatTrigger = 0;
                 lichKing = 0;
+                tirion = 0;
                 terenasFighter = 0;
                 spiritWarden = 0;
                 frostwyrms = 0;
@@ -121,6 +124,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                 isOozeDanceEligible = true;
                 isNauseaEligible = true;
                 isOrbWhispererEligible = true;
+                isPortalJockeyEligible  = 0;
                 coldflameJetsState = NOT_STARTED;
                 bloodQuickeningState = NOT_STARTED;
                 bloodQuickeningTimer = 0;
@@ -244,6 +248,22 @@ class instance_icecrown_citadel : public InstanceMapScript
                         if (!creature->isDead())
                             ++frostwyrms;
                         break;
+                    case NPC_VALITHRIA_DREAMWALKER:
+                        valithriaDreamwalker = creature->GetGUID();
+                        break;
+                    case NPC_VALITHRIA_ALTERNATIVE:
+                        valithriaAlternative = creature->GetGUID();
+                        break;
+                    case NPC_GREEN_DRAGON_COMBAT_TRIGGER:
+                    {
+                        greenDragonCombatTrigger = creature->GetGUID();
+                        creature->SetReactState(REACT_AGGRESSIVE);
+                        creature->SetSpeed(MOVE_RUN, 0.0f, true);
+                        creature->SetSpeed(MOVE_WALK, 0.0f, true);
+                        creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_NOT_SELECTABLE);
+                        creature->SetVisible(false);
+                        break;
+                    }
                     case NPC_THE_LICH_KING:
                         lichKing = creature->GetGUID();
                         break;
@@ -479,6 +499,12 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return bloodQuickeningState;
                     case DATA_HEROIC_ATTEMPTS:
                         return heroicAttempts;
+                    case DATA_PORTAL_JOCKEY_ACHIEVEMENT:
+                        return isPortalJockeyEligible ? true : false;
+                    case DATA_BEEN_WAITING_ACHIEVEMENT:
+                        return beenWaiting;
+                    case DATA_NECK_DEEP_ACHIEVEMENT:
+                        return neckDeep;
                     default:
                         break;
                 }
@@ -522,19 +548,19 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return spinestalker;
                     case DATA_RIMEFANG:
                         return rimefang;
+                    case DATA_VALITHRIA_DREAMWALKER:
+                        return valithriaDreamwalker;
+                    case DATA_VALITHRIA_ALTERNATIVE:
+                        return valithriaAlternative;
+                    case DATA_GREEN_DRAGON_COMBAT_TRIGGER:
+                        return greenDragonCombatTrigger;
                     case DATA_THE_LICH_KING:
                         return lichKing;
-                    case DATA_BEEN_WAITING_ACHIEVEMENT:
-                        return beenWaiting;
-                    case DATA_NECK_DEEP_ACHIEVEMENT:
-                        return neckDeep;
                     case DATA_TIRION:
                         return tirion;
-                    case DATA_NECROTIC_STACK:
-                        return necroticStack;
-					case DATA_TERENAS_FIGHTER:
+                    case DATA_TERENAS_FIGHTER:
                         return terenasFighter;
-					case DATA_SPIRIT_WARDEN:
+                    case DATA_SPIRIT_WARDEN:
                         return spiritWarden;
                     case DATA_ICE_SHARD_1:
                         return iceShard1;
@@ -766,6 +792,12 @@ class instance_icecrown_citadel : public InstanceMapScript
                         SaveToDB();
                         break;
                     }
+                    case DATA_PORTAL_JOCKEY_ACHIEVEMENT:
+                        isPortalJockeyEligible = data ? true : false;
+                    case DATA_NECK_DEEP_ACHIEVEMENT:         
+                        neckDeep = data;
+                    case DATA_BEEN_WAITING_ACHIEVEMENT:         
+                        necroticStack = data;
                     default:
                         break;
                 }
@@ -1048,8 +1080,11 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 sindragosa;
             uint64 spinestalker;
             uint64 rimefang;
-            uint64 tirion;
+            uint64 valithriaDreamwalker;
+            uint64 valithriaAlternative;
+            uint64 greenDragonCombatTrigger;
             uint64 lichKing;
+            uint64 tirion;
             uint64 terenasFighter;
             uint64 spiritWarden;
             uint64 iceShard1;
@@ -1071,6 +1106,7 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint8 beenWaiting;
             uint8 neckDeep;
             uint8 necroticStack;
+            uint8 isPortalJockeyEligible;
             bool isBonedEligible;
             bool isOozeDanceEligible;
             bool isNauseaEligible;
@@ -1082,6 +1118,23 @@ class instance_icecrown_citadel : public InstanceMapScript
             return new instance_icecrown_citadel_InstanceMapScript(map);
         }
 };
+
+void UnsummonSpecificCreaturesNearby(Creature* ref, uint32 entry, float radius)
+{
+    std::list<Creature*> allCreaturesWithEntry;
+    GetCreatureListWithEntryInGrid(allCreaturesWithEntry, ref, entry, radius);
+
+    for(std::list<Creature*>::iterator itr = allCreaturesWithEntry.begin(); itr != allCreaturesWithEntry.end(); ++itr)
+    {
+        Creature* candidate = *itr;
+
+        if (!candidate)
+            continue;
+
+        if (TempSummon* summon = candidate->ToTempSummon())
+            summon->DespawnOrUnsummon();
+    }
+}
 
 uint32 GetPhase(const EventMap &em)
 {

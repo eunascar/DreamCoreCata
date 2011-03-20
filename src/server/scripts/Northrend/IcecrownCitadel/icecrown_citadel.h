@@ -84,21 +84,25 @@ enum DataTypes
     DATA_TEAM_IN_INSTANCE           = 26,
     DATA_BLOOD_QUICKENING_STATE     = 27,
     DATA_HEROIC_ATTEMPTS            = 28,
-    DATA_BEEN_WAITING_ACHIEVEMENT   = 29,
-    DATA_NECK_DEEP_ACHIEVEMENT      = 30,
-    DATA_TIRION                     = 31,
-    DATA_NECROTIC_STACK             = 32,
+    // Valithria Dreamwalker Data
+    DATA_VALITHRIA_ALTERNATIVE      = 29,
+    DATA_GREEN_DRAGON_COMBAT_TRIGGER= 30,
+    DATA_PORTAL_JOCKEY_ACHIEVEMENT  = 31,
+    // Lich King Data
+    DATA_TIRION                     = 32,
     DATA_TERENAS_FIGHTER            = 33,
     DATA_SPIRIT_WARDEN              = 34,
+    DATA_BEEN_WAITING_ACHIEVEMENT   = 35,
+    DATA_NECK_DEEP_ACHIEVEMENT      = 36,
 
     // Go Data
-    DATA_ICE_SHARD_1                = 35,
-    DATA_ICE_SHARD_2                = 36,
-    DATA_ICE_SHARD_3                = 37,
-    DATA_ICE_SHARD_4                = 38,
-    DATA_FROSTY_EDGE_OUTER          = 39,
-    DATA_FROSTY_EDGE_INNER          = 40,
-    DATA_EDGE_DESTROY_WARNING       = 41,
+    DATA_ICE_SHARD_1                = 37,
+    DATA_ICE_SHARD_2                = 38,
+    DATA_ICE_SHARD_3                = 39,
+    DATA_ICE_SHARD_4                = 40,
+    DATA_FROSTY_EDGE_OUTER          = 41,
+    DATA_FROSTY_EDGE_INNER          = 42,
+    DATA_EDGE_DESTROY_WARNING       = 43,
 };
 
 enum CreaturesIds
@@ -196,6 +200,26 @@ enum CreaturesIds
 
     // Blood-Queen Lana'thel
     NPC_BLOOD_QUEEN_LANA_THEL                   = 37955,
+
+    // Valithria Dreamwalker
+    NPC_VALITHRIA_DREAMWALKER                   = 36789,
+    NPC_VALITHRIA_ALTERNATIVE                   = 37950,
+    NPC_PORTAL_NORMAL_MODE_PRE                  = 38186,
+    NPC_PORTAL_NORMAL_MODE_NPC                  = 37945,
+    NPC_PORTAL_HEROIC_MODE_PRE                  = 38429,
+    NPC_PORTAL_HEROIC_MODE_NPC                  = 38430,
+    NPC_ROT_WORM                                = 37907,
+    NPC_PORTAL                                  = 37945,
+    NPC_DREAM_CLOUD                             = 37985,
+    NPC_NIGHTMARE_CLOUD                         = 38421,
+    NPC_MANA_VOID                               = 38068,
+    NPC_ABOMINATION                             = 37886,
+    NPC_SKELETON                                = 36791,
+    NPC_ARCHMAGE                                = 37868,
+    NPC_SUPPRESSOR                              = 37863,
+    NPC_ZOMBIE                                  = 37934,
+    NPC_COLUMN_OF_FROST                         = 37918,
+    NPC_GREEN_DRAGON_COMBAT_TRIGGER             = 38752,
 
     // Sindragosa
     NPC_SINDRAGOSA                              = 36853,
@@ -416,6 +440,7 @@ class spell_trigger_spell_from_caster : public SpellScriptLoader
 };
 
 extern Position const SindragosaSpawnPos;
+void UnsummonSpecificCreaturesNearby(Creature* ref, uint32 entry, float radius);
 uint32 GetPhase(const EventMap &em);
 void TeleportPlayerToFrozenThrone(Player* player);
 void LeaveOnlyPlayers(std::list<Unit*> &unitList);
