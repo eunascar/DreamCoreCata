@@ -174,7 +174,6 @@ enum Spells
     SPELL_WMO_INTACT                                       = 50176,
     SPELL_WMO_DESTROY                                      = 50177,
     SPELL_WMO_REBUILD                                      = 50178,
-    SPELL_PLAY_MOVIE                                       = 73159,
     SPELL_SUMMON_MENETHIL                                  = 72420,
     SPELL_MENETHIL_VISUAL                                  = 72372,
     SPELL_VALKYR_CARRY_CAN_CAST                            = 74506,
@@ -309,11 +308,9 @@ class boss_the_lich_king : public CreatureScript
 
         struct boss_the_lich_kingAI : public BossAI
         {
-            boss_the_lich_kingAI(Creature* creature) : BossAI(creature, DATA_THE_LICH_KING), summons(me), uiStage(1)
+            boss_the_lich_kingAI(Creature* creature) : BossAI(creature, DATA_THE_LICH_KING), summons(me)
             {
                 instance = me->GetInstanceScript();
-                me->SetReactState(REACT_PASSIVE);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             }
 
             uint32 GetData(uint32 dataId)
@@ -370,11 +367,13 @@ class boss_the_lich_king : public CreatureScript
                 if (SpellEntry* remorselessWinter = GET_SPELL(SPELL_REMORSELESS_WINTER))
                     remorselessWinter->Effect[2] = 0;
 
-                if (SpellEntry* spellPlayMovie = GET_SPELL(SPELL_PLAY_MOVIE))
-                    spellPlayMovie->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_SRC;
-
                 if (instance)
                     instance->SetBossState(DATA_THE_LICH_KING, NOT_STARTED);
+
+                me->SetReactState(REACT_PASSIVE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+                uiStage = 1;
             }
 
             void EnterEvadeMode()
@@ -394,7 +393,6 @@ class boss_the_lich_king : public CreatureScript
                 instance->SetData(DATA_NECK_DEEP_ACHIEVEMENT, DONE);
 
                 uiEndingTimer = 1000;
-                uiStage = 1;
                 uiTirionGUID = 0;
                 isSwitching = false;
                 events.Reset();
@@ -454,7 +452,12 @@ class boss_the_lich_king : public CreatureScript
                     instance->DoCompleteAchievement(RAID_MODE(ACHIEV_NECK_DEEP_IN_VILE_10,ACHIEV_NECK_DEEP_IN_VILE_25));
 
                 Cleanup();
-                DoCast(SPELL_PLAY_MOVIE);
+
+                TPlayerList players = GetPlayersInTheMap(me->GetMap());
+
+                for (TPlayerList::iterator it = players.begin(); it != players.end(); ++it)
+                    if ((*it)->isAlive())
+                        (*it)->SendMovieStart(MOVIE_ID_ARTHAS_DEATH);
 
                 if (Creature* father = me->FindNearestCreature(NPC_TERENAS_MENETHIL, 25.0f, true))
                     father->SetVisible(false);
@@ -462,6 +465,7 @@ class boss_the_lich_king : public CreatureScript
                 if (Creature* tirion = Unit::GetCreature(*me, uiTirionGUID))
                 {
                     tirion->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    tirion->SetReactState(REACT_PASSIVE);
                     tirion->RemoveAllAuras();
                 }
             }
@@ -503,7 +507,6 @@ class boss_the_lich_king : public CreatureScript
                     tirion->AI()->DoAction(ACTION_RESET);
 
                 events.Reset();
-                uiStage = 1;
             }
 
             void KilledUnit(Unit* victim)
@@ -547,16 +550,17 @@ class boss_the_lich_king : public CreatureScript
                         //summoned->SetVisible(false);
                         break;
                     }
-                    //case NPC_TERENAS_MENETHIL:
-                    //{
-                    //    DoScriptText(SAY_ENDING_9_FATHER, summoned);
-                    //    summoned->CastSpell(summoned, SPELL_MENETHIL_VISUAL, true);
-                    //    summoned->CastSpell(summoned, SPELL_REVIVE, true);
-                    //    //TPlayerList players = GetPlayersInTheMap(me->GetMap());
-                    //    //for (TPlayerList::iterator it = players.begin(); it != players.end(); ++it)
-                    //    //    summoned->CastSpell(*it, SPELL_REVIVE_EFFECT, true);
-                    //    break;
-                    //}
+                    /*case NPC_TERENAS_MENETHIL:
+                    {
+                        DoScriptText(SAY_ENDING_9_FATHER, summoned);
+                        summoned->CastSpell(summoned, SPELL_MENETHIL_VISUAL, true);
+                        summoned->CastSpell(summoned, SPELL_REVIVE, true);
+                        TPlayerList players = GetPlayersInTheMap(me->GetMap());
+
+                        for (TPlayerList::iterator it = players.begin(); it != players.end(); ++it)
+                            summoned->CastSpell(*it, SPELL_REVIVE_EFFECT, true);
+                        break;
+                    }*/
                     case NPC_VALKYR:
                     {
                         if (Unit *valkyrTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
@@ -689,8 +693,7 @@ class boss_the_lich_king : public CreatureScript
 
             void UpdateAI(const uint32 uiDiff)
             {
-                if (GetPhase(events) != PHASE_6_ENDING
-                    && (!UpdateVictim() || !CheckInRoom()))
+                if (GetPhase(events) != PHASE_6_ENDING && (!UpdateVictim() || !CheckInRoom()))
                     return;
 
                 events.Update(uiDiff);
@@ -949,47 +952,36 @@ class boss_the_lich_king : public CreatureScript
                                 break;
                             }
                             case 2:
-                            {
                                 DoCast(me, SPELL_FURY_OF_FROSTMOURNE);
                                 uiEndingTimer = 11000;
-                            }
+                                break;
                             case 3:
-                            {
                                 DoScriptText(SAY_ENDING_1_KING, me);
                                 uiEndingTimer = 24000;
                                 break;
-                            }
                             case 4:
-                            {
                                 DoScriptText(SAY_ENDING_2_KING, me);
                                 uiEndingTimer = 25000;
                                 break;
-                            }
                             case 5:
-                            {
                                 me->GetMotionMaster()->MovePoint(0, MovePos[1]);
                                 uiEndingTimer = 4000;
                                 break;
-                            }
                             case 6:
-                            {
                                 DoScriptText(SAY_ENDING_3_KING, me);
-                                DoCast(me, SPELL_RAISE_DEAD);
+                                //DoCast(me, SPELL_RAISE_DEAD);
                                 me->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
                                 uiEndingTimer = 28000;
                                 break;
-                            }
                             case 7:
-                            {
-                                DoScriptText(SAY_ENDING_4_KING, me); //I delight the irony.
+                                DoScriptText(SAY_ENDING_4_KING, me);
                                 uiEndingTimer = 8000;
                                 break;
-                            }
                             case 8:
                             {
                                 if (uiTirionGUID)
                                     if (Creature* tirion = Unit::GetCreature(*me, uiTirionGUID))
-                                        DoScriptText(SAY_ENDING_5_TIRION, tirion); //Light grant me one final blessing
+                                        DoScriptText(SAY_ENDING_5_TIRION, tirion);
 
                                 uiEndingTimer = 11000;
                                 break;
@@ -1007,7 +999,7 @@ class boss_the_lich_king : public CreatureScript
                             {
                                 if (uiTirionGUID)
                                     if (Creature* tirion = Unit::GetCreature(*me, uiTirionGUID))
-                                        tirion->GetMotionMaster()->MovePoint(0, MovePos[2]);
+                                        tirion->GetMotionMaster()->MovePoint(0, MovePos[3]);
 
                                 uiEndingTimer = 2000;
                                 break;
@@ -1039,31 +1031,23 @@ class boss_the_lich_king : public CreatureScript
                                 break;
                             }
                             case 13:
-                            {
                                 DoCast(me, SPELL_SOUL_EFFECT);
                                 DoPlaySoundToSet(me, SOUND_ENDING_7_KING);
                                 uiEndingTimer = 1000;
                                 break;
-                            }
                             case 14:
-                            {
                                 SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
                                 DoScriptText(SAY_ENDING_6_KING, me);
                                 uiEndingTimer = 3000;
                                 break;
-                            }
                             case 15:
-                            {
                                 DoCast(me, SPELL_SUMMON_FROSTMOURNE_TRIGGER);
                                 uiEndingTimer = 2000;
                                 break;
-                            }
                             case 16:
-                            {
                                 me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 473);
                                 uiEndingTimer = 5000;
                                 break;
-                            }
                             case 17:
                             {
                                 if (uiTirionGUID)
@@ -1108,6 +1092,9 @@ class boss_the_lich_king : public CreatureScript
                                 DoScriptText(SAY_ENDING_12_KING, me);
                                 me->GetMotionMaster()->MovePoint(0, MovePos[6]);
 
+                                me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+                                me->SetReactState(REACT_AGGRESSIVE);
+								
                                 if (uiTirionGUID)
                                     if (Creature* tirion = Unit::GetCreature(*me, uiTirionGUID))
                                         tirion->AI()->AttackStart(me);
@@ -1119,14 +1106,14 @@ class boss_the_lich_king : public CreatureScript
                                 break;
                             }
                             case 22:
-                            {
                                 DoScriptText(SAY_DEATH_KING, me);
                                 break;
-                            }
                         }
+
                         ++uiStage;
                     } else uiEndingTimer -= uiDiff;
                 }
+
                 switch (GetPhase(events))
                 {
                     case PHASE_1:
@@ -1347,11 +1334,9 @@ class npc_tirion_icc : public CreatureScript
                             uiIntroTimer = 2000;
                             break;
                         case 9:
-                        {
                             me->CastSpell(me, SPELL_ICEBLOCK_TRIGGER, true);
                             uiIntroTimer = 2000;
                             break;
-                        }
                         case 10:
                         {
                             if (Creature* lich = Unit::GetCreature(*me, uiLichKingGUID))
@@ -1373,6 +1358,7 @@ class npc_tirion_icc : public CreatureScript
                             break;
                         }
                     }
+
                     ++uiStage;
                 } else uiIntroTimer -= diff;
             }
@@ -1392,8 +1378,8 @@ class npc_tirion_icc : public CreatureScript
             if (!instance)
                 return false;
 
-            Player *unfriendlyPlayer = NULL;
-            const Map::PlayerList &PlayerList = creature->GetMap()->GetPlayers();
+            Player* unfriendlyPlayer = NULL;
+            const Map::PlayerList& PlayerList = creature->GetMap()->GetPlayers();
 
             if (!PlayerList.isEmpty())
                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
@@ -1414,19 +1400,19 @@ class npc_tirion_icc : public CreatureScript
 
             if (instance->GetBossState(DATA_THE_LICH_KING) == DONE)
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "The Lich King was already defeated here. Teleport me back to the Light's Hammer", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "The Lich King was already defeated here. Teleport me back to the Light's Hammer", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
                 player->SEND_GOSSIP_MENU(GOSSIP_MENU, creature->GetGUID());
                 return true;
             }
 
             if ((!player->GetGroup() || !player->GetGroup()->IsLeader(player->GetGUID())) && !player->isGameMaster())
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Sorry, I'm not the raid leader", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Sorry, I'm not the raid leader", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
                 player->SEND_GOSSIP_MENU(GOSSIP_MENU, creature->GetGUID());
                 return true;
             }
 
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
             player->SEND_GOSSIP_MENU(GOSSIP_MENU, creature->GetGUID());
 
             return true;
@@ -1436,13 +1422,13 @@ class npc_tirion_icc : public CreatureScript
         {
             switch (uiAction)
             {
-                case GOSSIP_ACTION_INFO_DEF+2:
+                case GOSSIP_ACTION_INFO_DEF + 2:
                     creature->MonsterSay("OK, I'll wait for raid leader", LANG_UNIVERSAL, player->GetGUID());
                     break;
-                case GOSSIP_ACTION_INFO_DEF+4:
-                    creature->CastSpell(player, FROZEN_THRONE_TELEPORT, true); player->GetGUID();
+                case GOSSIP_ACTION_INFO_DEF + 4:
+                    creature->CastSpell(player, LIGHT_S_HAMMER_TELEPORT, true);
                     break;
-                case GOSSIP_ACTION_INFO_DEF+3:
+                case GOSSIP_ACTION_INFO_DEF + 3:
                     CAST_AI(npc_tirion_icc::npc_tirion_iccAI, creature->AI())->DoAction(ACTION_START_EVENT);
                     creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     player->CLOSE_GOSSIP_MENU();
@@ -3360,38 +3346,6 @@ class spell_ice_burst_distance_check : public SpellScriptLoader
         }
 };
 
-class spell_lich_king_play_movie : public SpellScriptLoader
-{
-    public:
-        spell_lich_king_play_movie() : SpellScriptLoader("spell_lich_king_play_movie") { }
-
-        class spell_lich_king_play_movie_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_lich_king_play_movie_SpellScript);
-
-            void HandleScript(SpellEffIndex /*effIndex*/)
-            {
-                Unit* target = GetHitUnit();
-
-                if (!(target && target->isAlive()))
-                    return;
-
-                if (target->GetTypeId() == TYPEID_PLAYER)
-                    target->ToPlayer()->SendMovieStart(MOVIE_ID_ARTHAS_DEATH);
-            }
-
-            void Register()
-            {
-                OnEffect += SpellEffectFn(spell_lich_king_play_movie_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const
-        {
-            return new spell_lich_king_play_movie_SpellScript();
-        }
-};
-
 class spell_valkyr_carry_can_cast : public SpellScriptLoader
 {
     public:
@@ -3672,7 +3626,6 @@ void AddSC_boss_the_lich_king()
     new spell_lich_king_pain_and_suffering_effect();
     new spell_ice_burst_distance_check();
     new spell_lich_king_quake();
-    new spell_lich_king_play_movie();
     new spell_valkyr_carry_can_cast();
     new spell_valkyr_target_search();
     new spell_valkyr_eject_passenger();

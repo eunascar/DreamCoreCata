@@ -125,6 +125,14 @@ enum eGameObjects
     GO_LEVIATHAN_DOOR       = 194905,
     GO_LEVIATHAN_GATE       = 194630,
     GO_VEZAX_DOOR           = 194750,
+    GO_HODIR_RARE_CHEST_10  = 194200,
+    GO_HODIR_RARE_CHEST_25  = 194201,
+    GO_RUNIC_DOOR           = 194557,
+    GO_STONE_DOOR           = 194558,
+    GO_THORIM_LEVER         = 194265,
+    GO_MIMIRON_TRAM         = 194675,
+    GO_MIMIRON_ELEVATOR     = 194749,
+    GO_KEEPERS_DOOR         = 194255,
 };
 
 enum eTowerEvents

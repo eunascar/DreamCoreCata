@@ -1059,7 +1059,6 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint64 frostyEdgeInner;
             uint64 frostyEdgeOuter;
             uint64 edgeDestroyWarning;
-            std::set<uint64> coldflameJets;
             uint32 teamInInstance;
             uint32 bloodQuickeningTimer;
             uint32 coldflameJetsState;
