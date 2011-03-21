@@ -1,5 +1,6 @@
 -- Valithria Dreamwalker
 -- Creature Script Names
+UPDATE `creature_template` SET `ScriptName` = 'boss_valithria_dreamwalker' WHERE `entry` = 36789;
 UPDATE `creature_template` SET `ScriptName` = 'npc_dream_portal' WHERE `entry` IN (38186,37945,38429,38430);
 UPDATE `creature_template` SET `ScriptName` = 'npc_dream_cloud' WHERE `entry` IN (37985, 38421);
 UPDATE `creature_template` SET `ScriptName` = 'npc_column_of_frost' WHERE `entry` = 37918;

@@ -31,13 +31,13 @@ enum eAchievements
 enum Yells
 {
     SAY_AGGRO          = 0,
-    SAY_BELOW_25       = 1,
+    SAY_OPEN_PORTAL    = 1,
     SAY_ABOVE_75       = 2,
-    SAY_DEATH          = 3,
-    SAY_PDEATH         = 4,
+    SAY_BELOW_25       = 3,
+    SAY_DEATH          = 4,
     SAY_END            = 5,
-    SAY_FAILURES       = 6,
-    SAY_OPEN_PORTAL    = 7
+    SAY_PDEATH         = -1666068,
+    SAY_FAILURES       = -1666069,
 };
 
 enum Spells
@@ -155,6 +155,7 @@ const Position Pos[] =
 
 #define FACTION_STORMWIND 11
 #define FACTION_ORGRIMMAR 1612
+#define MULTIPLIER 1.1
 
 void Cleanup(Creature* me, InstanceScript* instance, float radius)
 {
@@ -198,7 +199,7 @@ class boss_valithria_dreamwalker : public CreatureScript
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
                 me->SetSpeed(MOVE_RUN, 0.0f, true);
                 me->SetSpeed(MOVE_WALK, 0.0f, true);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE); // 3.0.3 - makes you unable to attack everything
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
 
                 Map::PlayerList const& players = me->GetMap()->GetPlayers();
@@ -224,7 +225,7 @@ class boss_valithria_dreamwalker : public CreatureScript
                 events.Reset();
                 DoCast(me, SPEEL_CLEAR_AURA);
                 DoCast(me, SPELL_CORRUPTION);
-                me->SetHealth(uint32(me->GetMaxHealth() / 2));
+                me->SetHealth(uint32(me->GetMaxHealth() / MULTIPLIER));
 
                 bIntro = false;
                 bEnd = false;
@@ -240,6 +241,8 @@ class boss_valithria_dreamwalker : public CreatureScript
                     instance->SetBossState(DATA_VALITHRIA_DREAMWALKER, NOT_STARTED);
             }
 
+            void EnterCombat(Unit* /*who*/) { }
+
             void JustDied(Unit* killer)
             {
                 me->Respawn();
@@ -249,7 +252,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
             void JustRespawned()
             {
-                me->SetHealth(me->GetMaxHealth() / 2);
+                me->SetHealth(me->GetMaxHealth() / MULTIPLIER);
             }
 
 
@@ -257,8 +260,6 @@ class boss_valithria_dreamwalker : public CreatureScript
             {
                 if (action == EVENT_INTRO)
                 {
-                    Reset();
-
                     if (Creature* combatTrigger = me->GetCreature(*me, instance->GetData64(DATA_GREEN_DRAGON_COMBAT_TRIGGER)))
                         me->getThreatManager().addThreat(combatTrigger, 1.0f);
                     
@@ -284,7 +285,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                     me->RemoveAllAuras();
                     DoCast(me, SPELL_CORRUPTION);
-                    me->SetHealth(uint32(me->GetMaxHealth() / 2));
+                    me->SetHealth(uint32(me->GetMaxHealth() / MULTIPLIER));
                     EnterEvadeMode();
                     return;
                 }
@@ -308,7 +309,7 @@ class boss_valithria_dreamwalker : public CreatureScript
                 //Prevent healing while encounter isn't in progress
                 if (instance->GetBossState(DATA_VALITHRIA_DREAMWALKER) != IN_PROGRESS)
                 {
-                    me->SetHealth(uint32(me->GetMaxHealth() / 2));
+                    me->SetHealth(uint32(me->GetMaxHealth() / MULTIPLIER));
                     return;
                 }
 
@@ -335,7 +336,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                 if (!bAboveHP && HealthAbovePct(74))
                 {
-                    DoScriptText(SAY_ABOVE_75, me);
+                    Talk(SAY_ABOVE_75);
                     float curScale = me->GetFloatValue(OBJECT_FIELD_SCALE_X);
                     me->SetFloatValue(OBJECT_FIELD_SCALE_X, curScale * 1.25f);
                     //Need to increase her in size
@@ -345,7 +346,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                 if (!bBelowHP && HealthBelowPct(26))
                 {
-                    DoScriptText(SAY_BELOW_25, me);
+                    Talk(SAY_BELOW_25);
                     //Need to decrease her in size
                     bBelowHP = true;
                     bAboveHP = false;
@@ -367,9 +368,9 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                 if (!bEnd && HealthAbovePct(99))
                 {
-                    DoScriptText(SAY_END, me);
+                    Talk(SAY_END);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-                    me->SetReactState(REACT_PASSIVE);
+                    //me->SetReactState(REACT_PASSIVE);
                     DoCast(me, SPELL_CANCEL_ALL_AURAS);
                     me->RemoveAurasDueToSpell(SPELL_CORRUPTION);
                     bEnd = true;
@@ -447,13 +448,13 @@ class boss_valithria_dreamwalker : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_INTRO:
-                            DoScriptText(SAY_AGGRO, me);
+                            Talk(SAY_AGGRO);
                             //events.ScheduleEvent(EVENT_SUMMON_ADDS, 10000);
                             events.ScheduleEvent(EVENT_SUMMON_PORTALS_TO_DREAM, 35000);
                             break;
                         case EVENT_SUMMON_PORTALS_TO_DREAM:
                         {
-                            DoScriptText(SAY_OPEN_PORTAL, me);
+                            Talk(SAY_OPEN_PORTAL);
                             //DoCast(SPELL_SUMMON_PORTAL_TO_DREAM);
                             //Need to check, maybe, this isn't required
                             for (uint8 p = 0; p < RAID_MODE<uint8>(3, 8, 3, 8); ++p)

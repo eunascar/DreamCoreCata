@@ -262,7 +262,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                         valithriaAlternative = creature->GetGUID();
                         break;
                     case NPC_GREEN_DRAGON_COMBAT_TRIGGER:
-                    {
                         greenDragonCombatTrigger = creature->GetGUID();
                         creature->SetReactState(REACT_AGGRESSIVE);
                         creature->SetSpeed(MOVE_RUN, 0.0f, true);
@@ -270,7 +269,6 @@ class instance_icecrown_citadel : public InstanceMapScript
                         creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_NOT_SELECTABLE);
                         creature->SetVisible(false);
                         break;
-                    }
                     case NPC_THE_LICH_KING:
                         lichKing = creature->GetGUID();
                         break;
