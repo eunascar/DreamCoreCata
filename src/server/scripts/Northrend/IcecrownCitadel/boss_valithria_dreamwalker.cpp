@@ -506,7 +506,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new boss_valithria_dreamwalkerAI(creature);
+            return GetIcecrownCitadelAI<boss_valithria_dreamwalkerAI>(creature);
         }
 };
 
@@ -573,7 +573,7 @@ class npc_valithria_alternative : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_valithria_alternativeAI(creature);
+            return GetIcecrownCitadelAI<npc_valithria_alternativeAI>(creature);
         }
 }; 
 
@@ -662,7 +662,7 @@ class npc_dream_portal : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_dream_portalAI(creature);
+            GetIcecrownCitadelAI<return new npc_dream_portalAI>(creature);
         }
 };
 
@@ -741,7 +741,7 @@ class npc_dream_cloud : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_dream_cloudAI(creature);
+            return GetIcecrownCitadelAI<npc_dream_cloudAI>(creature);
         }
 };
 
@@ -790,7 +790,7 @@ class npc_column_of_frost : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_column_of_frostAI(creature);
+            return GetIcecrownCitadelAI<npc_column_of_frostAI>(creature);
         }
 };
 
@@ -1011,7 +1011,7 @@ class npc_green_dragon_combat_trigger : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_green_dragon_combat_triggerAI(creature);
+            return GetIcecrownCitadelAI<npc_green_dragon_combat_triggerAI>(creature);
         }
 };
 
@@ -1054,7 +1054,7 @@ class npc_rot_worm : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_rot_wormAI(creature);
+            return GetIcecrownCitadelAI<npc_rot_wormAI>(creature);
         }
 };
 
@@ -1131,7 +1131,7 @@ class npc_gluttonous_abomination : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_gluttonous_abominationAI(creature);
+            return GetIcecrownCitadelAI<npc_gluttonous_abominationAI>(creature);
         }
 };
 
@@ -1169,7 +1169,7 @@ class npc_mana_void : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_mana_voidAI(creature);
+            return GetIcecrownCitadelAI<npc_mana_voidAI>(creature);
         }
 };
 
@@ -1250,7 +1250,7 @@ class npc_blistering_zombie : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_blistering_zombieAI(creature);
+            return GetIcecrownCitadelAI<npc_blistering_zombieAI>(creature);
         }
 };
 
@@ -1333,7 +1333,7 @@ class npc_risen_archmage : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_risen_archmageAI(creature);
+            return GetIcecrownCitadelAI<npc_risen_archmageAI>(creature);
         }
 };
 
@@ -1410,7 +1410,7 @@ class npc_supresser : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_supresserAI(creature);
+            return GetIcecrownCitadelAI<npc_supresserAI>(creature);
         }
 };
 
@@ -1480,7 +1480,7 @@ class npc_blazing_skeleton : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_blazing_skeletonAI(creature);
+            return GetIcecrownCitadelAI<npc_blazing_skeletonAI>(creature);
         }
 };
 

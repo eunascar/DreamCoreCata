@@ -1150,7 +1150,7 @@ class boss_the_lich_king : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new boss_the_lich_kingAI(creature);
+            return GetIcecrownCitadelAI<boss_the_lich_kingAI>(creature);
         }
 };
 
@@ -1442,7 +1442,7 @@ class npc_tirion_icc : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_tirion_iccAI(creature);
+            return GetIcecrownCitadelAI<npc_tirion_iccAI>(creature);
         }
 };
 
@@ -1714,7 +1714,7 @@ static const float Z_FLY;
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_valkyr_shadowguardAI(creature);
+            return GetIcecrownCitadelAI<npc_valkyr_shadowguardAI>(creature);
         }
 };
 
@@ -1760,7 +1760,7 @@ enum ePoints
                 me->GetRandomNearPosition(randomPos, dist);
                 randomPos.m_positionZ = Z_VILE_SPIRIT;
                 me->GetMotionMaster()->MovePoint(POINT_MOVE_NEAR_RANDOM, randomPos);
-                m_bActive = false;
+                bActive = false;
             }
 
             void MovementInform(uint32 type, uint32 id)
@@ -1772,7 +1772,7 @@ enum ePoints
                 {
                     me->GetMotionMaster()->MovementExpired();
 
-                    if (!m_bActive)
+                    if (!bActive)
                         events.ScheduleEvent(EVENT_MOVE_RANDOM, 1000);
                 }
             }
@@ -1812,7 +1812,7 @@ enum ePoints
                         case EVENT_BECOME_ACTIVE:
                         {
                             events.CancelEvent(EVENT_MOVE_RANDOM);
-                            m_bActive = true;
+                            bActive = true;
                             SetCombatMovement(true);
                             me->SetReactState(REACT_AGGRESSIVE);
                             me->GetMotionMaster()->MovementExpired();
@@ -1862,12 +1862,12 @@ enum ePoints
             }
     private:
         EventMap events;
-        bool m_bActive;
+        bool bActive;
     };
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_vile_spiritAI(creature);
+        return GetIcecrownCitadelAI<npc_vile_spiritAI>(creature);
     }
 };
 
@@ -1957,7 +1957,7 @@ class npc_shambling_horror: public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_shambling_horrorAI(creature);
+        return GetIcecrownCitadelAI<npc_shambling_horrorAI>(creature);
     }
 };
 
@@ -2019,7 +2019,7 @@ class npc_raging_spirit: public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_raging_spiritAI(creature);
+        return GetIcecrownCitadelAI<npc_raging_spiritAI>(creature);
     }
 };
 
@@ -2136,7 +2136,7 @@ class npc_ice_sphere : public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_ice_sphereAI(creature);
+        return GetIcecrownCitadelAI<npc_ice_sphereAI>(creature);
     }
 };
 
@@ -2196,7 +2196,7 @@ class npc_defile : public CreatureScript
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new npc_defileAI(creature);
+        return GetIcecrownCitadelAI<npc_defileAI>(creature);
     }
 };
 
@@ -2328,7 +2328,7 @@ enum eEvents
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_spirit_wardenAI(creature);
+            return GetIcecrownCitadelAI<npc_spirit_wardenAI>(creature);
         }
 };
 
@@ -2444,7 +2444,7 @@ enum eEvents
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new npc_terenas_menethilAI(creature);
+            return GetIcecrownCitadelAI<npc_terenas_menethilAI>(creature);
         }
 };
 
