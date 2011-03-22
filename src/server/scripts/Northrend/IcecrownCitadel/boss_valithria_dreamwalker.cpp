@@ -662,7 +662,7 @@ class npc_dream_portal : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            GetIcecrownCitadelAI<return new npc_dream_portalAI>(creature);
+            return GetIcecrownCitadelAI<npc_dream_portalAI>(creature);
         }
 };
 
