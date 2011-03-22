@@ -1739,7 +1739,6 @@ InstanceGroupBind* Group::GetBoundInstance(MapEntry const* mapEntry)
         return NULL;
 }
 
-
 InstanceGroupBind* Group::BindToInstance(InstanceSave *save, bool permanent, bool load)
 {
     if (!save || isBGGroup())
@@ -1971,7 +1970,6 @@ void Group::SetBattlegroundGroup(Battleground *bg)
 {
     m_bgGroup = bg;
 }
-
 
 void Group::SetGroupMemberFlag(uint64 guid, const bool &apply, GroupMemberFlags flag)
 {

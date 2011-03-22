@@ -19,6 +19,8 @@
 #define ICECROWN_CITADEL_H_
 
 #include "SpellScript.h"
+#include "Map.h"
+#include "Creature.h"
 
 #define ICCScriptName "instance_icecrown_citadel"
 
@@ -456,4 +458,14 @@ void LeaveOnlyPlayers(std::list<Unit*> &unitList);
 typedef std::list<Player*> TPlayerList;
 TPlayerList GetPlayersInTheMap(Map* pMap);
 TPlayerList GetAttackablePlayersInTheMap(Map* pMap);
+template<class AI>
+CreatureAI* GetIcecrownCitadelAI(Creature* creature)
+{
+    if (InstanceMap* instance = creature->GetMap()->ToInstanceMap())
+        if (instance->GetInstanceScript())
+            if (instance->GetScriptId() == GetScriptId(ICCScriptName))
+                return new AI(creature);
+    return NULL;
+}
+
 #endif // ICECROWN_CITADEL_H_

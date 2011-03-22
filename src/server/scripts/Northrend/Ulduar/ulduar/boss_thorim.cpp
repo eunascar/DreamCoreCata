@@ -499,7 +499,6 @@ public:
 
 };
 
-
 class npc_thorim_pre_phase : public CreatureScript
 {
 public:
@@ -935,8 +934,6 @@ public:
     };
 
 };
-
-
 
 void AddSC_boss_thorim()
 {
