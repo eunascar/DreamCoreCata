@@ -3964,6 +3964,33 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->MaxAffectedTargets = 1;
             count++;
             break;
+        case 64145: // Diminish Power
+        case 63882: // Death Ray Warning Visual
+        case 63886: // Death Ray Damage Visual
+            spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
+            count++;
+            break;
+        case 64172: // Titanic Storm
+            spellInfo->excludeTargetAuraSpell = 65294; // Empowered
+            count++;
+            break;
+        case 63830: // Malady of the Mind
+        case 63881: // Malady of the Mind proc
+        case 63795: // Psychosis
+            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
+            spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_TARGET_ANY;
+            spellInfo->EffectImplicitTargetB[2] = TARGET_UNIT_TARGET_ANY;
+            count++;
+            break;
+        case 63802: // Brain Link
+            spellInfo->MaxAffectedTargets = 2;
+            spellInfo->EffectRadiusIndex[0] = 12; // 100 yard
+            count++;
+            break;
+        case 63050: // Sanity
+            spellInfo->AttributesEx3 |= SPELL_ATTR3_DEATH_PERSISTENT;
+            count++;
+            break;
         // ENDOF ULDUAR SPELLS
         //
         // ICECROWN CITADEL SPELLS
