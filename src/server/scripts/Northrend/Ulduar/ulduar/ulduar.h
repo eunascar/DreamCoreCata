@@ -70,6 +70,13 @@ enum eTypes
     DATA_RUNIC_DOOR,
     DATA_STONE_DOOR,
 
+    // YoggSaron
+    DATA_YS_FREYA,
+    DATA_YS_THORIM,
+    DATA_YS_MIMIRON,
+    DATA_YS_HODIR,
+    DATA_YOGGSARON_BRAIN,
+
     // Instance Tram
     DATA_CALL_TRAM,
 };
@@ -107,7 +114,16 @@ enum eNPCs
     NPC_AERIAL_UNIT             = 33670,
     NPC_MAGNETIC_CORE           = 34068,
     NPC_RUNIC_COLOSSUS          = 32872,
-    NPC_RUNE_GIANT              = 32873
+    NPC_RUNE_GIANT              = 32873,
+    NPC_THORIM_IMAGE            = 33413,
+    NPC_MIMIRON_IMAGE           = 33412,
+    NPC_HODIR_IMAGE             = 33411,
+    NPC_FREYA_IMAGE             = 33410,
+    NPC_YOGG_BRAIN              = 33890,
+    NPC_KEEPER_FREYA            = 33241,
+    NPC_KEEPER_HODIR            = 33213,
+    NPC_KEEPER_MIMIRON          = 33244,
+    NPC_KEEPER_THORIM           = 33242
 };
 
 enum eGameObjects
@@ -122,8 +138,20 @@ enum eGameObjects
     GO_HODIR_CHEST          = 194307,
     GO_FREYA_CHEST_HERO     = 194325,
     GO_FREYA_CHEST          = 194324,
+    GO_SHIELD_WALL          = 194416,
     GO_LEVIATHAN_DOOR       = 194905,
     GO_LEVIATHAN_GATE       = 194630,
+    GO_XT002_GATE           = 194631,
+    GO_IRON_ENTRANCE_DOOR   = 194554,
+    GO_ARCHIVUM_DOOR        = 194556,
+    GO_HODIR_ICE_WALL       = 194441,
+    GO_HODIR_EXIT           = 194634,
+    GO_HODIR_ENTER          = 194442,
+    GO_LIGHTNING_FIELD      = 194559,
+    GO_MIMIRON_DOOR_1       = 194774,
+    GO_MIMIRON_DOOR_2       = 194775,
+    GO_MIMIRON_DOOR_3       = 194776,
+    GO_YOGG_GATE            = 194773,
     GO_VEZAX_DOOR           = 194750,
     GO_HODIR_RARE_CHEST_10  = 194200,
     GO_HODIR_RARE_CHEST_25  = 194201,

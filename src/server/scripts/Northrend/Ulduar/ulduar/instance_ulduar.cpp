@@ -20,8 +20,22 @@
 
 static const DoorData doorData[] =
 {
-    {GO_LEVIATHAN_DOOR, TYPE_LEVIATHAN, DOOR_TYPE_ROOM,     BOUNDARY_S},
-    {0,                 0,              DOOR_TYPE_ROOM,     BOUNDARY_NONE}
+    {GO_SHIELD_WALL,        TYPE_LEVIATHAN, DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_LEVIATHAN_DOOR,     TYPE_LEVIATHAN, DOOR_TYPE_PASSAGE,  BOUNDARY_S},
+    {GO_XT002_GATE,         TYPE_XT002,     DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_IRON_ENTRANCE_DOOR, TYPE_ASSEMBLY,  DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_ARCHIVUM_DOOR,      TYPE_ASSEMBLY,  DOOR_TYPE_PASSAGE,  BOUNDARY_NONE},
+    {GO_KOLOGARN_DOOR,      TYPE_KOLOGARN,  DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_HODIR_ICE_WALL,     TYPE_HODIR,     DOOR_TYPE_PASSAGE,  BOUNDARY_NONE},
+    {GO_HODIR_EXIT,         TYPE_HODIR,     DOOR_TYPE_PASSAGE,  BOUNDARY_NONE},
+    {GO_HODIR_ENTER,        TYPE_HODIR,     DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_LIGHTNING_FIELD,    TYPE_THORIM,    DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_MIMIRON_DOOR_1,     TYPE_MIMIRON,   DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_MIMIRON_DOOR_2,     TYPE_MIMIRON,   DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_MIMIRON_DOOR_3,     TYPE_MIMIRON,   DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {GO_VEZAX_DOOR,         TYPE_VEZAX,     DOOR_TYPE_PASSAGE,  BOUNDARY_NONE},
+    {GO_YOGG_GATE,          TYPE_YOGGSARON, DOOR_TYPE_ROOM,     BOUNDARY_NONE},
+    {0,                     0,              DOOR_TYPE_ROOM,     BOUNDARY_NONE}
 };
 
 class instance_ulduar : public InstanceMapScript
@@ -71,6 +85,15 @@ public:
         uint64 uiMagneticCore;
         uint64 uiRunicColossus;
         uint64 uiRuneGiant;
+        uint64 uiFreyaYS;
+        uint64 uiThorimYS;
+        uint64 uiMimironYS;
+        uint64 uiHodirYS;
+        uint64 uiYoggSaronBrain;
+        uint64 uiFreyaImage;
+        uint64 uiThorimImage;
+        uint64 uiMimironImage;
+        uint64 uiHodirImage;
 
         uint64 uiKologarnChestGUID;
         uint64 uiKologarnBridgeGUID;
@@ -117,6 +140,15 @@ public:
             uiMagneticCore          = 0;
             uiRunicColossus         = 0;
             uiRuneGiant             = 0;
+            uiFreyaYS               = 0;
+            uiThorimYS              = 0;
+            uiMimironYS             = 0;
+            uiHodirYS               = 0;
+            uiYoggSaronBrain        = 0;
+            uiFreyaImage            = 0;
+            uiThorimImage           = 0;
+            uiMimironImage          = 0;
+            uiHodirImage            = 0;
             uiKologarnChestGUID     = 0;
             uiKologarnBridgeGUID    = 0;
             uiKologarnChestGUID     = 0;
@@ -226,31 +258,83 @@ public:
                     break;
                 case NPC_BRIGHTLEAF:
                     uiBrightLeaf = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_IRONBRANCH:
                     uiIronBranch = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_STONEBARK:
                     uiStoneBark = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_LEVIATHAN_MK_II:
                     uiLeviathanMkII = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_VX_001:
                     uiVx001 = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_AERIAL_UNIT:
                     uiAerialUnit = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_MAGNETIC_CORE:
                     uiMagneticCore = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_RUNIC_COLOSSUS:
                     uiRunicColossus = creature->GetGUID();
-                    return;
+                    break;
                 case NPC_RUNE_GIANT:
                     uiRuneGiant = creature->GetGUID();
-                    return;
+                    break;
+                case NPC_FREYA_IMAGE:
+                    uiFreyaYS = creature->GetGUID();
+                    break;
+                case NPC_THORIM_IMAGE:
+                    uiThorimYS = creature->GetGUID();
+                    break;
+                case NPC_MIMIRON_IMAGE:
+                    uiMimironYS = creature->GetGUID();
+                    break;
+                case NPC_HODIR_IMAGE:
+                    uiHodirYS = creature->GetGUID();
+                    break;
+                case NPC_YOGG_BRAIN:
+                    uiYoggSaronBrain = creature->GetGUID();
+                    break;
+                // Keeper's Images
+                case NPC_KEEPER_FREYA:
+                {
+                    uiFreyaImage = creature->GetGUID();
+                    creature->SetVisible(false);
+
+                    if (GetBossState(TYPE_VEZAX) == DONE)
+                        creature->SetVisible(true);
+                    break;
+                }
+                case NPC_KEEPER_THORIM:
+                {
+                    uiThorimImage = creature->GetGUID();
+                    creature->SetVisible(false);
+
+                    if (GetBossState(TYPE_VEZAX) == DONE)
+                        creature->SetVisible(true);
+                    break;
+                }
+                case NPC_KEEPER_MIMIRON:
+                {
+                    uiMimironImage = creature->GetGUID();
+                    creature->SetVisible(false);
+					
+                    if (GetBossState(TYPE_VEZAX) == DONE)
+                        creature->SetVisible(true);
+                    break;
+                }            
+                case NPC_KEEPER_HODIR:
+                {
+                    uiHodirImage = creature->GetGUID();
+                    creature->SetVisible(false);
+
+                    if (GetBossState(TYPE_VEZAX) == DONE)
+                        creature->SetVisible(true);
+                    break;
+                }
             }
         }
 
@@ -258,6 +342,23 @@ public:
         {
             switch(go->GetEntry())
             {
+                case GO_SHIELD_WALL:
+                case GO_LEVIATHAN_DOOR:
+                case GO_XT002_GATE:
+                case GO_IRON_ENTRANCE_DOOR:
+                case GO_ARCHIVUM_DOOR:
+                case GO_KOLOGARN_DOOR:
+                case GO_HODIR_ICE_WALL:
+                case GO_HODIR_EXIT:
+                case GO_HODIR_ENTER:
+                case GO_LIGHTNING_FIELD:
+                case GO_MIMIRON_DOOR_1:
+                case GO_MIMIRON_DOOR_2:
+                case GO_MIMIRON_DOOR_3:
+                case GO_VEZAX_DOOR:
+                case GO_YOGG_GATE:
+                    AddDoor(go, true);
+                    break;
                 case GO_KOLOGARN_CHEST_HERO:
                 case GO_KOLOGARN_CHEST:
                     uiKologarnChestGUID = go->GetGUID();
@@ -266,9 +367,6 @@ public:
                     uiKologarnBridgeGUID = go->GetGUID();
                     if (GetBossState(TYPE_KOLOGARN) == DONE)
                         HandleGameObject(0, false, go);
-                    break;
-                case GO_KOLOGARN_DOOR:
-                    uiKologarnDoorGUID = go->GetGUID();
                     break;
                 case GO_THORIM_CHEST_HERO:
                 case GO_THORIM_CHEST:
@@ -282,17 +380,10 @@ public:
                 case GO_FREYA_CHEST:
                     uiFreyaChestGUID = go->GetGUID();
                     break;
-                case GO_LEVIATHAN_DOOR:
-                    AddDoor(go, true);
-                    break;
                 case GO_LEVIATHAN_GATE:
                     uiLeviathanGateGUID = go->GetGUID();
                     if (GetBossState(TYPE_LEVIATHAN) == DONE)
                         go->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
-                    break;
-                case GO_VEZAX_DOOR:
-                    uiVezaxDoorGUID = go->GetGUID();
-                    HandleGameObject(NULL, false, go);
                     break;
                 case GO_HODIR_RARE_CHEST_10:
                 case GO_HODIR_RARE_CHEST_25:
@@ -313,9 +404,10 @@ public:
                 case GO_MIMIRON_ELEVATOR:
                     uiMimironElevatorGUID = go->GetGUID();
                     break;
-                case GO_KEEPERS_DOOR: uiKeepersGateGUID = go->GetGUID();
+                case GO_KEEPERS_DOOR:
                 {
                     InstanceScript* instance = go->GetInstanceScript();
+                    uiKeepersGateGUID = go->GetGUID();
                     go->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_LOCKED);
 
                     if (instance)
@@ -333,7 +425,21 @@ public:
         {
             switch (go->GetEntry())
             {
+                case GO_SHIELD_WALL:
                 case GO_LEVIATHAN_DOOR:
+                case GO_XT002_GATE:
+                case GO_IRON_ENTRANCE_DOOR:
+                case GO_ARCHIVUM_DOOR:
+                case GO_KOLOGARN_DOOR:
+                case GO_HODIR_ICE_WALL:
+                case GO_HODIR_EXIT:
+                case GO_HODIR_ENTER:
+                case GO_LIGHTNING_FIELD:
+                case GO_MIMIRON_DOOR_1:
+                case GO_MIMIRON_DOOR_2:
+                case GO_MIMIRON_DOOR_3:
+                case GO_VEZAX_DOOR:
+                case GO_YOGG_GATE:
                     AddDoor(go, false);
                     break;
                 default:
@@ -381,29 +487,22 @@ public:
                 case TYPE_XT002:
                 case TYPE_ASSEMBLY:
                 case TYPE_AURIAYA:
-                case TYPE_MIMIRON:
-                case TYPE_VEZAX:
-                    if (state == DONE)
-                        HandleGameObject(uiVezaxDoorGUID, true);
-                    break;
                 case TYPE_YOGGSARON:
-                    break;
                 case TYPE_KOLOGARN:
                     if (state == DONE)
                     {
                         if (GameObject* go = instance->GetGameObject(uiKologarnChestGUID))
                             go->SetRespawnTime(go->GetRespawnDelay());
+
                         HandleGameObject(uiKologarnBridgeGUID, false);
                     }
-                    if (state == IN_PROGRESS)
-                        HandleGameObject(uiKologarnDoorGUID, false);
-                    else
-                        HandleGameObject(uiKologarnDoorGUID, true);
                     break;
                 case TYPE_HODIR:
                     if (state == DONE)
                         if (GameObject* go = instance->GetGameObject(uiHodirChestGUID))
                             go->SetRespawnTime(go->GetRespawnDelay());
+
+                    CheckKeepersState();
                     break;
                 case TYPE_THORIM:
                     if (state == DONE)
@@ -415,15 +514,52 @@ public:
                         if (state == IN_PROGRESS)
                             pThorimLever->RemoveFlag(GAMEOBJECT_FLAGS,GO_FLAG_UNK1);
                     }
+
+                    CheckKeepersState();
                     break;
                 case TYPE_FREYA:
                     if (state == DONE)
                         if (GameObject* go = instance->GetGameObject(uiFreyaChestGUID))
                             go->SetRespawnTime(go->GetRespawnDelay());
+
+                    CheckKeepersState();
+                    break;
+                case TYPE_MIMIRON:
+                    CheckKeepersState();
+                    break;
+                case TYPE_VEZAX:
+                    if (state == DONE)
+                    {
+                        // Keeper's Images
+                        if (Creature* pFreya = instance->GetCreature(uiFreyaImage))
+                            pFreya->SetVisible(true);
+                        if (Creature* pThorim = instance->GetCreature(uiThorimImage))
+                            pThorim->SetVisible(true);
+                        if (Creature* pMimiron = instance->GetCreature(uiMimironImage))
+                            pMimiron->SetVisible(true);
+                        if (Creature* pHodir = instance->GetCreature(uiHodirImage))
+                            pHodir->SetVisible(true);
+                    }
                     break;
              }
 
              return true;
+        }
+
+        void CheckKeepersState()
+        {
+            if (GameObject* go = instance->GetGameObject(uiKeepersGateGUID))
+            {
+                InstanceScript* instance = go->GetInstanceScript();
+                go->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_LOCKED);
+
+                if (instance)
+                {
+                    for (uint32 i = TYPE_MIMIRON; i < TYPE_VEZAX; ++i)
+                        if (instance->GetBossState(i) != DONE)
+                            go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_LOCKED);
+                }
+            }
         }
 
         void SetData(uint32 type, uint32 data)
@@ -552,6 +688,12 @@ public:
                 // Thorim
                 case DATA_RUNIC_COLOSSUS:       return uiRunicColossus;
                 case DATA_RUNE_GIANT:           return uiRuneGiant;
+                // YoggSaron
+                case DATA_YS_FREYA:             return uiFreyaYS;
+                case DATA_YS_THORIM:            return uiThorimYS;
+                case DATA_YS_MIMIRON:           return uiMimironYS;
+                case DATA_YS_HODIR:             return uiHodirYS;
+                case DATA_YOGGSARON_BRAIN:      return uiYoggSaronBrain;
             }
 
             return 0;
