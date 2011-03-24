@@ -15,6 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "SpellAuraEffects.h"
+
 #ifndef DEF_ULDUAR_H
 #define DEF_ULDUAR_H
 
@@ -44,6 +46,7 @@ enum eTypes
     DATA_BRUNDIR,
 
     DATA_EXP_COMMANDER,
+    DATA_RAZORSCALE_CONTROL,
 
     // Kologarn:
     DATA_LEFT_ARM,
@@ -86,6 +89,8 @@ enum eNPCs
     NPC_LEVIATHAN               = 33113,
     NPC_IGNIS                   = 33118,
     NPC_RAZORSCALE              = 33186,
+    NPC_RAZORSCALE_CONTROLLER   = 33233,
+    NPC_STEELFORGED_DEFFENDER   = 33236,
     NPC_EXPEDITION_COMMANDER    = 33210,
     NPC_XT002                   = 33293,
     NPC_STEELBREAKER            = 32867,
@@ -174,6 +179,12 @@ enum eGameObjects
     GO_MIMIRON_DOOR_3       = 194776,
     GO_YOGG_GATE            = 194773,
     GO_VEZAX_DOOR           = 194750,
+    GO_MOLE_MACHINE         = 194316,
+    GO_RAZOR_HARPOON_1      = 194542,
+    GO_RAZOR_HARPOON_2      = 194541,
+    GO_RAZOR_HARPOON_3      = 194543,
+    GO_RAZOR_HARPOON_4      = 194519,
+    GO_RAZOR_BROKEN_HARPOON = 194565,
     GO_HODIR_RARE_CHEST_10  = 194200,
     GO_HODIR_RARE_CHEST_25  = 194201,
     GO_RUNIC_DOOR           = 194557,
@@ -201,4 +212,5 @@ enum eAchievementCriteria
     ACHIEVEMENT_CRITERIA_HOT_POCKET_10                   = 10430, //ignis
     ACHIEVEMENT_CRITERIA_HOT_POCKET_25                   = 10431,
 };
+
 #endif
