@@ -183,6 +183,13 @@ public:
 
         void OnCreatureCreate(Creature* creature)
         {
+            Map::PlayerList const& players = instance->GetPlayers();
+            uint32 TeamInInstance = 0;
+
+            if (!players.isEmpty())
+                if (Player* player = players.begin()->getSource())
+                    TeamInInstance = player->GetTeam();
+
             switch(creature->GetEntry())
             {
                 case NPC_LEVIATHAN:
@@ -334,6 +341,46 @@ public:
                     if (GetBossState(TYPE_VEZAX) == DONE)
                         creature->SetVisible(true);
                     break;
+                }
+            }
+
+            if (TeamInInstance == HORDE)
+            {
+                switch(creature->GetEntry())
+                {
+                    case NPC_SALVAGED_CHOPPER:
+                        creature->SetDisplayId(25871);
+                        break;
+                    case NPC_ELVI_NIGHTFEATHER:
+                        creature->UpdateEntry(NPC_TOR_GREYCLOUD, HORDE);
+                        break;
+                    case NPC_ELLIE_NIGHTFEATHER:
+                        creature->UpdateEntry(NPC_KAR_GREYCLOUD, HORDE);
+                        break;
+                    case NPC_ELEMENTALIST_MAHFUUN:
+                        creature->UpdateEntry(NPC_SPIRITWALKER_TARA, HORDE);
+                        break;
+                    case NPC_ELEMENTALIST_AVUUN:
+                        creature->UpdateEntry(NPC_SPIRITWALKER_YONA, HORDE);
+                        break;
+                    case NPC_MISSY_FLAMECUFFS:
+                        creature->UpdateEntry(NPC_AMIRA_BLAZEWEAVER, HORDE);
+                        break;
+                    case NPC_SISSY_FLAMECUFFS:
+                        creature->UpdateEntry(NPC_VEESHA_BLAZEWEAVER, HORDE);
+                        break;
+                    case NPC_FIELD_MEDIC_PENNY:
+                        creature->UpdateEntry(NPC_BATTLE_PRIEST_ELIZA, HORDE);
+                        break;
+                    case NPC_FIELD_MEDIC_JESSI:
+                        creature->UpdateEntry(NPC_BATTLE_PRIEST_GINA, HORDE);
+                        break;
+                    case NPC_MERCENARY_CAPTAIN_A:
+                        creature->UpdateEntry(NPC_MERCENARY_CAPTAIN_H, HORDE);
+                        break;
+                    case NPC_MERCENARY_SOLDIER_A:
+                        creature->UpdateEntry(NPC_MERCENARY_SOLDIER_H, HORDE);
+                        break;
                 }
             }
         }
@@ -786,12 +833,12 @@ public:
 
         switch(go->GetEntry())
         {
-            case 194914:
-            case 194438:
+            case GO_CALL_TRAM_1:
+            case GO_ACTIVATE_TRAM_1:
                 instance->SetData(DATA_CALL_TRAM, 0);
                 break;
-            case 194912:
-            case 194437:
+            case GO_CALL_TRAM_2:
+            case GO_ACTIVATE_TRAM_2:
                 instance->SetData(DATA_CALL_TRAM, 1);
                 break;
         }
