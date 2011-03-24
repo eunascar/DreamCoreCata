@@ -86,7 +86,7 @@ class boss_umbra : public CreatureScript
     	    {
                 events.Reset();
 
-    	        instance->SetData(DATA_UMBRA_EVENT, NOT_STARTED);
+    	        instance->SetBossState(DATA_UMBRA, NOT_STARTED);
 
                 uiTimer = 1000;
     	    }
@@ -109,7 +109,7 @@ class boss_umbra : public CreatureScript
                 DoCast(me, AURA_VISUAL_2, false);
 
                 if(instance)
-                    instance->SetData(DATA_UMBRA_EVENT, DONE);
+                    instance->SetBossState(DATA_UMBRA, DONE);
     	    }
 
     	    void UpdateAI(const uint32 diff)
@@ -193,7 +193,7 @@ class npc_emerald_isidorus : public CreatureScript
                     switch(uiPhase)
                     {
                         case 1:
-                            instance->SetData(DATA_UMBRA_EVENT, IN_PROGRESS);
+                            instance->SetBossState(DATA_UMBRA, IN_PROGRESS);
                             me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                             me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
                             me->SetSpeed(MOVE_WALK, 1.2f);
@@ -309,7 +309,7 @@ class npc_emerald_isidorus : public CreatureScript
                     if (bFinal)
                         Final();
                     
-                    if (instance->GetData(DATA_UMBRA_EVENT) == DONE)
+                    if (instance->GetBossState(DATA_UMBRA) == DONE)
                         bFinal = true;
                 }
                 else (uiTimer -= diff);
@@ -329,7 +329,7 @@ class npc_emerald_isidorus : public CreatureScript
             if (!instance)
                 return false;
 
-            if ((instance->GetData(DATA_HYOTON_EVENT) == DONE && instance->GetData(DATA_FIREMIST_EVENT) == DONE && instance->GetData(DATA_UMBRA_EVENT) == NOT_STARTED) || player->isGameMaster())
+            if ((instance->GetBossState(DATA_HYOTON) == DONE && instance->GetBossState(DATA_FIREMIST) == DONE && instance->GetBossState(DATA_UMBRA) == NOT_STARTED) || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Proseguir con el Siguiente Evento", GOSSIP_SENDER_MAIN, UMBRA);
             
             player->SEND_GOSSIP_MENU(10600, creature->GetGUID());

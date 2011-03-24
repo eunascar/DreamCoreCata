@@ -52,12 +52,12 @@ class boss_firemist : public CreatureScript
     	    {
                 events.Reset();
 
-    	        instance->SetData(DATA_FIREMIST_EVENT, NOT_STARTED);
+    	        instance->SetBossState(DATA_FIREMIST, NOT_STARTED);
     	    }
 
     	    void EnterCombat(Unit*)
     	    {
-                instance->SetData(DATA_FIREMIST_EVENT, IN_PROGRESS);
+                instance->SetBossState(DATA_FIREMIST, IN_PROGRESS);
 
                 events.ScheduleEvent(EVENT_FLAME_JETS, 250000);
                 events.ScheduleEvent(EVENT_BURNING_FURY, 300000);
@@ -66,7 +66,7 @@ class boss_firemist : public CreatureScript
     	    void JustDied(Unit*)
     	    {
                 if(instance)
-                    instance->SetData(DATA_FIREMIST_EVENT, DONE);
+                    instance->SetBossState(DATA_FIREMIST, DONE);
     	    }
 
     	    void UpdateAI(const uint32 diff)
@@ -110,7 +110,47 @@ class boss_firemist : public CreatureScript
         }
 };
 
+class npc_emerald_pyro : public CreatureScript
+{
+    public:
+        npc_emerald_pyro()
+            : CreatureScript("npc_emerald_pyro")
+        {
+        }
+
+        struct npc_emerald_pyroAI : public ScriptedAI
+        {
+    	    npc_emerald_pyroAI(Creature* creature) : ScriptedAI(creature)
+    	    {
+    	        instance = me->GetInstanceScript();
+    	    }
+
+    	    void JustDied(Unit* /*Who*/)
+            {
+                if (instance)
+                    instance->SetData(DATA_PYRO_DRAKE, instance->GetData(DATA_PYRO_DRAKE) + 1);
+            }
+
+            void UpdateAI(const uint32 /*diff*/)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                DoMeleeAttackIfReady() ;
+            }
+
+        private:
+            InstanceScript* instance;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+    	    return new npc_emerald_pyroAI(creature);
+        }
+};
+
 void AddSC_boss_firemist()
 {
     new boss_firemist();
+    new npc_emerald_pyro();
 }

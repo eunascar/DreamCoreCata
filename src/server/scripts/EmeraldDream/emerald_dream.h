@@ -19,23 +19,18 @@
 #ifndef DEF_EMERALD_DREAM_H
 #define DEF_EMERALD_DREAM_H
 
+uint32 const EncounterCount = 4;
+
 enum Data
 {
-    DATA_HYOTON_EVENT         = 0,
-    DATA_FIREMIST_EVENT       = 1,
-    DATA_KRITYUS_EVENT        = 2,
-    DATA_UMBRA_EVENT          = 3,
-    DATA_AQUA_GHOST           = 4,
-    DATA_AQUA_LEKION          = 5,
-    DATA_PYRO_DRAKE           = 6
-};
-
-enum Data64
-{
-    DATA_HYOTON        = 1,
-    DATA_FIREMIST      = 2,
-    DATA_KRITYUS       = 3,
-    DATA_UMBRA         = 4
+    DATA_EMERALD_DREAM,
+    DATA_HYOTON,
+    DATA_FIREMIST,
+    DATA_KRITYUS,
+    DATA_UMBRA,
+    DATA_AQUA_GHOST,
+    DATA_AQUA_LEKION,
+    DATA_PYRO_DRAKE,
 };
 
 enum Creatures
@@ -53,12 +48,17 @@ enum Creatures
     NPC_RAGNAROS          = 100002,
     NPC_KALECGOS          = 100003,
     NPC_ISIDORUS          = 100004,
-    NPC_RAGNAROSSTATIC    = 100005
+    NPC_RAGNAROSSTATIC    = 100005,
 };
 
 enum Gameobjects
 {
-    GAMEOBJECT_EMERALD_DOOR    = 1000004
+    GO_EMERALD_DOOR    = 1000004
+};
+
+enum Spells
+{
+    SPELL_PARACHUTE    = 66516
 };
 
 #endif

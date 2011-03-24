@@ -101,8 +101,6 @@ void AddSC_boss_hyoton();
 void AddSC_boss_firemist();
 void AddSC_boss_krityus();
 void AddSC_boss_umbra();
-void AddSC_npc_emerald_aqua();
-void AddSC_npc_emerald_pyro();
 void AddSC_instance_emerald_dream();
 
 //eastern kingdoms
@@ -729,8 +727,6 @@ void AddWorldScripts()
     AddSC_boss_firemist();
     AddSC_boss_krityus();
     AddSC_boss_umbra();
-    AddSC_npc_emerald_aqua();
-    AddSC_npc_emerald_pyro();
     AddSC_instance_emerald_dream();
 #endif
 }

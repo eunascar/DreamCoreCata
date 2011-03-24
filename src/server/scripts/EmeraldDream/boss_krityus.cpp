@@ -36,18 +36,18 @@ class boss_krityus : public CreatureScript
 
     	    void Reset()
     	    {
-    	        instance->SetData(DATA_KRITYUS_EVENT, NOT_STARTED);
+    	        instance->SetBossState(DATA_KRITYUS, NOT_STARTED);
     	    }
 
     	    void EnterCombat(Unit*)
     	    {
-                instance->SetData(DATA_KRITYUS_EVENT, IN_PROGRESS);
+                instance->SetBossState(DATA_KRITYUS, IN_PROGRESS);
     	    }
 
             void JustDied(Unit*)
     	    {
                 if(instance)
-                    instance->SetData(DATA_KRITYUS_EVENT, DONE);
+                    instance->SetBossState(DATA_KRITYUS, DONE);
     	    }
 
     	    void UpdateAI(const uint32 /*diff*/)
@@ -55,7 +55,7 @@ class boss_krityus : public CreatureScript
     	        if(!UpdateVictim())
     	            return;
 
-    		DoMeleeAttackIfReady();
+    		    DoMeleeAttackIfReady();
     	    }
 
         private:

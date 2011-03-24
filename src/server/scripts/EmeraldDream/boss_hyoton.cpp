@@ -52,12 +52,12 @@ class boss_hyoton : public CreatureScript
     	    {
                 events.Reset();
 
-    	        instance->SetData(DATA_HYOTON_EVENT, NOT_STARTED);
+    	        instance->SetBossState(DATA_HYOTON, NOT_STARTED);
     	    }
 
     	    void EnterCombat(Unit*)
     	    {
-                instance->SetData(DATA_HYOTON_EVENT, IN_PROGRESS);
+                instance->SetBossState(DATA_HYOTON, IN_PROGRESS);
                 
                 events.ScheduleEvent(EVENT_WHITEOUT, 150000);
                 events.ScheduleEvent(EVENT_BREATH, 180000);
@@ -66,7 +66,7 @@ class boss_hyoton : public CreatureScript
     	    void JustDied(Unit*)
     	    {
                 if(instance)
-                    instance->SetData(DATA_HYOTON_EVENT, DONE);
+                    instance->SetBossState(DATA_HYOTON, DONE);
     	    }
 
     	    void UpdateAI(const uint32 diff)
@@ -97,7 +97,7 @@ class boss_hyoton : public CreatureScript
                     }
                 }
 
-    		DoMeleeAttackIfReady();
+    		    DoMeleeAttackIfReady();
     	    }
 
         private:
@@ -110,7 +110,84 @@ class boss_hyoton : public CreatureScript
         }
 };
 
+class npc_emerald_aqua_ghost : public CreatureScript
+{
+    public:
+        npc_emerald_aqua_ghost()
+            : CreatureScript("npc_emerald_aqua_ghost")
+        {
+        }
+
+        struct npc_emerald_aqua_ghostAI : public ScriptedAI
+        {
+    	    npc_emerald_aqua_ghostAI(Creature* creature) : ScriptedAI(creature)
+    	    {
+    	        instance = me->GetInstanceScript();
+    	    }
+
+    	    void JustDied(Unit* /*Who*/)
+            {
+                if (instance)
+                    instance->SetData(DATA_AQUA_GHOST,instance->GetData(DATA_AQUA_GHOST) + 1);
+            }
+
+            void UpdateAI(const uint32 /*diff*/)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                DoMeleeAttackIfReady() ;
+            }
+
+        private:
+            InstanceScript* instance;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+    	    return new npc_emerald_aqua_ghostAI(creature);
+        }
+};
+
+class npc_emerald_aqua_lekion : public CreatureScript
+{
+    public:
+        npc_emerald_aqua_lekion() : CreatureScript("npc_emerald_aqua_lekion") { }
+
+        struct npc_emerald_aqua_lekionAI : public ScriptedAI
+        {
+    	    npc_emerald_aqua_lekionAI(Creature* creature) : ScriptedAI(creature)
+    	    {
+    	        instance = me->GetInstanceScript();
+    	    }
+
+    	    void JustDied(Unit* /*Who*/)
+            {
+                if (instance)
+                    instance->SetData(DATA_AQUA_LEKION,instance->GetData(DATA_AQUA_LEKION)+1);
+            }
+
+            void UpdateAI(const uint32 /*diff*/)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                DoMeleeAttackIfReady() ;
+            }
+
+        private:
+            InstanceScript* instance;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+    	    return new npc_emerald_aqua_lekionAI(creature);
+        }
+};
+
 void AddSC_boss_hyoton()
 {
     new boss_hyoton();
+    new npc_emerald_aqua_ghost();
+    new npc_emerald_aqua_lekion();
 }

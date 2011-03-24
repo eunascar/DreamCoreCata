@@ -27,12 +27,26 @@ static Position Locations[] =
     {-3009.255127f, -3151.516846f, 143.045319f, 1.623513f}     //Final Laberinto
 };
 
-#define MAX_ENCOUNTER      7
-#define PYRO               200
-#define KRITYUS            201
-#define HYOTON             202
-#define FIREMIST           203
-#define SPELL_PARACHUTE    66516
+enum Locations
+{
+    PYRO        = 200,
+    HYOTON      = 201,
+    KRITYUS     = 202,
+    FIREMIST    = 203
+};
+
+enum EmeraldStates
+{
+    EMERALD_AQUA_DONE        = 1,
+    EMERALD_HYOTON_START     = 2,
+    EMERALD_HYOTON_DONE      = 3,
+    EMERALD_DRAKE_ZONE       = 4,
+    EMERALD_DRAKE_DONE       = 5,
+    EMERALD_MAZE_DONE        = 6,
+    EMERALD_FIREMIST_DONE    = 7,
+    EMERALD_KRITYUS_DONE     = 8,
+    EMERALD_UMBRA_DONE       = 9,    
+};
 
 class instance_emerald_dream : public InstanceMapScript
 {
@@ -46,19 +60,22 @@ class instance_emerald_dream : public InstanceMapScript
         {
             instance_emerald_dream_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
             {
-                uiBossCounter           = 0;
-                uiAnnouncerGUID         = 0;
-                uiHydroGUID             = 0;
-                uiRagnarosGUID          = 0;
-                uiRagnarosStaticGUID    = 0;
-                uiKalecgosGUID          = 0;
-                uiIsidorusGUID          = 0;
-                uiHyotonGUID            = 0;
-                uiFiremistGUID          = 0;
-                uiKrityusGUID           = 0;
-                uiUmbraGUID             = 0;
-                uiEmeraldDoor           = 0;
-                memset(uiEncounter, 0, sizeof(uiEncounter));
+                SetBossNumber(EncounterCount);
+                announcerGUID         = 0;
+                hydroGUID             = 0;
+                ragnarosGUID          = 0;
+                ragnarosStaticGUID    = 0;
+                kalecgosGUID          = 0;
+                isidorusGUID          = 0;
+                hyotonGUID            = 0;
+                firemistGUID          = 0;
+                krityusGUID           = 0;
+                umbraGUID             = 0;
+                emeraldDoor           = 0;
+                aquaGhostData         = 0;
+                aquaLekionData        = 0;
+                pyroDrakeData         = 0;
+                emeraldInstanceData   = NOT_STARTED;
             };
 
             void OnCreatureCreate(Creature* creature)
@@ -66,51 +83,51 @@ class instance_emerald_dream : public InstanceMapScript
                 switch(creature->GetEntry())
                 {
                     case NPC_HYOTON:
-                        uiHyotonGUID = creature->GetGUID();
+                        hyotonGUID = creature->GetGUID();
                         creature->SetReactState(REACT_PASSIVE);
                         creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         creature->SetVisible(false);
                         break;
                     case NPC_FIREMIST:
-                        uiFiremistGUID = creature->GetGUID();
+                        firemistGUID = creature->GetGUID();
                         creature->SetReactState(REACT_PASSIVE);
                         creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         creature->SetVisible(false);
                         break;
                     case NPC_KRITYUS:
-                        uiKrityusGUID = creature->GetGUID();
+                        krityusGUID = creature->GetGUID();
                         creature->SetReactState(REACT_PASSIVE);
                         creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         creature->SetVisible(false);
                         break;
                     case NPC_UMBRA:
-                        uiUmbraGUID = creature->GetGUID();
+                        umbraGUID = creature->GetGUID();
                         creature->SetReactState(REACT_PASSIVE);
                         creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         creature->SetVisible(false);
                         break;
                     case NPC_ANNOUNCER:
-                        uiAnnouncerGUID = creature->GetGUID();
+                        announcerGUID = creature->GetGUID();
                         creature->SetVisible(false);
                         break;
                     case NPC_HYDRO:
-                        uiHydroGUID = creature->GetGUID();
+                        hydroGUID = creature->GetGUID();
                         creature->SetVisible(false);
                         break;
                     case NPC_RAGNAROS:
-                        uiRagnarosGUID = creature->GetGUID();
+                        ragnarosGUID = creature->GetGUID();
                         creature->SetVisible(false);
                         break;
                     case NPC_RAGNAROSSTATIC:
-                        uiRagnarosStaticGUID = creature->GetGUID();
+                        ragnarosStaticGUID = creature->GetGUID();
                         creature->SetVisible(false);
                         break;
                     case NPC_KALECGOS:
-                        uiKalecgosGUID = creature->GetGUID();
+                        kalecgosGUID = creature->GetGUID();
                         creature->SetVisible(false);
                         break;
                     case NPC_ISIDORUS:
-                        uiIsidorusGUID = creature->GetGUID();
+                        isidorusGUID = creature->GetGUID();
                         creature->SetVisible(false);
                         break;
                 }
@@ -120,36 +137,29 @@ class instance_emerald_dream : public InstanceMapScript
     	    {
                 switch(go->GetEntry())
                 {
-                    case GAMEOBJECT_EMERALD_DOOR:
-                        uiEmeraldDoor = go->GetGUID();
+                    case GO_EMERALD_DOOR:
+                        emeraldDoor = go->GetGUID();
                         go->SetFlag(GAMEOBJECT_FLAGS,GO_FLAG_INTERACT_COND);
                         HandleGameObject(NULL,false,go);
                         break;
     		    }
             }
 
-            void SetData(uint32 type, uint32 data)
+            bool SetBossState(uint32 type, EncounterState state)
             {
+                if (!InstanceScript::SetBossState(type, state))
+                    return false;
+
                 switch(type)
                 {
-                    case DATA_HYOTON_EVENT:
-                        uiEncounter[DATA_HYOTON_EVENT] = data;
-
-                        if(data == 4)
-                        {
-                            if (Creature* pHyoton = instance->GetCreature(uiHyotonGUID))
-                            {
-                                pHyoton->SetReactState(REACT_AGGRESSIVE);
-                                pHyoton->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                                pHyoton->SetVisible(true);
-                            }
-                        }
+                    case DATA_HYOTON:
+                        if (state == DONE)
+                            SetData(DATA_EMERALD_DREAM, EMERALD_HYOTON_DONE);
                         break;
-                    case DATA_FIREMIST_EVENT:
-                        uiEncounter[DATA_FIREMIST_EVENT] = data;
-                        if (data == DONE)
+                    case DATA_FIREMIST:
+                        if (state == DONE)
                         {
-                            if (Creature* pKalecgos = instance->GetCreature(uiKalecgosGUID))
+                            if (Creature* pKalecgos = instance->GetCreature(kalecgosGUID))
                             {
                                 pKalecgos->SetReactState(REACT_AGGRESSIVE);
                                 pKalecgos->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -157,21 +167,10 @@ class instance_emerald_dream : public InstanceMapScript
                             }
                         }
                         break;
-                    case DATA_KRITYUS_EVENT:
-                        uiEncounter[DATA_KRITYUS_EVENT] = data;
-                        if(data == 2)
+                    case DATA_KRITYUS:
+                        if (state == DONE)
                         {
-                            if (Creature* pKrityus = instance->GetCreature(uiKrityusGUID))
-                            {
-                                pKrityus->SetReactState(REACT_AGGRESSIVE);
-                                pKrityus->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                                pKrityus->SetVisible(true);
-                            }
-                        }
-                        
-                        if (data == DONE)
-                        {
-                            if (Creature* pIsidorus = instance->GetCreature(uiIsidorusGUID))
+                            if (Creature* pIsidorus = instance->GetCreature(isidorusGUID))
                             {
                                 pIsidorus->SetReactState(REACT_AGGRESSIVE);
                                 pIsidorus->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -179,154 +178,205 @@ class instance_emerald_dream : public InstanceMapScript
                             }
                         }
                         break;
-                    case DATA_UMBRA_EVENT:
-                        uiEncounter[DATA_UMBRA_EVENT] = data;
-                        break;
-                    case DATA_AQUA_GHOST:
-                        uiEncounter[DATA_AQUA_GHOST] = data;
-                        if (data >= 5 && uiEncounter[DATA_AQUA_LEKION] >= 5)
-                        {
-                            if (Creature* pAnnouncer = instance->GetCreature(uiAnnouncerGUID))
-                                pAnnouncer->SetVisible(true);
-                             
-                            if (Creature* pHydro = instance->GetCreature(uiHydroGUID))
-                                pHydro->SetVisible(true);
- 
-                            SetData(DATA_HYOTON_EVENT, 2);
-                        }
-                        break;
-                    case DATA_AQUA_LEKION:
-                        uiEncounter[DATA_AQUA_LEKION] = data;
-                        if (uiEncounter[DATA_AQUA_GHOST] >= 5 && data >= 5)
-                        {
-                            if (Creature* pAnnouncer = instance->GetCreature(uiAnnouncerGUID))
-                                pAnnouncer->SetVisible(true);
-                             
-                            if (Creature* pHydro = instance->GetCreature(uiHydroGUID))
-                                pHydro->SetVisible(true);
-
-                            SetData(DATA_HYOTON_EVENT, 2);
-                        }
-                        break;
-                    case DATA_PYRO_DRAKE:
-                        uiEncounter[DATA_PYRO_DRAKE] = data;
-                        if (data == 16)
-                        {
-                            HandleGameObject(uiEmeraldDoor,true);
-                            if (Creature* pRagnaros = instance->GetCreature(uiRagnarosGUID))
-                                pRagnaros->SetVisible(true);
-                            if (Creature* pRagnarosStatic = instance->GetCreature(uiRagnarosStaticGUID))
-                                pRagnarosStatic->SetVisible(true);
-                        }
-                        if (data == 2)
-                        {
-                            if (Creature* pFiremist = instance->GetCreature(uiFiremistGUID))
-                            {
-                                pFiremist->SetReactState(REACT_AGGRESSIVE);
-                                pFiremist->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                                pFiremist->SetVisible(true);
-                            }
-                        }
+                    case DATA_UMBRA:
                         break;
                 }
-                
-                if (data == DONE || data == IN_PROGRESS || data == 2 || data == 5 || data == 16)
-                    SaveToDB();
+
+                return true;
             }
 
             uint32 GetData(uint32 type)
             {
                 switch (type)
                 {
-                    case DATA_HYOTON_EVENT:
-                    case DATA_FIREMIST_EVENT:
-                    case DATA_KRITYUS_EVENT:
-                    case DATA_UMBRA_EVENT:
                     case DATA_AQUA_GHOST:
+                        return aquaGhostData;
                     case DATA_AQUA_LEKION:
+                        return aquaLekionData;
                     case DATA_PYRO_DRAKE:
-                        return uiEncounter[type];
+                        return pyroDrakeData;
+                    case DATA_EMERALD_DREAM:
+                        return emeraldInstanceData;
+                    default:
+                        break;
                 }
-    		return 0;
+
+                return 0;
             }
 
             uint64 GetData64(uint32 type)
             {
                 switch (type)
                 {
-                    case DATA_HYOTON:            return uiHyotonGUID;
-                    case DATA_FIREMIST:          return uiFiremistGUID;
-                    case DATA_KRITYUS:           return uiKrityusGUID;
-                    case DATA_UMBRA:             return uiUmbraGUID;
-    		    }		
+                    case DATA_HYOTON:
+                        return hyotonGUID;
+                    case DATA_FIREMIST:
+                        return firemistGUID;
+                    case DATA_KRITYUS:
+                        return krityusGUID;
+                    case DATA_UMBRA:
+                        return umbraGUID;
+    		    }
                 return 0;
+            }
+
+            void SetData(uint32 type, uint32 data)
+            {
+                switch (type)
+                {
+                    case DATA_AQUA_GHOST:
+                        if (data >= 5 && GetData(DATA_AQUA_LEKION) >= 5)
+                        {
+                            if (Creature* pAnnouncer = instance->GetCreature(announcerGUID))
+                                pAnnouncer->SetVisible(true);
+                             
+                            if (Creature* pHydro = instance->GetCreature(hydroGUID))
+                                pHydro->SetVisible(true);
+ 
+                            SetData(DATA_EMERALD_DREAM, EMERALD_AQUA_DONE);
+                        }
+                        
+                        aquaGhostData = data;
+                        break;
+                    case DATA_AQUA_LEKION:
+                        if (GetData(DATA_AQUA_GHOST) >= 5 && data >= 5)
+                        {
+                            if (Creature* pAnnouncer = instance->GetCreature(announcerGUID))
+                                pAnnouncer->SetVisible(true);
+                             
+                            if (Creature* pHydro = instance->GetCreature(hydroGUID))
+                                pHydro->SetVisible(true);
+
+                            SetData(DATA_EMERALD_DREAM, EMERALD_AQUA_DONE);
+                        }
+
+                        aquaLekionData = data;
+                        break;
+                    case DATA_PYRO_DRAKE:
+                        if (data == 4)
+                            SetData(DATA_EMERALD_DREAM, EMERALD_DRAKE_DONE);
+                        
+                        pyroDrakeData = data;
+                        break;
+                    case DATA_EMERALD_DREAM:
+                        switch (data)
+                        {
+                            case EMERALD_HYOTON_START:
+                                if (Creature* pHyoton = instance->GetCreature(hyotonGUID))
+                                {
+                                    pHyoton->SetReactState(REACT_AGGRESSIVE);
+                                    pHyoton->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                    pHyoton->SetVisible(true);
+                                }
+                                break;
+                            case EMERALD_DRAKE_DONE:
+                                HandleGameObject(emeraldDoor,true);
+
+                                if (Creature* pRagnaros = instance->GetCreature(ragnarosGUID))
+                                    pRagnaros->SetVisible(true);
+
+                                if (Creature* pRagnarosStatic = instance->GetCreature(ragnarosStaticGUID))
+                                    pRagnarosStatic->SetVisible(true);
+                                break;
+                            case EMERALD_MAZE_DONE:
+                                if (Creature* pFiremist = instance->GetCreature(firemistGUID))
+                                {
+                                    pFiremist->SetReactState(REACT_AGGRESSIVE);
+                                    pFiremist->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                    pFiremist->SetVisible(true);
+                                }
+                                break;
+                            case EMERALD_FIREMIST_DONE:
+                                if (Creature* pKrityus = instance->GetCreature(krityusGUID))
+                                {
+                                    pKrityus->SetReactState(REACT_AGGRESSIVE);
+                                    pKrityus->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                                    pKrityus->SetVisible(true);
+                                }
+                                break;
+                        }
+
+                        emeraldInstanceData = data;
+                        break;
+                    default:
+                        break;
+                }
+
+                SaveToDB();
             }
 
             std::string GetSaveData()
             {
-                 OUT_SAVE_INST_DATA;
+                OUT_SAVE_INST_DATA;
 
-                 std::ostringstream saveStream;
-				 saveStream << "E D " << uiEncounter[0] << " " << uiEncounter[1] << " " << uiEncounter[2] << " " << uiEncounter[3] << " " << uiEncounter[4] << " " << uiEncounter[5] << " " << uiEncounter[6];
+                std::ostringstream saveStream;
+                saveStream << "E D " << GetBossSaveData() << aquaGhostData << " " << aquaLekionData << " " << pyroDrakeData << " " << emeraldInstanceData;
 
-                 str_data = saveStream.str();
+                OUT_SAVE_INST_DATA_COMPLETE;
+                return saveStream.str();
+            }
 
-                 OUT_SAVE_INST_DATA_COMPLETE;
-                 return str_data;
-             }
+            void Load(const char* str)
+            {
+                if (!str)
+                {
+                    OUT_LOAD_INST_DATA_FAIL;
+                    return;
+                }
 
-             void Load(const char* in)
-             {
-                 if (!in)
-                 {
-                     OUT_LOAD_INST_DATA_FAIL;
-                     return;
-                 }
+                OUT_LOAD_INST_DATA(str);
 
-                 OUT_LOAD_INST_DATA(in);
+                char dataHead1, dataHead2;
 
-                 char dataHead1, dataHead2;
-                 uint16 data0, data1, data2, data3, data4, data5, data6;
+                std::istringstream loadStream(str);
+                loadStream >> dataHead1 >> dataHead2;
 
-                 std::istringstream loadStream(in);
-                 loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2 >> data3 >> data4 >> data5 >> data6;
+                if (dataHead1 == 'E' && dataHead2 == 'D')
+                {
+                    for (uint32 i = 0; i < EncounterCount; ++i)
+                    {
+                        uint32 tmpState;
+                        loadStream >> tmpState;
+                        if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
+                            tmpState = NOT_STARTED;
+                        SetBossState(i, EncounterState(tmpState));
+                    }
 
-                 if (dataHead1 == 'E' && dataHead2 == 'D')
-                 {
-                     uiEncounter[0] = data0;
-                     uiEncounter[1] = data1;
-                     uiEncounter[2] = data2;
-                     uiEncounter[3] = data3;
-                     uiEncounter[4] = data4;
-                     uiEncounter[5] = data5;
-                     uiEncounter[6] = data6;
+                    uint32 temp = 0;
+                    loadStream >> temp;
+                    aquaGhostData = temp;
+                    temp = 0;
+                    loadStream >> temp;
+                    aquaLekionData = temp;
+                    temp = 0;
+                    loadStream >> temp;
+                    pyroDrakeData = temp;
+                    temp = 0;
+                    loadStream >> temp;
+                    emeraldInstanceData = temp;
+                }
+                else
+                    OUT_LOAD_INST_DATA_FAIL;
 
-                     for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                         if (uiEncounter[i] == IN_PROGRESS)
-                             uiEncounter[i] = NOT_STARTED;
-
-                 } else OUT_LOAD_INST_DATA_FAIL;
-
-                 OUT_LOAD_INST_DATA_COMPLETE;
-             }
+                OUT_LOAD_INST_DATA_COMPLETE;
+            }
           
           private:
-               uint16 uiEncounter[MAX_ENCOUNTER];
-               std::string str_data;
-
-               uint32 uiBossCounter;
-               
-               uint64 uiAnnouncerGUID;
-               uint64 uiHydroGUID;
-               uint64 uiRagnarosGUID;
-               uint64 uiRagnarosStaticGUID;
-               uint64 uiKalecgosGUID;
-               uint64 uiIsidorusGUID; 
-               uint64 uiHyotonGUID;
-               uint64 uiFiremistGUID;
-               uint64 uiKrityusGUID;
-               uint64 uiUmbraGUID;
-               uint64 uiEmeraldDoor;
+               uint32 aquaGhostData;
+               uint32 aquaLekionData;
+               uint32 pyroDrakeData;
+               uint32 emeraldInstanceData;
+               uint64 announcerGUID;
+               uint64 hydroGUID;
+               uint64 ragnarosGUID;
+               uint64 ragnarosStaticGUID;
+               uint64 kalecgosGUID;
+               uint64 isidorusGUID; 
+               uint64 hyotonGUID;
+               uint64 firemistGUID;
+               uint64 krityusGUID;
+               uint64 umbraGUID;
+               uint64 emeraldDoor;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const
@@ -356,13 +406,14 @@ class npc_emerald_announcer : public CreatureScript
         bool OnGossipHello(Player* player, Creature* creature)
         {
             InstanceScript* instance = creature->GetInstanceScript();
+
             if (!instance)
                 return false;
 
-            if (instance->GetData(DATA_HYOTON_EVENT) == DONE || player->isGameMaster())
+            if (instance->GetBossState(DATA_HYOTON) == DONE || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Siguiente Desafio: Pyro Emerald Legion", GOSSIP_SENDER_MAIN, PYRO);
 
-            if ((instance->GetData(DATA_HYOTON_EVENT) == DONE && instance->GetData(DATA_FIREMIST_EVENT) == DONE && instance->GetData(DATA_KRITYUS_EVENT) == DONE && instance->GetData(DATA_UMBRA_EVENT) == DONE) || player->isGameMaster())
+            if ((instance->GetBossState(DATA_HYOTON) == DONE && instance->GetBossState(DATA_FIREMIST) == DONE && instance->GetBossState(DATA_KRITYUS) == DONE && instance->GetBossState(DATA_UMBRA) == DONE) || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Evento Especial (Aun en Desarrollo)", GOSSIP_SENDER_MAIN, SPECIAL);
             
             player->SEND_GOSSIP_MENU(10600, creature->GetGUID());
@@ -372,14 +423,16 @@ class npc_emerald_announcer : public CreatureScript
         bool OnGossipSelect(Player* player, Creature* creature, uint32 uiSender, uint32 uiAction)
         {
             player->PlayerTalkClass->ClearMenus();
+
             if (uiSender != GOSSIP_SENDER_MAIN)
                 return false;
+
             if (!player->getAttackers().empty())
                 return false;
 
             switch(uiAction)
             {
-	        case PYRO:
+	            case PYRO:
                     player->TeleportTo(player->GetMapId(),Locations[1].GetPositionX(),Locations[1].GetPositionY(),Locations[1].GetPositionZ(),Locations[1].GetOrientation());
                     player->CLOSE_GOSSIP_MENU();
                     creature->CastSpell(player,SPELL_PARACHUTE, true);
@@ -418,10 +471,11 @@ class npc_emerald_hydro : public CreatureScript
         bool OnGossipHello(Player* player, Creature* creature)
         {
             InstanceScript* instance = creature->GetInstanceScript();
+
             if (!instance)
                 return false;
 
-            if (instance->GetData(DATA_HYOTON_EVENT) == 2 || player->isGameMaster())
+            if (instance->GetData(DATA_EMERALD_DREAM) == EMERALD_AQUA_DONE || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Enfrentar a Hyoton: Boss de la Legion Aqua", GOSSIP_SENDER_MAIN, HYOTON);
             
             player->SEND_GOSSIP_MENU(10600, creature->GetGUID());
@@ -432,18 +486,21 @@ class npc_emerald_hydro : public CreatureScript
         {
             InstanceScript* instance = creature->GetInstanceScript();
             player->PlayerTalkClass->ClearMenus();
+
             if (uiSender != GOSSIP_SENDER_MAIN)
                 return false;
+
             if (!player->getAttackers().empty())
                 return false;
 
             switch(uiAction)
             {
-	        case HYOTON:
-                    instance->SetData(DATA_HYOTON_EVENT,4);
+	            case HYOTON:
+                    instance->SetData(DATA_EMERALD_DREAM, EMERALD_HYOTON_START);
                     player->CLOSE_GOSSIP_MENU();
                     break;
             }
+
             return true;
         }
 
@@ -477,7 +534,7 @@ class npc_emerald_ragnaros : public CreatureScript
             if (!instance)
                 return false;
 
-            if (instance->GetData(DATA_PYRO_DRAKE) == 16 || instance->GetData(DATA_PYRO_DRAKE) == 2 || player->isGameMaster())
+            if (instance->GetData(DATA_EMERALD_DREAM) == EMERALD_DRAKE_DONE || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Enfrentar a Firemist: Boss de la Legion de Fuego", GOSSIP_SENDER_MAIN, FIREMIST);
             
             player->SEND_GOSSIP_MENU(10600, creature->GetGUID());
@@ -488,26 +545,27 @@ class npc_emerald_ragnaros : public CreatureScript
         {
             InstanceScript* instance = creature->GetInstanceScript();
             player->PlayerTalkClass->ClearMenus();
+
             if (uiSender != GOSSIP_SENDER_MAIN)
                 return false;
+
             if (!player->getAttackers().empty())
                 return false;
 
             switch(uiAction)
             {
 	            case FIREMIST:
-                    if (instance->GetData(DATA_PYRO_DRAKE) == 2)
-                    {
-                        player->TeleportTo(player->GetMapId(),Locations[0].GetPositionX(),Locations[0].GetPositionY(),Locations[0].GetPositionZ(),Locations[0].GetOrientation());
-                    }
+                    if (instance->GetData(DATA_EMERALD_DREAM) == EMERALD_MAZE_DONE)
+                        player->TeleportTo(player->GetMapId(), Locations[0].GetPositionX(), Locations[0].GetPositionY(), Locations[0].GetPositionZ(), Locations[0].GetOrientation());
                     else
                     {
-                        player->TeleportTo(player->GetMapId(),Locations[0].GetPositionX(),Locations[0].GetPositionY(),Locations[0].GetPositionZ(),Locations[0].GetOrientation());		
-                        instance->SetData(DATA_PYRO_DRAKE,2);
+                        player->TeleportTo(player->GetMapId(), Locations[0].GetPositionX(), Locations[0].GetPositionY(), Locations[0].GetPositionZ(), Locations[0].GetOrientation());		
+                        instance->SetData(DATA_EMERALD_DREAM, EMERALD_MAZE_DONE);
                     }
                     player->CLOSE_GOSSIP_MENU();
                     break;
             }
+
             return true;
         }
 
@@ -538,10 +596,11 @@ class npc_emerald_kalecgos : public CreatureScript
         bool OnGossipHello(Player* player, Creature* creature)
         {
             InstanceScript* instance = creature->GetInstanceScript();
+
             if (!instance)
                 return false;
 
-            if ((instance->GetData(DATA_HYOTON_EVENT) == DONE && instance->GetData(DATA_FIREMIST_EVENT) == DONE && instance->GetData(DATA_KRITYUS_EVENT) == NOT_STARTED) || player->isGameMaster())
+            if ((instance->GetBossState(DATA_HYOTON) == DONE && instance->GetBossState(DATA_FIREMIST) == DONE && instance->GetBossState(DATA_KRITYUS) == NOT_STARTED) || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Enfrentar a Krityus: Boss de la Legion del Aire", GOSSIP_SENDER_MAIN, KRITYUS);
             
             player->SEND_GOSSIP_MENU(10600, creature->GetGUID());
@@ -552,6 +611,7 @@ class npc_emerald_kalecgos : public CreatureScript
         {
             InstanceScript* instance = creature->GetInstanceScript();
             player->PlayerTalkClass->ClearMenus();
+
             if (uiSender != GOSSIP_SENDER_MAIN)
                 return false;
 
@@ -561,10 +621,11 @@ class npc_emerald_kalecgos : public CreatureScript
             switch(uiAction)
             {
 	            case KRITYUS:
-                    instance->SetData(DATA_KRITYUS_EVENT,2);
+                    instance->SetData(DATA_EMERALD_DREAM, EMERALD_FIREMIST_DONE);
                     player->CLOSE_GOSSIP_MENU();
                     break;
             }
+
             return true;
         }
 
@@ -582,19 +643,21 @@ public:
     bool OnGossipHello(Player* player, GameObject* go)
     {   
         InstanceScript* instance = go->GetInstanceScript();
+
             if (!instance)
                 return false;
 
-            if (instance->GetData(DATA_PYRO_DRAKE) == 16)
-            { 
-                player->TeleportTo(player->GetMapId(),Locations[3].GetPositionX(),Locations[3].GetPositionY(),Locations[3].GetPositionZ(),Locations[3].GetOrientation());
-                go->CastSpell(player,SPELL_PARACHUTE);
-            }
+            if (instance->GetData(DATA_EMERALD_DREAM) == EMERALD_DRAKE_ZONE)
+                player->TeleportTo(player->GetMapId(), Locations[2].GetPositionX(), Locations[2].GetPositionY(), Locations[2].GetPositionZ(), Locations[2].GetOrientation());
             else
             {
-                player->TeleportTo(player->GetMapId(),Locations[2].GetPositionX(),Locations[2].GetPositionY(),Locations[2].GetPositionZ(),Locations[2].GetOrientation());
+                if (instance->GetData(DATA_EMERALD_DREAM) == EMERALD_DRAKE_DONE)
+                { 
+                    player->TeleportTo(player->GetMapId(), Locations[3].GetPositionX(), Locations[3].GetPositionY(), Locations[3].GetPositionZ(), Locations[3].GetOrientation());
+                    go->CastSpell(player, SPELL_PARACHUTE);
+                }
             }
-            
+
         return true;
     }
 };
