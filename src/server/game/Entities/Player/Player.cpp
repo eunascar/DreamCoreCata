@@ -6414,6 +6414,8 @@ void Player::RepopAtGraveyard()
     }
     else if (GetPositionZ() < -500.0f)
         TeleportTo(m_homebindMapId, m_homebindX, m_homebindY, m_homebindZ, GetOrientation());
+	else if (GetZoneId() == 956 || GetZoneId() == 1397)
+        TeleportTo(169, 2668.29f, -3297.28f, 96.17f, 5.311748f);
 }
 
 bool Player::CanJoinConstantChannelInZone(ChatChannelsEntry const* channel, AreaTableEntry const* zone)

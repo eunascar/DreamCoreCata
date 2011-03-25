@@ -126,15 +126,14 @@ int Master::Run()
     sLog->outString("%s (core-daemon)", _FULLVERSION);
     sLog->outString("<Ctrl-C> to stop.\n");
 
-    sLog->outString(" ______                       __");
-    sLog->outString("/\\__  _\\       __          __/\\ \\__");
-    sLog->outString("\\/_/\\ \\/ _ __ /\\_\\    ___ /\\_\\ \\ ,_\\  __  __");
-    sLog->outString("   \\ \\ \\/\\`'__\\/\\ \\ /' _ `\\/\\ \\ \\ \\/ /\\ \\/\\ \\");
-    sLog->outString("    \\ \\ \\ \\ \\/ \\ \\ \\/\\ \\/\\ \\ \\ \\ \\ \\_\\ \\ \\_\\ \\");
-    sLog->outString("     \\ \\_\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_\\ \\__\\\\/`____ \\");
-    sLog->outString("      \\/_/\\/_/   \\/_/\\/_/\\/_/\\/_/\\/__/ `/___/> \\");
-    sLog->outString("                                 C O R E  /\\___/");
-    sLog->outString("http://TrinityCore.org                    \\/__/\n");
+    sLog->outString(" DDDDDD   RRRRRR  EEEEEE AAAAAA MMM   MMM");
+    sLog->outString(" DD   DD  RR   RR EE     AA  AA MM M M MM");
+    sLog->outString(" DD    DD RR   RR EE     AA  AA MM  M  MM CCCCCC OOOOOO RRRRRR EEEEEE");
+    sLog->outString(" DD    DD RRRRRR  EEEEEE AAAAAA MM     MM CC     OO  OO RR  RR EE");
+    sLog->outString(" DD    DD RR RR   EEEEEE AAAAAA MM     MM CC     OO  OO RRRRR  EEEEEE");
+    sLog->outString(" DD   DD  RR  RR  EE     AA  AA MM     MM CC     OO  OO RR RR  EE");
+    sLog->outString(" DDDDDD   RR   RR EEEEEE AA  AA MM     MM CCCCCC OOOOOO RR  RR EEEEEE");
+    sLog->outString("Fork of TrinityCore: http://TrinityCore.org");
 
 #ifdef USE_SFMT_FOR_RNG
     sLog->outString("\n");
