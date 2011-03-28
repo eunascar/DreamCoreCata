@@ -166,7 +166,6 @@ public:
             uiMimironTramGUID       = 0;
             uiMimironElevatorGUID   = 0;
             uiKeepersGateGUID       = 0;
-            flag                    = 0;
 
             memset(uiEncounter, 0, sizeof(uiEncounter));
             memset(uiAssemblyGUIDs, 0, sizeof(uiAssemblyGUIDs));
