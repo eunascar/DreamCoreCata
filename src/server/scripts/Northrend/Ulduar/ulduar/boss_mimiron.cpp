@@ -630,7 +630,7 @@ public:
             }
         }
         
-        void DespawnCreatures(uint32 entry, float distance, bool discs = false)
+        void DespawnCreatures(uint32 entry, float distance)
         {
             std::list<Creature*> m_creatures;
             GetCreatureListWithEntryInGrid(m_creatures, me, entry, distance);
