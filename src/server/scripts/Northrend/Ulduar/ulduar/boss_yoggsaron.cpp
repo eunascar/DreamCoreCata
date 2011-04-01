@@ -422,6 +422,7 @@ public:
         std::vector<Creature *> ominous_list;
         uint32 uiPhase_timer;
         uint32 uiStep;
+        uint8 keepers;
         bool wipe;
         
         void Reset()
@@ -470,9 +471,10 @@ public:
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetVisible(true);
             me->RestoreDisplayId();
-            me->setFaction(35);
+            me->RestoreFaction();
             me->GetMotionMaster()->MoveTargetedHome();
             phase = PHASE_NULL;
+            keepers = 0;
             _Reset();
         }
         
@@ -511,6 +513,7 @@ public:
                         {
                             creature->SetInCombatWith(me);
                             creature->AddThreat(me, 150.0f);
+                            ++keepers;
                         }
                     }
                 }
@@ -526,7 +529,7 @@ public:
                 }
             }
             wipe = true;
-            me->setFaction(35);
+            me->RestoreFaction();
             uiStep = 0;
             uiPhase_timer = -1;
             JumpToNextStep(5000);
@@ -1964,10 +1967,7 @@ class spell_yoggsaron_induce_madness : public SpellScriptLoader
 
             void FilterTargets(std::list<Unit*>& unitList)
             {
-                for (std::list<Unit*>::iterator itr = unitList.begin(); itr != unitList.end(); ++itr)
-                {
-                    unitList.remove_if(IllusionRoomCheck());
-                }
+                unitList.remove_if(IllusionRoomCheck());
             }
 
             void Register()
