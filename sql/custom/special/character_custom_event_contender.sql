@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `character_custom_event_winner`;
-CREATE TABLE IF NOT EXISTS `character_custom_event_winner` (
+DROP TABLE IF EXISTS `character_custom_event_contender`;
+CREATE TABLE IF NOT EXISTS `character_custom_event_contender` (
   `character_guid` int(10) unsigned NOT NULL DEFAULT '0',
   `event_id` int(10) unsigned NOT NULL DEFAULT '0',
   `position` int(10) unsigned NOT NULL DEFAULT '0',

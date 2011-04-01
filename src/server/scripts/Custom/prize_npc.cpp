@@ -24,6 +24,9 @@
 #define GOSSIP_LEVEL_NOT_80         "Aun no has alcanzado el nivel necesario para reclamar tu premio"
 #define GOSSIP_LEVEL_COMPLETE_80    "Ya se han copado el maximo de los puestos del evento. Gracias por participar"
 #define GOSSIP_NO_EVENTS            "No hay Eventos Disponibles"
+#define GOSSIP_NO_REGISTER          "No estas registrado en los Eventos Activos"
+#define GOSSIP_S_REGISTER           "Te has registrado exitosamente"
+#define GOSSIP_REGISTER             "Deseo Registrarme en el Evento"
 
 //Realizar verificación de clase de cada jugador
 
@@ -195,7 +198,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -213,7 +216,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -231,7 +234,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -249,7 +252,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -267,7 +270,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -285,7 +288,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -303,7 +306,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -321,7 +324,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -339,7 +342,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -357,7 +360,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -375,7 +378,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -393,7 +396,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -411,7 +414,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -429,7 +432,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -447,7 +450,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -465,7 +468,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -483,7 +486,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -501,7 +504,7 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
@@ -519,11 +522,16 @@ public:
                     }
                 }
 
-                CharacterDatabase.PExecute("UPDATE character_custom_event_winner SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET prize = 1 WHERE character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
             }
             case GOSSIP_ACTION_INFO_DEF + 21:
+                CharacterDatabase.PExecute("INSERT INTO character_custom_event_contender (position, premium, character_guid, character_name, event_id, prize) VALUES (0, 0, '%u', '%s', (SELECT id FROM character_custom_event WHERE active = 1), 0)", player->GetGUIDLow(), player->GetName());
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_S_REGISTER, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
+                player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                break;
+            case GOSSIP_ACTION_INFO_DEF + 22:
                 player->CLOSE_GOSSIP_MENU(); 
                 break;
         }
@@ -534,8 +542,9 @@ public:
     bool OnGossipHello(Player* player, Creature* creature)
     {
         QueryResult active_events = CharacterDatabase.PQuery("SELECT active FROM character_custom_event WHERE active = 1");
+        QueryResult registered = CharacterDatabase.PQuery("SELECT character_guid FROM character_custom_event_contender WHERE character_guid  = '%u'", player->GetGUIDLow());
 
-        if (active_events)
+        if (active_events && registered)
         {
             if (player->getLevel() == 80)
             {
@@ -549,18 +558,16 @@ public:
                     if (!max_winners)
                     {
                         QueryResult event = CharacterDatabase.PQuery("SELECT id, premium_winners FROM character_custom_event WHERE premium_winners < max_winners AND active = 1");
+                        QueryResult initialized = CharacterDatabase.PQuery("SELECT position FROM character_custom_event_contender WHERE position = 0 AND character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                         Field *fields = event->Fetch();
                         uint32 event_id = fields[0].GetUInt32();
-                        uint32 evento;
-                        evento = event_id;
                         uint32 position = fields[1].GetUInt32();
-                        QueryResult exist = CharacterDatabase.PQuery("SELECT character_guid FROM character_custom_event_winner WHERE character_guid = '%u' AND event_id = '%u'", player->GetGUIDLow(), event_id);
 
-                        if (event && !exist)
+                        if (event && initialized)
                         {
-                            CharacterDatabase.PExecute("INSERT INTO character_custom_event_winner (position, premium, character_guid, character_name, event_id, prize) VALUES ('%u', 1, '%u', '%s', '%u', 0)", position + 1, player->GetGUIDLow(), player->GetName(), event_id);
+                            CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET position = '%u', premium = 1 WHERE character_guid = '%u'", position + 1, player->GetGUIDLow());
                             CharacterDatabase.PExecute("UPDATE character_custom_event SET premium_winners = premium_winners + 1 WHERE id = '%u'", event_id);
-                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_winner WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
+                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_contender WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
 
                             if (!prize)
                             {
@@ -570,7 +577,7 @@ public:
                         }
                         else
                         {
-                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_winner WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
+                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_contender WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
 
                             if (!prize)
                             {
@@ -579,14 +586,14 @@ public:
                             }
 			                else // Prize received yet
                             {
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_YET_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_YET_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
                                 player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                             }
                         }
                     }
                     else
                     {
-                        QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_winner WHERE character_guid = '%u' AND prize = 1 AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                        QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_contender WHERE character_guid = '%u' AND prize = 1 AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
 
                         if (!prize)
                         {
@@ -596,7 +603,7 @@ public:
                         
                         if (max_winners)
                         {
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_COMPLETE_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_COMPLETE_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
                             player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                         }
                     }
@@ -609,18 +616,16 @@ public:
                     if (!max_winners)
                     {
                         QueryResult event = CharacterDatabase.PQuery("SELECT id, normal_winners FROM character_custom_event WHERE normal_winners < max_winners AND active = 1");
+                        QueryResult initialized = CharacterDatabase.PQuery("SELECT position FROM character_custom_event_contender WHERE position = 0 AND character_guid = '%u' AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
                         Field *fields = event->Fetch();
                         uint32 event_id = fields[0].GetUInt32();
-                        uint32 evento;
-                        evento = event_id;
                         uint32 position = fields[1].GetUInt32();
-                        QueryResult exist = CharacterDatabase.PQuery("SELECT character_guid FROM character_custom_event_winner WHERE character_guid = '%u' AND event_id = '%u'", player->GetGUIDLow(), event_id);
 
-                        if (event && !exist)
+                        if (event && initialized)
                         {
-                            CharacterDatabase.PExecute("INSERT INTO character_custom_event_winner (position, premium, character_guid, character_name, event_id, prize) VALUES ('%u', 0, '%u', '%s', '%u', 0)", position + 1, player->GetGUIDLow(), player->GetName(), event_id);
+                            CharacterDatabase.PExecute("UPDATE character_custom_event_contender SET position = '%u', premium = 0 WHERE character_guid = '%u'", position + 1, player->GetGUIDLow());
                             CharacterDatabase.PExecute("UPDATE character_custom_event SET normal_winners = normal_winners + 1 WHERE id = '%u'", event_id);
-                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_winner WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
+                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_contender WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
 
                             if (!prize)
                             {
@@ -630,7 +635,7 @@ public:
                         }
                         else
                         {
-                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_winner WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
+                            QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_contender WHERE character_guid = '%u' AND prize = 1 AND event_id = '%u'", player->GetGUIDLow(), event_id);
 
                             if (!prize)
                             {
@@ -639,14 +644,14 @@ public:
                             }
 			                else // Prize received yet
                             {
-                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_YET_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+                                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_YET_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
                                 player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                             }
                         }
                     }
                     else
                     {
-                        QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_winner WHERE character_guid = '%u' AND prize = 1 AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
+                        QueryResult prize = CharacterDatabase.PQuery("SELECT prize FROM character_custom_event_contender WHERE character_guid = '%u' AND prize = 1 AND event_id = (SELECT id FROM character_custom_event WHERE active = 1)", player->GetGUIDLow());
 
                         if (!prize)
                         {
@@ -656,7 +661,7 @@ public:
                         
                         if (max_winners)
                         {
-                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_COMPLETE_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+                            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_COMPLETE_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
                             player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                         }
                     }
@@ -664,14 +669,24 @@ public:
             }
             else
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_NOT_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LEVEL_NOT_80, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
                 player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             }
         }
         else
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_EVENTS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
-            player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            if (!active_events)
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_EVENTS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
+                player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            }
+            
+            if (active_events && !registered)
+                if (player->getLevel() >= 10 && player->getLevel() <= 20)
+                {
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_REGISTER, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+                    player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                }
         }
 
         return true;
