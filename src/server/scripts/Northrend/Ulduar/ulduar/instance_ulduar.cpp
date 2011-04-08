@@ -101,6 +101,7 @@ public:
         uint64 uiKologarnDoorGUID;
         uint64 uiThorimChestGUID;
         uint64 uiHodirChestGUID;
+        uint64 uiMimironChestGUID;
         uint64 uiFreyaChestGUID;
 
         uint64 uiHodirRareChestGUID;
@@ -156,6 +157,7 @@ public:
             uiKologarnChestGUID     = 0;
             uiThorimChestGUID       = 0;
             uiHodirChestGUID        = 0;
+            uiMimironChestGUID        = 0;
             uiFreyaChestGUID        = 0;
             uiLeviathanGateGUID     = 0;
             uiVezaxDoorGUID         = 0;
@@ -428,6 +430,10 @@ public:
                 case GO_HODIR_CHEST:
                     uiHodirChestGUID = go->GetGUID();
                     break;
+                case GO_MIMIRON_CHEST_HERO:
+                case GO_MIMIRON_CHEST:
+                    uiMimironChestGUID = go->GetGUID();
+                    break;
                 case GO_FREYA_CHEST_HERO:
                 case GO_FREYA_CHEST:
                     uiFreyaChestGUID = go->GetGUID();
@@ -589,6 +595,10 @@ public:
                     CheckKeepersState();
                     break;
                 case TYPE_MIMIRON:
+                    if (state == DONE)
+                        if (GameObject* go = instance->GetGameObject(uiMimironChestGUID))
+                            go->SetRespawnTime(go->GetRespawnDelay());
+
                     CheckKeepersState();
                     break;
                 case TYPE_VEZAX:
