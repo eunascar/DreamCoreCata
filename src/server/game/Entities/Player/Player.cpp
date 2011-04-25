@@ -2513,7 +2513,7 @@ void Player::RefreshBot(uint32 diff)
 
     if (HaveBot())
     {
-        Creature *m_bot = GetBot();
+        Creature* m_bot = GetBot();
 
         //BOT IS DEAD SUPPORT
         if (GetGroup() && !m_bot->isAlive())
@@ -2527,19 +2527,15 @@ void Player::RefreshBot(uint32 diff)
             else
                 m_bot_died = true;
         }
+        // dont want to delete from group if dead
         else if (GetBotMustDie() || !GetGroup())
-        {
-            // dont want to delete from group if dead
             if (m_bot->isAlive()) 
-            {
                 RemoveBot();
-            }
-        }
     }
 
     if (HaveBot() && GetBot()->isAlive())
     {
-        Creature *m_bot = GetBot();
+        Creature* m_bot = GetBot();
 
         if (isInCombat())
         {
@@ -2597,7 +2593,7 @@ void Player::RefreshBot(uint32 diff)
             //If player change of zone/area
             if (tp)
             {
-                Creature *m_bot = GetBot();
+                Creature* m_bot = GetBot();
 
                 //SAVE INFO
                 uint32 entry = m_bot->GetEntry();
@@ -2615,43 +2611,60 @@ void Player::RefreshBot(uint32 diff)
         //FLYING MOUNT SUPPORT
         if ((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())
         {
-            if (m_bot->GetMountID() != 17759
-            && m_bot->GetMountID() != 17703
-            && m_bot->GetMountID() != 17718
-            && m_bot->GetMountID() != 17720
-            && m_bot->GetMountID() != 17721
-            && m_bot->GetMountID() != 17719)
+            if (m_bot->GetMountID() != 17759 && m_bot->GetMountID() != 17703 && m_bot->GetMountID() != 17718 && m_bot->GetMountID() != 17720 && m_bot->GetMountID() != 17721 && m_bot->GetMountID() != 17719)
             {
                 int m_mount = 0;
-                int m_rand = rand()%100;
-                if (m_rand < 33)      m_mount = 1;
-                else if (m_rand > 64) m_mount = 2;
-                else                 m_mount = 3;
+                int m_rand = rand() % 100;
 
-                if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70)) m_mount = 0;
-                if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70)) m_mount = 0;
+                if (m_rand < 33)
+                    m_mount = 1;
+                else if (m_rand > 64)
+                    m_mount = 2;
+                else
+                    m_mount = 3;
+
+                if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70))
+                    m_mount = 0;
+
+                if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() >= 70))
+                    m_mount = 0;
 
                 if (GetBotRace() == RACE_HUMAN || GetBotRace() == RACE_DWARF || GetBotRace() == RACE_NIGHTELF || GetBotRace() == RACE_GNOME || GetBotRace() == RACE_DRAENEI)
                 {
                     switch(m_mount)
                     {
-                        case 1: m_bot->Mount(17759); break;
-                        case 2: m_bot->Mount(17703); break;
-                        case 3: m_bot->Mount(17718); break;
-                        default: break;
+                        case 1:
+                            m_bot->Mount(17759);
+                            break;
+                        case 2:
+                            m_bot->Mount(17703);
+                            break;
+                        case 3:
+                            m_bot->Mount(17718);
+                            break;
+                        default:
+                            break;
                     }
                 }
                 else if (GetBotRace() == RACE_ORC || GetBotRace() == RACE_UNDEAD_PLAYER || GetBotRace() == RACE_TAUREN || GetBotRace() == RACE_TROLL || GetBotRace() == RACE_BLOODELF)
                 {
                     switch(m_mount)
                     {
-                        case 1: m_bot->Mount(17720); break;
-                        case 2: m_bot->Mount(17721); break;
-                        case 3: m_bot->Mount(17719); break;
-                        default: break;
+                        case 1:
+                            m_bot->Mount(17720);
+                            break;
+                        case 2:
+                            m_bot->Mount(17721);
+                            break;
+                        case 3:
+                            m_bot->Mount(17719);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
+
             if (isInFlight())
             {
                 m_bot->HasUnitMovementFlag(MOVEMENTFLAG_FLYING);
@@ -2676,8 +2689,11 @@ void Player::RefreshBot(uint32 diff)
             else
                 m_mount = 3;
 
-            if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60)) m_mount = 0;
-            if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60)) m_mount = 0;
+            if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60))
+                m_mount = 0;
+
+            if ((GetBotClass() == CLASS_DRUID) && (m_bot->getLevel() < 60))
+                m_mount = 0;
 
             switch(GetBotRace())
             {
@@ -2687,20 +2703,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(2409); break;
-                            case 2: m_bot->Mount(2404); break;
-                            case 3: m_bot->Mount(2405); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(2409);
+                                break;
+                            case 2:
+                                m_bot->Mount(2404);
+                                break;
+                            case 3:
+                                m_bot->Mount(2405);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14338); break;
-                            case 2: m_bot->Mount(14583); break;
-                            case 3: m_bot->Mount(14582); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14338);
+                                break;
+                            case 2:
+                                m_bot->Mount(14583);
+                                break;
+                            case 3:
+                                m_bot->Mount(14582);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2711,20 +2741,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(247); break;
-                            case 2: m_bot->Mount(2327); break;
-                            case 3: m_bot->Mount(2328); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(247);
+                                break;
+                            case 2:
+                                m_bot->Mount(2327);
+                                break;
+                            case 3:
+                                m_bot->Mount(2328);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14575); break;
-                            case 2: m_bot->Mount(14574); break;
-                            case 3: m_bot->Mount(14573); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14575);
+                                break;
+                            case 2:
+                                m_bot->Mount(14574);
+                                break;
+                            case 3:
+                                m_bot->Mount(14573);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2735,20 +2779,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(2785); break;
-                            case 2: m_bot->Mount(2786); break;
-                            case 3: m_bot->Mount(2736); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(2785);
+                                break;
+                            case 2:
+                                m_bot->Mount(2786);
+                                break;
+                            case 3:
+                                m_bot->Mount(2736);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14347); break;
-                            case 2: m_bot->Mount(14576); break;
-                            case 3: m_bot->Mount(14346); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14347);
+                                break;
+                            case 2:
+                                m_bot->Mount(14576);
+                                break;
+                            case 3:
+                                m_bot->Mount(14346);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2759,20 +2817,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(6080); break;
-                            case 2: m_bot->Mount(6448); break;
-                            case 3: m_bot->Mount(6444); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(6080);
+                                break;
+                            case 2:
+                                m_bot->Mount(6448);
+                                break;
+                            case 3:
+                                m_bot->Mount(6444);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14632); break;
-                            case 2: m_bot->Mount(14332); break;
-                            case 3: m_bot->Mount(14331); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14632);
+                                break;
+                            case 2:
+                                m_bot->Mount(14332);
+                                break;
+                            case 3:
+                                m_bot->Mount(14331);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2783,20 +2855,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(10670); break;
-                            case 2: m_bot->Mount(10671); break;
-                            case 3: m_bot->Mount(10672); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(10670);
+                                break;
+                            case 2:
+                                m_bot->Mount(10671);
+                                break;
+                            case 3:
+                                m_bot->Mount(10672);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(10721); break;
-                            case 2: m_bot->Mount(10720); break;
-                            case 3: m_bot->Mount(10719); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(10721);
+                                break;
+                            case 2:
+                                m_bot->Mount(10720);
+                                break;
+                            case 3:
+                                m_bot->Mount(10719);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2807,20 +2893,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(12246); break;
-                            case 2: m_bot->Mount(11641); break;
-                            case 3: m_bot->Mount(12245); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(12246);
+                                break;
+                            case 2:
+                                m_bot->Mount(11641);
+                                break;
+                            case 3:
+                                m_bot->Mount(12245);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14579); break;
-                            case 2: m_bot->Mount(14349); break;
-                            case 3: m_bot->Mount(14578); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14579);
+                                break;
+                            case 2:
+                                m_bot->Mount(14349);
+                                break;
+                            case 3:
+                                m_bot->Mount(14578);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2831,20 +2931,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(9473); break;
-                            case 2: m_bot->Mount(10661); break;
-                            case 3: m_bot->Mount(6569); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(9473);
+                                break;
+                            case 2:
+                                m_bot->Mount(10661);
+                                break;
+                            case 3:
+                                m_bot->Mount(6569);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14376); break;
-                            case 2: m_bot->Mount(14374); break;
-                            case 3: m_bot->Mount(14377); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14376);
+                                break;
+                            case 2:
+                                m_bot->Mount(14374);
+                                break;
+                            case 3:
+                                m_bot->Mount(14377);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2855,20 +2969,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(6472); break;
-                            case 2: m_bot->Mount(4806); break;
-                            case 3: m_bot->Mount(6473); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(6472);
+                                break;
+                            case 2:
+                                m_bot->Mount(4806);
+                                break;
+                            case 3:
+                                m_bot->Mount(6473);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(14344); break;
-                            case 2: m_bot->Mount(14339); break;
-                            case 3: m_bot->Mount(14342); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(14344);
+                                break;
+                            case 2:
+                                m_bot->Mount(14339);
+                                break;
+                            case 3:
+                                m_bot->Mount(14342);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2879,20 +3007,34 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(18696); break;
-                            case 2: m_bot->Mount(19480); break;
-                            case 3: m_bot->Mount(19478); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(18696);
+                                break;
+                            case 2:
+                                m_bot->Mount(19480);
+                                break;
+                            case 3:
+                                m_bot->Mount(19478);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(19484); break;
-                            case 2: m_bot->Mount(18697); break;
-                            case 3: m_bot->Mount(19482); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(19484);
+                                break;
+                            case 2:
+                                m_bot->Mount(18697);
+                                break;
+                            case 3:
+                                m_bot->Mount(19482);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -2903,31 +3045,46 @@ void Player::RefreshBot(uint32 diff)
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(17063); break;
-                            case 2: m_bot->Mount(19870); break;
-                            case 3: m_bot->Mount(19869); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(17063);
+                                break;
+                            case 2:
+                                m_bot->Mount(19870);
+                                break;
+                            case 3:
+                                m_bot->Mount(19869);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     else
                     {
                         switch(m_mount)
                         {
-                            case 1: m_bot->Mount(19871); break;
-                            case 2: m_bot->Mount(19872); break;
-                            case 3: m_bot->Mount(19873); break;
-                            default: break;
+                            case 1:
+                                m_bot->Mount(19871);
+                                break;
+                            case 2:
+                                m_bot->Mount(19872);
+                                break;
+                            case 3:
+                                m_bot->Mount(19873);
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
                 }
             }
+
             m_bot->SetSpeed(MOVE_RUN, GetSpeed(MOVE_WALK) - 0.1f, true);
         }
         else if (!IsMounted() && m_bot->IsMounted())
         {
             m_bot->Unmount();
-            CreatureInfo const *cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
+            CreatureInfo const* cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
             m_bot->SetSpeed(MOVE_RUN, cinfo->speed_run, true);
             m_bot->HasUnitMovementFlag(MOVEMENTFLAG_NONE);
         }
@@ -2935,7 +3092,7 @@ void Player::RefreshBot(uint32 diff)
         //if low on mana, take a drink (only check for classes with custom AI) because they are the only ones currently using mana
         if (GetBotClass() == CLASS_SHAMAN || GetBotClass() == CLASS_DRUID || GetBotClass() == CLASS_PRIEST || GetBotClass() == CLASS_MAGE || GetBotClass() == CLASS_HUNTER || GetBotClass() == CLASS_WARLOCK || GetBotClass() == CLASS_PALADIN)
         {
-            if (m_bot->GetPower(POWER_MANA)*100/m_bot->GetMaxPower(POWER_MANA) < 80 && !m_bot->HasAura(1137) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
+            if (m_bot->GetPower(POWER_MANA) * 100 / m_bot->GetMaxPower(POWER_MANA) < 80 && !m_bot->HasAura(1137) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
             {
                 m_bot->CastSpell(m_bot, 1137, true);
                 SetBotMustWaitForSpell3(1000);
@@ -2954,17 +3111,16 @@ void Player::RefreshBot(uint32 diff)
 
             if (curValue <= maxValue)
             {
-                addvalue = maxValue/20;
+                addvalue = maxValue / 20;
                 m_bot->ModifyPower(POWER_MANA, addvalue);
-                //return;
             }
         }
 
         if (m_bot->HasAura(1137) && m_bot->GetPower(POWER_MANA) >= m_bot->GetMaxPower(POWER_MANA))
             m_bot->RemoveAurasDueToSpell(1137);
 
-        //eat
-        if (m_bot->GetHealth()*100 / m_bot->GetMaxHealth() < 80 && !m_bot->HasAura(10256) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
+        // Food Support
+        if (m_bot->GetHealth() * 100 / m_bot->GetMaxHealth() < 80 && !m_bot->HasAura(10256) && GetBotMustWaitForSpell3() <= 0 && !m_bot->isInCombat())
         {
             SetBotMustWaitForSpell3(1000);
             m_bot->CastSpell(m_bot, 10256, true);
@@ -2982,7 +3138,7 @@ void Player::RefreshBot(uint32 diff)
 
             if (curValue <= maxValue)
             {
-                addvalue = maxValue/20;
+                addvalue = maxValue / 20;
                 m_bot->SetHealth(curValue + addvalue);
             }
         }
@@ -2992,7 +3148,7 @@ void Player::RefreshBot(uint32 diff)
 
         //if bot stands up for some reason, ie goes into combat,
         //remove the food and drink affect
-        if (m_bot->isInCombat() /*|| !m_bot->IsStopped()*/ || m_bot->IsStandState())
+        if (m_bot->isInCombat() || m_bot->IsStandState())
         {
             if (m_bot->HasAura(10256)) m_bot->RemoveAurasDueToSpell(10256);
             if (m_bot->HasAura(1137)) m_bot->RemoveAurasDueToSpell(1137);
@@ -3009,9 +3165,9 @@ void Player::RefreshBot(uint32 diff)
             {
                 if (!m_bot->isAlive()) break;
 
-                CreatureInfo const *cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
-
+                CreatureInfo const* cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
                 uint32 m_old_bot_form = m_bot->GetDisplayId();
+
                 if ((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())
                 {
                     //flight form
@@ -3027,23 +3183,6 @@ void Player::RefreshBot(uint32 diff)
                         SetBotForm(m_bot->GetDisplayId());
                         SetBotMustWaitForSpell1(3000);
                     }
-                }
-                else if ((GetBotMustWaitForSpell1() == 0) && (m_bot->IsInWater()) && (!isInFlight()))
-                {
-                    //Removed this because it turns into a seal in Booty Bay
-                    //seal form
-                    /*
-                    if ((GetBotRace() == RACE_NIGHTELF) && (m_bot->GetDisplayId() != 2428))
-                        m_bot->SetDisplayId(2428);
-                    if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 2428))
-                        m_bot->SetDisplayId(2428);
-                    SetBotForm(m_bot->GetDisplayId());
-                    SetBotMustWaitForSpell1(3000);
-                    */
-                }
-                else if ((GetBotMustWaitForSpell1() == 0) && (m_bot->isInCombat()) && (!m_bot->isInFlight()))
-                {
-                    //combat form is now handled in AI
                 }
                 else if ((GetBotMustWaitForSpell1() == 0) && (((IsMounted()) && (m_bot->getLevel() < 60)) || (GetShapeshiftForm() == FORM_TRAVEL)) && (!m_bot->isInFlight()))
                 {
@@ -3065,6 +3204,7 @@ void Player::RefreshBot(uint32 diff)
 
                     if ((GetBotRace() == RACE_TAUREN) && (m_bot->GetDisplayId() != 8571))
                         m_bot->SetDisplayId(8571);
+
                     SetBotForm(m_bot->GetDisplayId());
                 }
                 else if ((GetBotMustWaitForSpell1() == 0) && (GetShapeshiftForm() == FORM_BEAR) && (!m_bot->isInFlight()))
@@ -3083,6 +3223,7 @@ void Player::RefreshBot(uint32 diff)
                 {
                     //change stats based on forms
                     m_bot->SetSpeed(MOVE_SWIM, cinfo->speed_run, true); m_bot->SetSpeed(MOVE_RUN, cinfo->speed_run, true);
+
                     if (GetBotForm() == 2428)
                         m_bot->SetSpeed(MOVE_SWIM, cinfo->speed_run * 1.50f, true);
                     else if (GetBotForm() == 632) //travel form
@@ -3111,7 +3252,6 @@ void Player::RefreshBot(uint32 diff)
                 SetBotForm(m_bot->GetDisplayId());
                 break;
             }
-
         }
 
         if (!m_bot->isInCombat() && m_bot->GetCharmInfo()->GetCommandState() != COMMAND_STAY && GetDistance(m_bot) > 60 && !IsBeingTeleported())
@@ -3126,9 +3266,7 @@ void Player::RefreshBot(uint32 diff)
             m_bot->SetStandState(UNIT_STAND_STATE_STAND);
     }
     else if (GetBotMustBeCreated() && isAlive())
-    {
         CreateBot(m_bot_entry_must_be_created, m_bot_race_must_be_created, m_bot_class_must_be_created);
-    }
 
     if (GetBotMustWaitForSpell1() > 0)
         SetBotMustWaitForSpell1(GetBotMustWaitForSpell1() - refreshDelay > 0 ? refreshDelay : 10);
@@ -3153,6 +3291,7 @@ void Player::RemoveBot()
         m_botsPet->CleanupsBeforeDelete();
         m_botsPet->AddObjectToRemoveList();
     }
+
     m_botsPet = NULL;
     m_botHasPet = false;
 
@@ -3161,22 +3300,24 @@ void Player::RemoveBot()
     m_bot->DeleteThreatList();
     m_bot->SetCharmerGUID(0);
     m_bot->CleanupsBeforeDelete();
-    //m_bot->DeleteFromDB();
     m_bot->SetIAmABot(false);
     m_bot->AddObjectToRemoveList();
     m_bot->RemoveFromWorld();
     CharacterDatabase.PExecute("DELETE FROM character_npcbot WHERE owner='%u'", this->GetGUIDLow());
 
-    m_bot = NULL; m_bot_class = 0; m_bot_race = 0; m_bot_form = 0;
-    m_bot_must_wait_for_spell_1 = 0; m_bot_must_wait_for_spell_2 = 0;
-    m_bot_must_wait_for_spell_3 = 0; m_bot_must_be_created = false;
+    m_bot = NULL;
+    m_bot_class = 0;
+    m_bot_race = 0;
+    m_bot_form = 0;
+    m_bot_must_wait_for_spell_1 = 0;
+    m_bot_must_wait_for_spell_2 = 0;
+    m_bot_must_wait_for_spell_3 = 0;
+    m_bot_must_be_created = false;
 
     if (m_bot_ai)
         m_bot_ai = NULL;
 
     m_bot_must_die = false;
-
-
 }
 
 void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
@@ -3198,7 +3339,7 @@ void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
 
     if (this->GetGroup())
     {
-        Creature *newbot = SummonCreature(botentry, GetPositionX()-2, GetPositionY()-2, GetPositionZ(), GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN, 0);
+        Creature* newbot = SummonCreature(botentry, GetPositionX() - 2, GetPositionY() - 2, GetPositionZ(), GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN, 0);
 
         SetBot(newbot);
         SetBotClass(botclass);
@@ -3210,7 +3351,7 @@ void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
         newbot->DeleteThreatList();
         newbot->AIM_Initialize();
 
-        CharmInfo *charmInfonewbot = newbot->InitCharmInfo();
+        CharmInfo* charmInfonewbot = newbot->InitCharmInfo();
         newbot->setFaction(getFaction());
     
 	    if (botclass == CLASS_PRIEST || botclass == CLASS_MAGE || botclass == CLASS_WARLOCK)
@@ -3230,7 +3371,7 @@ void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
         //it wont get an error about not finding correct race
         GetBot()->SetByteValue(UNIT_FIELD_BYTES_0, 0, newbotrace);
 
-        if(GetBotAI()) 
+        if (GetBotAI()) 
             GetBotAI()->JustRespawned();
 
         SetBotMustWaitForSpell1(0);
@@ -3264,11 +3405,11 @@ void Player::CreateBot(uint32 botentry, uint8 botrace, uint8 botclass)
         newbot->SetLevel(getLevel());
         newbot->AI()->Reset();
     }
-} //end Player::CreateBot
+}
 
-Creature *Player::GetBotsPet(uint32 entry)
+Creature* Player::GetBotsPet(uint32 entry)
 {
-    Creature *pet = this->SummonCreature(entry, GetPositionX() + 10, GetPositionY() + 10, GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+    Creature* pet = this->SummonCreature(entry, GetPositionX() + 10, GetPositionY() + 10, GetPositionZ(), 0, TEMPSUMMON_DEAD_DESPAWN, 0);
 
     QueryResult result;
 
@@ -3276,7 +3417,7 @@ Creature *Player::GetBotsPet(uint32 entry)
 
     if (result)
     {
-        Field *fields = result->Fetch();
+        Field* fields = result->Fetch();
         uint32 hp = fields[0].GetUInt32();
         uint32 mana = fields[1].GetUInt32();
         uint32 armor = fields[2].GetUInt32();
@@ -3288,15 +3429,15 @@ Creature *Player::GetBotsPet(uint32 entry)
         pet->SetArmor(armor);
         pet->SetStat(STAT_STRENGTH, str);
         pet->SetStat(STAT_AGILITY, agi);
-        //delete result;
     }
+
     pet->SetLevel(getLevel());
 
     m_botHasPet = true;
     m_botsPet = pet;
 
     return pet;
-} //end GetBotsPet
+}
 
 void Player::SetBotsPetDied()
 {
@@ -3325,29 +3466,49 @@ void Player::CreateNPCBot(uint8 bot_class)
 
         if (this->GetTeam() == ALLIANCE)
         {
-            if (bot_class == CLASS_ROGUE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_PRIEST) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_DRUID) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_SHAMAN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_MAGE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_WARLOCK) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_WARRIOR) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_PALADIN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else if (bot_class == CLASS_HUNTER) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
-            else result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='script_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            if (bot_class == CLASS_ROGUE)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_PRIEST)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_DRUID)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_SHAMAN)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_MAGE)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_WARLOCK)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_WARRIOR)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_PALADIN)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else if (bot_class == CLASS_HUNTER)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
+            else
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='script_bot' and trainer_class=%u and trainer_race IN(1,3,4,7,11)", bot_class);
         }
         else if (this->GetTeam() == HORDE)
         {
-            if (bot_class == CLASS_ROGUE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_PRIEST) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_SHAMAN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_MAGE) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_WARLOCK) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_WARRIOR) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_DRUID) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_PALADIN) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else if (bot_class == CLASS_HUNTER) result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
-            else result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='script_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            if (bot_class == CLASS_ROGUE)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='rogue_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_PRIEST)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='priest_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_SHAMAN)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='shaman_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_MAGE)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='mage_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_WARLOCK)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warlock_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_WARRIOR)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='warrior_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_DRUID)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='druid_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_PALADIN)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='paladin_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else if (bot_class == CLASS_HUNTER)
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='hunter_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
+            else
+                result = WorldDatabase.PQuery("SELECT entry,trainer_race FROM creature_template WHERE scriptname='script_bot' and trainer_class=%u and trainer_race IN(2,5,6,8,10)", bot_class);
         }
 
         //randomly select one of NPCs
@@ -3355,31 +3516,29 @@ void Player::CreateNPCBot(uint8 bot_class)
         {
             uint64 m_rand = urand(1, result->GetRowCount());
             uint64 tmp_rand = 0;
+
             do
             {
-                Field *fields = result->Fetch();
+                Field* fields = result->Fetch();
                 entry = fields[0].GetUInt32();
                 bot_race = fields[1].GetUInt32();
                 ++tmp_rand;
+
                 if (tmp_rand == m_rand)
                     break;
             } while(result->NextRow());
-           // delete result;
         }
     }
 
     this->SetBotMustBeCreated(entry, bot_race, bot_class);
-} //end CreateNPCBot
+}
 
 void Player::RegenerateAll()
 {
-    //if (m_regenTimer <= 500)
-    //    return;
 
     m_regenTimerCount += m_regenTimer;
 
     Regenerate(POWER_ENERGY);
-
     Regenerate(POWER_MANA);
 
     // Runes act as cooldowns, and they don't need to send any data
@@ -3391,13 +3550,11 @@ void Player::RegenerateAll()
     if (m_regenTimerCount >= 2000)
     {
         // Not in combat or they have regeneration
-        if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
-            HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
-        {
+        if (!isInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) || HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
             RegenerateHealth();
-        }
 
         Regenerate(POWER_RAGE);
+
         if (getClass() == CLASS_DEATH_KNIGHT)
             Regenerate(POWER_RUNIC_POWER);
 
@@ -3410,12 +3567,13 @@ void Player::RegenerateAll()
 void Player::Regenerate(Powers power)
 {
     uint32 maxValue = GetMaxPower(power);
+
     if (!maxValue)
         return;
 
     uint32 curValue = GetPower(power);
 
-    // TODO: possible use of miscvalueb instead of amount
+    // TODO: possible use of miscvalue instead of amount
     if (HasAuraTypeWithValue(SPELL_AURA_PREVENT_REGENERATE_POWER, power))
         return;
 
@@ -3435,7 +3593,8 @@ void Player::Regenerate(Powers power)
                 addvalue += GetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) *  ManaIncreaseRate * 0.001f * m_regenTimer;
             else
                 addvalue += GetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER) * ManaIncreaseRate * 0.001f * m_regenTimer;
-        }   break;
+            break;
+        }
         case POWER_RAGE:                                    // Regenerate rage
         {
             if (!isInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
@@ -3443,7 +3602,8 @@ void Player::Regenerate(Powers power)
                 float RageDecreaseRate = sWorld->getRate(RATE_POWER_RAGE_LOSS);
                 addvalue += -20 * RageDecreaseRate;               // 2 rage by tick (= 2 seconds => 1 rage/sec)
             }
-        }   break;
+            break;
+        }
         case POWER_ENERGY:                                  // Regenerate energy (rogue)
             addvalue += 0.01f * m_regenTimer * sWorld->getRate(RATE_POWER_ENERGY);
             break;
@@ -3454,7 +3614,8 @@ void Player::Regenerate(Powers power)
                 float RunicPowerDecreaseRate = sWorld->getRate(RATE_POWER_RUNICPOWER_LOSS);
                 addvalue += -30 * RunicPowerDecreaseRate;         // 3 RunicPower by tick
             }
-        }   break;
+            break;
+        }
         case POWER_RUNE:
         case POWER_FOCUS:
         case POWER_HAPPINESS:
