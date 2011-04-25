@@ -195,6 +195,7 @@ enum eGameObjects
     GO_THORIM_LEVER         = 194265,
     GO_MIMIRON_TRAM         = 194675,
     GO_MIMIRON_ELEVATOR     = 194749,
+    GO_DO_NOT_PUSH          = 194739,
     GO_KEEPERS_DOOR         = 194255,
     GO_CALL_TRAM_1          = 194914,
     GO_CALL_TRAM_2          = 194912,

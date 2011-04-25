@@ -110,6 +110,7 @@ public:
         uint64 uiThorimLeverGUID;
         uint64 uiMimironTramGUID;
         uint64 uiMimironElevatorGUID;
+        uint64 uiDoNotPushGUID;
         uint64 uiKeepersGateGUID;
 
         std::set<uint64> mRubbleSpawns;
@@ -157,7 +158,7 @@ public:
             uiKologarnChestGUID     = 0;
             uiThorimChestGUID       = 0;
             uiHodirChestGUID        = 0;
-            uiMimironChestGUID        = 0;
+            uiMimironChestGUID      = 0;
             uiFreyaChestGUID        = 0;
             uiLeviathanGateGUID     = 0;
             uiVezaxDoorGUID         = 0;
@@ -167,6 +168,7 @@ public:
             uiThorimLeverGUID       = 0;
             uiMimironTramGUID       = 0;
             uiMimironElevatorGUID   = 0;
+            uiDoNotPushGUID         = 0;
             uiKeepersGateGUID       = 0;
 
             memset(uiEncounter, 0, sizeof(uiEncounter));
@@ -285,7 +287,7 @@ public:
                 case NPC_VX_001:
                     uiVx001 = creature->GetGUID();
                     break;
-                case NPC_AERIAL_COMMAND_UNIT
+                case NPC_AERIAL_COMMAND_UNIT:
                     uiAerialUnit = creature->GetGUID();
                     break;
                 case NPC_MAGNETIC_CORE:
@@ -474,6 +476,9 @@ public:
                 case GO_MIMIRON_ELEVATOR:
                     uiMimironElevatorGUID = go->GetGUID();
                     break;
+                case GO_DO_NOT_PUSH:
+                    uiDoNotPushGUID = go->GetGUID();
+                    break;
                 case GO_KEEPERS_DOOR:
                 {
                     InstanceScript* instance = go->GetInstanceScript();
@@ -595,6 +600,20 @@ public:
                     CheckKeepersState();
                     break;
                 case TYPE_MIMIRON:
+                    if (state == NOT_STARTED || state == FAIL)
+                        if (GameObject* go = instance->GetGameObject(uiDoNotPushGUID))
+                        {
+                            go->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
+                            HandleGameObject(uiDoNotPushGUID, true);
+                        }
+
+                    if (state == IN_PROGRESS)
+                        if (GameObject* go = instance->GetGameObject(uiDoNotPushGUID))
+                        {
+                            go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
+                            HandleGameObject(uiDoNotPushGUID, false);
+                        }
+
                     if (state == DONE)
                         if (GameObject* go = instance->GetGameObject(uiMimironChestGUID))
                             go->SetRespawnTime(go->GetRespawnDelay());

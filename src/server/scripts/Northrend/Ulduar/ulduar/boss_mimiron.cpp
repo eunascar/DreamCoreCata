@@ -60,6 +60,7 @@ enum eSpells
     SPELL_SHOCK_BLAST                       = 63631,
     SPELL_EXPLOSION                         = 66351,
     SPELL_NAPALM_SHELL                      = 63666,
+    SPELL_TRIGGER_MISSILE                   = 65347,
     
     // VX-001
     SPELL_RAPID_BURST                       = 63382,
@@ -698,7 +699,7 @@ class boss_leviathan_mk : public CreatureScript
                     turret->ForcedDespawn();
                 }
 
-                vehicle->InstallAllAccessories();
+                vehicle->InstallAllAccessories(false);
             }
 
             void JustReachedHome()
@@ -937,55 +938,6 @@ class boss_leviathan_mk_turret : public CreatureScript
         }
 };
 
-class npc_proximity_mine : public CreatureScript
-{
-    public:
-        npc_proximity_mine() : CreatureScript("npc_proximity_mine") { }
-
-        struct npc_proximity_mineAI : public Scripted_NoMovementAI
-        {
-            npc_proximity_mineAI(Creature* creature) : Scripted_NoMovementAI(creature)
-            {
-               me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
-               uiBoomTimer = 35000;
-               Boom = false;
-            }
-
-            void MoveInLineOfSight(Unit* who)
-            {
-                if (!Boom && me->IsWithinDistInMap(who, 0.5f) && who->ToPlayer() && !who->ToPlayer()->isGameMaster())
-                {
-                    DoCastAOE(SPELL_EXPLOSION);
-                    me->ForcedDespawn(1000);
-                    Boom = true;
-                }
-            }
-
-            void UpdateAI(const uint32 diff)
-            {
-                if (uiBoomTimer <= diff)
-                {
-                    if (!Boom)
-                    {
-                        DoCastAOE(SPELL_EXPLOSION);
-                        me->ForcedDespawn(1000);
-                        Boom = true;
-                    }
-                }
-                else
-                    uiBoomTimer -= diff;
-            }
-        private:
-            uint32 uiBoomTimer;
-            bool Boom;
-        };
-
-        CreatureAI* GetAI(Creature* creature) const
-        {
-            return new npc_proximity_mineAI (creature);
-        }
-};
-
 class boss_vx_001 : public CreatureScript
 {
     public:
@@ -1201,27 +1153,6 @@ class boss_vx_001 : public CreatureScript
         }
 };
 
-class npc_rocket_strike : public CreatureScript
-{
-    public:
-        npc_rocket_strike() : CreatureScript("npc_rocket_strike") { }
-
-        struct npc_rocket_strikeAI : public Scripted_NoMovementAI
-        {
-            npc_rocket_strikeAI(Creature* creature) : Scripted_NoMovementAI(creature)
-            {
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
-                me->ForcedDespawn(10000);
-                DoCast(me, SPELL_ROCKET_STRIKE_AURA);
-            }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const
-        {
-            return new npc_rocket_strikeAI (creature);
-        }
-};
-
 class boss_aerial_unit : public CreatureScript
 {
     public:
@@ -1276,6 +1207,21 @@ class boss_aerial_unit : public CreatureScript
                                 DoScriptText(RAND(SAY_AERIAL_SLAY_1, SAY_AERIAL_SLAY_2), pMimiron);
                             else
                                 DoScriptText(RAND(SAY_V07TRON_SLAY_1, SAY_V07TRON_SLAY_2), pMimiron);
+                        }
+            }
+
+            // Until V0L7R0N Code is Done
+            void JustDied(Unit* /*victim*/)
+            {
+                if (Creature* leviathan = me->GetCreature(*me, instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                    if (Creature* vx001 = me->GetCreature(*me, instance->GetData64(DATA_VX_001)))
+                        if (Creature* mimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        {
+                            instance->SetBossState(TYPE_MIMIRON, DONE);
+                            leviathan->DisappearAndDie();
+                            vx001->DisappearAndDie();
+                            mimiron->DisappearAndDie();
+                            me->DisappearAndDie();
                         }
             }
 
@@ -1430,7 +1376,7 @@ class boss_aerial_unit : public CreatureScript
                     DoCast(me, SPELL_EMERGENCY_MODE, true);
             }
 
-            void DamageTaken(Unit* who, uint32& damage)
+            /*void DamageTaken(Unit* who, uint32& damage)
             {
                 if (phase == PHASE_AERIAL_SOLO)
                     if (damage >= me->GetHealth())
@@ -1446,8 +1392,8 @@ class boss_aerial_unit : public CreatureScript
                         phase = PHASE_NULL;
                         events.SetPhase(PHASE_NULL);
 
-                        /*if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
-                            pMimiron->AI()->DoAction(DO_ACTIVATE_V0L7R0N);*/
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                            pMimiron->AI()->DoAction(DO_ACTIVATE_V0L7R0N);
                     }
 
                 if (phase == PHASE_AERIAL_ASSEMBLED)
@@ -1466,7 +1412,7 @@ class boss_aerial_unit : public CreatureScript
                         if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_DEATH_TIMER);
                     }
-            }
+            }*/
         private:
             Vehicle* vehicle;
             Phases phase;
@@ -1477,6 +1423,76 @@ class boss_aerial_unit : public CreatureScript
         CreatureAI* GetAI(Creature* creature) const
         {
             return new boss_aerial_unitAI(creature);
+        }
+};
+
+class npc_proximity_mine : public CreatureScript
+{
+    public:
+        npc_proximity_mine() : CreatureScript("npc_proximity_mine") { }
+
+        struct npc_proximity_mineAI : public Scripted_NoMovementAI
+        {
+            npc_proximity_mineAI(Creature* creature) : Scripted_NoMovementAI(creature)
+            {
+               me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
+               uiBoomTimer = 35000;
+               Boom = false;
+            }
+
+            void MoveInLineOfSight(Unit* who)
+            {
+                if (!Boom && me->IsWithinDistInMap(who, 0.5f) && who->ToPlayer() && !who->ToPlayer()->isGameMaster())
+                {
+                    DoCastAOE(SPELL_EXPLOSION);
+                    me->ForcedDespawn(1000);
+                    Boom = true;
+                }
+            }
+
+            void UpdateAI(const uint32 diff)
+            {
+                if (uiBoomTimer <= diff)
+                {
+                    if (!Boom)
+                    {
+                        DoCastAOE(SPELL_EXPLOSION);
+                        me->ForcedDespawn(1000);
+                        Boom = true;
+                    }
+                }
+                else
+                    uiBoomTimer -= diff;
+            }
+        private:
+            uint32 uiBoomTimer;
+            bool Boom;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_proximity_mineAI (creature);
+        }
+};
+
+class npc_rocket_strike : public CreatureScript
+{
+    public:
+        npc_rocket_strike() : CreatureScript("npc_rocket_strike") { }
+
+        struct npc_rocket_strikeAI : public Scripted_NoMovementAI
+        {
+            npc_rocket_strikeAI(Creature* creature) : Scripted_NoMovementAI(creature)
+            {
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
+                me->ForcedDespawn(10000);
+                DoCast(me, SPELL_ROCKET_STRIKE_AURA);
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_rocket_strikeAI (creature);
         }
 };
 
@@ -1607,26 +1623,6 @@ class npc_emergency_bot : public CreatureScript
         }
 };
 
-class go_not_push_button : public GameObjectScript
-{
-    public:
-        go_not_push_button() : GameObjectScript("go_not_push_button") { }
-
-        bool OnGossipHello(Player* player, GameObject* go)
-        {
-            InstanceScript* instance = go->GetInstanceScript();
-
-            if (!instance)
-                return false;
-
-            if ((instance->GetBossState(TYPE_MIMIRON) != IN_PROGRESS || instance->GetBossState(TYPE_MIMIRON) != DONE) && player)
-                if (Creature* pMimiron = player->GetCreature((*player), instance->GetData64(TYPE_MIMIRON)))
-                    pMimiron->AI()->DoAction(DO_ACTIVATE_HARD_MODE);
-
-            return true;
-        }
-};
-
 class npc_mimiron_flame_trigger : public CreatureScript
 {
     public:
@@ -1744,6 +1740,26 @@ class npc_frost_bomb : public CreatureScript
         }
 };
 
+class go_not_push_button : public GameObjectScript
+{
+    public:
+        go_not_push_button() : GameObjectScript("go_not_push_button") { }
+
+        bool OnGossipHello(Player* player, GameObject* go)
+        {
+            InstanceScript* instance = go->GetInstanceScript();
+
+            if (!instance)
+                return false;
+
+            if ((instance->GetBossState(TYPE_MIMIRON) != IN_PROGRESS || instance->GetBossState(TYPE_MIMIRON) != DONE) && player)
+                if (Creature* pMimiron = player->GetCreature((*player), instance->GetData64(TYPE_MIMIRON)))
+                    pMimiron->AI()->DoAction(DO_ACTIVATE_HARD_MODE);
+
+            return true;
+        }
+};
+
 class spell_ulduar_proximity_mines : public SpellScriptLoader
 {
    public:
@@ -1777,16 +1793,16 @@ void AddSC_boss_mimiron()
     new boss_mimiron();
     new boss_leviathan_mk();
     new boss_leviathan_mk_turret();
-    new npc_proximity_mine();
     new boss_vx_001();
-    new npc_rocket_strike();
     new boss_aerial_unit();
+    new npc_proximity_mine();
+    new npc_rocket_strike();
     new npc_magnetic_core();
     new npc_assault_bot();
     new npc_emergency_bot();
-    new go_not_push_button();
     new npc_mimiron_flame_trigger();
     new npc_mimiron_flame_spread();
     new npc_frost_bomb();
+    new go_not_push_button();
     new spell_ulduar_proximity_mines();
 }
