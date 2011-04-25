@@ -500,7 +500,7 @@ class boss_mimiron : public CreatureScript
                                 me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_STAND);
 
                                 if (instance)
-                                    me->SummonCreature(NPC_AERIAL_UNIT, 2744.65f, 2569.46f, 380, 3.14159f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
+                                    me->SummonCreature(NPC_AERIAL_COMMAND_UNIT, 2744.65f, 2569.46f, 380, 3.14159f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
 
                                 JumpToNextStep(5000);
                                 break;
@@ -1493,7 +1493,7 @@ class npc_magnetic_core : public CreatureScript
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
                 me->ForcedDespawn(21000);
 
-                if (Creature* pAerialUnit = me->FindNearestCreature(NPC_AERIAL_UNIT, 20, true))
+                if (Creature* pAerialUnit = me->FindNearestCreature(NPC_AERIAL_COMMAND_UNIT, 20, true))
                     if (!pAerialUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE) && pAerialUnit->IsFlying())
                         pAerialUnit->AI()->DoAction(DO_DISABLE_AERIAL);
             }

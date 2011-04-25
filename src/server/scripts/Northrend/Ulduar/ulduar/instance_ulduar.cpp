@@ -279,13 +279,13 @@ public:
                 case NPC_STONEBARK:
                     uiStoneBark = creature->GetGUID();
                     break;
-                case NPC_LEVIATHAN_MK_II:
+                case NPC_LEVIATHAN_MKII:
                     uiLeviathanMkII = creature->GetGUID();
                     break;
                 case NPC_VX_001:
                     uiVx001 = creature->GetGUID();
                     break;
-                case NPC_AERIAL_UNIT:
+                case NPC_AERIAL_COMMAND_UNIT
                     uiAerialUnit = creature->GetGUID();
                     break;
                 case NPC_MAGNETIC_CORE:
