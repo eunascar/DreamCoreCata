@@ -3965,6 +3965,17 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->EffectSpellClassMask[0] = flag96(0x00000040, 0x00000000, 0x00000000);
             count++;
             break;
+        case 19970: // Entangling Roots (Rank 6) -- Nature's Grasp Proc
+        case 19971: // Entangling Roots (Rank 5) -- Nature's Grasp Proc
+        case 19972: // Entangling Roots (Rank 4) -- Nature's Grasp Proc
+        case 19973: // Entangling Roots (Rank 3) -- Nature's Grasp Proc
+        case 19974: // Entangling Roots (Rank 2) -- Nature's Grasp Proc
+        case 19975: // Entangling Roots (Rank 1) -- Nature's Grasp Proc
+        case 27010: // Entangling Roots (Rank 7) -- Nature's Grasp Proc
+        case 53313: // Entangling Roots (Rank 8) -- Nature's Grasp Proc
+            spellInfo->CastingTimeIndex = 1;
+            count++;
+            break;
         // ULDUAR SPELLS
         //
         case 63342: // Focused Eyebeam Summon Trigger
@@ -4058,19 +4069,6 @@ void SpellMgr::LoadSpellCustomAttr()
         case 72674: // Mutated Strength (Professor Putricide)
         case 72675: // Mutated Strength (Professor Putricide)
             spellInfo->Effect[1] = 0;
-            count++;
-            break;
-        case 70447: // Volatile Ooze Adhesive (Professor Putricide)
-        case 72836: // Volatile Ooze Adhesive (Professor Putricide)
-        case 72837: // Volatile Ooze Adhesive (Professor Putricide)
-        case 72838: // Volatile Ooze Adhesive (Professor Putricide)
-        case 70672: // Gaseous Bloat (Professor Putricide)
-        case 72455: // Gaseous Bloat (Professor Putricide)
-        case 72832: // Gaseous Bloat (Professor Putricide)
-        case 72833: // Gaseous Bloat (Professor Putricide)
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ENEMY;
-            spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_TARGET_ENEMY;
-            spellInfo->EffectImplicitTargetB[2] = TARGET_UNIT_TARGET_ENEMY;
             count++;
             break;
         case 70911: // Unbound Plague (Professor Putricide)

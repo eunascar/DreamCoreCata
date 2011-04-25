@@ -478,7 +478,6 @@ INSERT INTO `command` VALUES
 ('itemmove',2,'Syntax: .itemmove #sourceslotid #destinationslotid\r\n\r\nMove an item from slots #sourceslotid to #destinationslotid in your inventory\r\n\r\nNot yet implemented'),
 ('kick',2,'Syntax: .kick [$charactername] [$reason]\r\n\r\nKick the given character name from the world with or without reason. If no character name is provided then the selected player (except for yourself) will be kicked. If no reason is provided, default is \"No Reason\".'),
 ('learn',3,'Syntax: .learn #spell [all]\r\n\r\nSelected character learn a spell of id #spell. If ''all'' provided then all ranks learned.'),
-('learn all',3,'Syntax: .learn all\r\n\r\nLearn all big set different spell maybe useful for Administaror.'),
 ('learn all crafts',2,'Syntax: .learn crafts\r\n\r\nLearn all professions and recipes.'),
 ('learn all default',1,'Syntax: .learn all default [$playername]\r\n\r\nLearn for selected/$playername player all default spells for his race/class and spells rewarded by completed quests.'),
 ('learn all gm',2,'Syntax: .learn all gm\r\n\r\nLearn all default spells for Game Masters.'),
@@ -16957,6 +16956,7 @@ INSERT INTO `spell_bonus_data` (`entry`,`direct_bonus`,`dot_bonus`,`ap_bonus`,`a
 (2948, 0.4286, -1, -1, -1, 'Mage - Scorch'),
 (59638, 0.3, -1, 0, -1, 'Mage - Mirror Image Frostbolt'),
 (59637, 0.15, -1, 0, -1, 'Mage - Mirror Image Fire Blast'),
+(31707, 0.8333, 0, 0, 0, 'Mage - Water Elemental Waterbolt'),
 (31935, 0.07, -1, 0.07, -1, 'Paladin - Avenger Shield'),
 (53742, -1, 0.0176, -1, 0.03, 'Paladin - Blood Corruption'),
 (26573, -1, 0.04, -1, 0.04, 'Paladin - Consecration'),
@@ -17330,7 +17330,8 @@ INSERT INTO `spell_dbc` (`Id`,`Dispel`,`Mechanic`,`Attributes`,`AttributesEx`,`A
 (65195,  0, 0, 536870912, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 101, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 16, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'The Iron Council credit marker'),
 (64899,  0, 0, 536870912, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 101, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 16, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Hodir credit marker'),
 (64985,  0, 0, 536870912, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 101, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 16, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Thorim credit marker'),
-(65074,  0, 0, 536870912, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 101, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 16, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Freya credit marker');
+(65074,  0, 0, 536870912, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 101, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 16, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Freya credit marker'),
+(60937,  0, 0, 562036736, 32, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 101, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'Seaforium charges damaging wall achievement credit');
 /*!40000 ALTER TABLE `spell_dbc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -17689,7 +17690,6 @@ INSERT INTO `spell_group` (`id`, `spell_id`) VALUES
 (1046,57660), -- Totem of Wrath
 (1046,57662), -- Totem of Wrath
 (1046,57663), -- Totem of Wrath
-(1046,30708), -- Totem of Wrath
 (1047,53646), -- Demonic Pact
 -- Increased Spell Hit Chance Taken Debuff
 (1049,33600), --  Improved Faerie Fire
@@ -18202,6 +18202,10 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment
 (-71224, 69706, 0, 'Rotface: Mutated Infection Summon'),
 (-73022, 69706, 0, 'Rotface: Mutated Infection Summon'),
 (-73023, 69706, 0, 'Rotface: Mutated Infection Summon'),
+(-70447, 70530, 0, 'Putricide: Volatile Ooze Adhesive Protection'),
+(-72836, 70530, 0, 'Putricide: Volatile Ooze Adhesive Protection'),
+(-72837, 70530, 0, 'Putricide: Volatile Ooze Adhesive Protection'),
+(-72838, 70530, 0, 'Putricide: Volatile Ooze Adhesive Protection'),
 ( 70867, 70871, 2, 'Blood-Queen: Essence of the Blood Queen'),
 ( 71473, 70871, 2, 'Blood-Queen: Essence of the Blood Queen'),
 ( 71532, 70871, 2, 'Blood-Queen: Essence of the Blood Queen'),

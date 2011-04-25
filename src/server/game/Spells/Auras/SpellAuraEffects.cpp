@@ -3468,14 +3468,17 @@ void AuraEffect::HandleAuraCloneCaster(AuraApplication const * aurApp, uint8 mod
     if (apply)
     {
         Unit * caster = GetCaster();
-        if (!caster)
+        if (!caster || caster == target)
             return;
-        // Set display id (probably for portrait?)
+        // What must be cloned? at least display and scale
         target->SetDisplayId(caster->GetDisplayId());
+        target->SetCreatorGUID(caster->GetGUID());
+        //target->SetFloatValue(OBJECT_FIELD_SCALE_X, caster->GetFloatValue(OBJECT_FIELD_SCALE_X)); // we need retail info about how scaling is handled (aura maybe?)
         target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);
     }
     else
     {
+        target->SetCreatorGUID(0);
         target->SetDisplayId(target->GetNativeDisplayId());
         target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_MIRROR_IMAGE);
     }
@@ -4542,9 +4545,8 @@ void AuraEffect::HandleAuraModStateImmunity(AuraApplication const * aurApp, uint
     Unit * target = aurApp->GetTarget();
 
     if ((apply) && GetSpellProto()->AttributesEx & SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY)
-    {
-        target->RemoveAurasByType(AuraType(GetMiscValue()), NULL , GetBase());
-    }
+        target->RemoveAurasByType(AuraType(GetMiscValue()), 0 , GetBase());
+
     // stop handling the effect if it was removed by linked event
     if (apply && aurApp->GetRemoveMode())
         return;

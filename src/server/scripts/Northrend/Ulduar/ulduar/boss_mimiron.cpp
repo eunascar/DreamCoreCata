@@ -1744,6 +1744,34 @@ class npc_frost_bomb : public CreatureScript
         }
 };
 
+class spell_ulduar_proximity_mines : public SpellScriptLoader
+{
+   public:
+       spell_ulduar_proximity_mines() : SpellScriptLoader("spell_ulduar_proximity_mines") { }
+
+       class spell_ulduar_proximity_minesSpellScript : public SpellScript
+       {
+           PrepareSpellScript(spell_ulduar_proximity_minesSpellScript)
+
+           void HandleScript(SpellEffIndex effIndex)
+           {
+               PreventHitDefaultEffect(effIndex);
+               for (uint8 i = 0; i < 10; ++i)
+                   GetCaster()->CastSpell(GetCaster(), SPELL_TRIGGER_MISSILE, true);
+           }
+
+           void Register()
+           {
+               OnEffect += SpellEffectFn(spell_ulduar_proximity_minesSpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+           }
+       };
+       
+       SpellScript* GetSpellScript() const
+       {
+           return new spell_ulduar_proximity_minesSpellScript();
+       }
+};
+
 void AddSC_boss_mimiron()
 {
     new boss_mimiron();
@@ -1760,4 +1788,5 @@ void AddSC_boss_mimiron()
     new npc_mimiron_flame_trigger();
     new npc_mimiron_flame_spread();
     new npc_frost_bomb();
+    new spell_ulduar_proximity_mines();
 }
