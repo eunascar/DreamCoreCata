@@ -2551,6 +2551,14 @@ void Player::RefreshBot(uint32 diff)
                     m_bot->CombatStop();
                     return; //for now return because can't do anything, need to continue timer though somehow
                 }
+
+                if (m_bot->getVictim()->GetTypeId() == TYPEID_PLAYER && !m_bot->getVictim()->IsFriendlyTo(m_bot))
+                {
+                    m_bot->SetReactState(REACT_PASSIVE); //Don't attack Players
+                    m_bot->CombatStop();
+                    RemoveBot();
+                    SetBotMustBeCreated(m_bot_entry, newbotrace, newbotclass);
+                }
             }
             else if (getVictim() > 0 && !getVictim()->IsPolymorphed())
             {
