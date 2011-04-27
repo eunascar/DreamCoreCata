@@ -81,8 +81,6 @@ enum Phases
     PHASE_2_MASK  = 1 << PHASE_2
 };
 
-Creature* pXerestrasza;
-
 class boss_baltharus : public CreatureScript
 {
     public:
@@ -129,18 +127,12 @@ class boss_baltharus : public CreatureScript
 
             void JustDied(Unit*)
             {
+                _JustDied();
                 Talk(SAY_DEATH);
                 instance->SetData(DATA_BALTHARUS, DONE);
-                if (GameObject* flame = GetClosestGameObjectWithEntry(me, GO_FIRE_FIELD, 200.0f))
-                    flame->RemoveFromWorld();
 
-                if (instance->GetBossState(DATA_RAGEFIRE) == DONE)
-                {
-                   if (GameObject* flame = GetClosestGameObjectWithEntry(me, GO_FLAME_WALLS, 200.0f))
-                       flame->RemoveFromWorld();
-                }
-                pXerestrasza->AI()->DoAction(ACTION_START_EVENT);
-                _JustDied();
+                if (Creature* xerestrasza = me->GetCreature(*me, instance->GetData64(DATA_XERESTRASZA)))
+                    xerestrasza->AI()->DoAction(ACTION_START_EVENT);
             }
 
             void UpdateAI(const uint32 diff)
@@ -188,14 +180,12 @@ class boss_baltharus : public CreatureScript
 
                 DoMeleeAttackIfReady();
             }
-
         };
 
         CreatureAI* GetAI(Creature* creature) const
         {
             return new boss_baltharusAI(creature);
         }
-
 };
 
 class boss_baltharus_summon : public CreatureScript
@@ -213,9 +203,9 @@ class boss_baltharus_summon : public CreatureScript
             void Reset()
             {
                 events.Reset();
-                events.ScheduleEvent(EVENT_CAST_CLEAVE, urand(2000,3000));
-                events.ScheduleEvent(EVENT_CAST_ENERVATING_BRAND, urand(30000,45000));
-                events.ScheduleEvent(EVENT_CAST_BLADE_TEMPEST, urand(20000,25000));
+                events.ScheduleEvent(EVENT_CAST_CLEAVE, urand(2000, 3000));
+                events.ScheduleEvent(EVENT_CAST_ENERVATING_BRAND, urand(30000, 45000));
+                events.ScheduleEvent(EVENT_CAST_BLADE_TEMPEST, urand(20000, 25000));
             }
 
             void UpdateAI(const uint32 diff)
@@ -249,11 +239,9 @@ class boss_baltharus_summon : public CreatureScript
 
                 DoMeleeAttackIfReady();
             }
-
         private:
             EventMap events;
             InstanceScript* pInstance;
-
         };
 
         CreatureAI* GetAI(Creature* creature) const
@@ -273,7 +261,6 @@ class npc_xerestrasza : public CreatureScript
             npc_xerestraszaAI(Creature* creature) : ScriptedAI(creature)
             {
                 pInstance = me->GetInstanceScript();
-                pXerestrasza = me;
             }
 
             void Reset()

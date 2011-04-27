@@ -93,11 +93,6 @@ class boss_ragefire : public CreatureScript
                 _JustDied();
                 Talk(SAY_DEATH);
                 instance->SetBossState(DATA_RAGEFIRE, DONE);
-                if (instance->GetBossState(DATA_BALTHARUS) == DONE)
-                {
-                   if (GameObject* flame = GetClosestGameObjectWithEntry(me, GO_FLAME_WALLS, 200.0f))
-                       flame->RemoveFromWorld();
-                }
             }
 
             void JustReachedHome()
@@ -169,20 +164,16 @@ class boss_ragefire : public CreatureScript
 
                 DoMeleeAttackIfReady();
             }
-
         private:
             bool bConflagration;
             std::list<Unit *> playerList;
-
         };
 
         CreatureAI* GetAI(Creature* creature) const
         {
             return new boss_ragefireAI(creature);
         }
-
 };
-
 
 void AddSC_boss_ragefire()
 {
