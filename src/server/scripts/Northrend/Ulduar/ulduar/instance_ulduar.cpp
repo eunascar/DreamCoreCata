@@ -618,6 +618,12 @@ public:
                         if (GameObject* go = instance->GetGameObject(uiMimironChestGUID))
                             go->SetRespawnTime(go->GetRespawnDelay());
 
+                        if (GameObject* go = instance->GetGameObject(uiDoNotPushGUID))
+                        {
+                            go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
+                            HandleGameObject(uiDoNotPushGUID, false);
+                        }
+
                     CheckKeepersState();
                     break;
                 case TYPE_VEZAX:

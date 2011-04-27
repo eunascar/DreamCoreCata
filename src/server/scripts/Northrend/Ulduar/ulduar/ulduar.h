@@ -59,10 +59,10 @@ enum eTypes
 
     // Mimiron
     DATA_LEVIATHAN_MK_II,
-    DATA_VX_001,
-    DATA_AERIAL_UNIT,
-    DATA_MAGNETIC_CORE,
     DATA_MIMIRON_ELEVATOR,
+    DATA_AERIAL_UNIT,
+    DATA_VX_001,
+    DATA_MAGNETIC_CORE,
 
     // Hodir
     DATA_HODIR_RARE_CHEST,
@@ -118,6 +118,7 @@ enum eNPCs
     NPC_VX_001                  = 33651,
     NPC_AERIAL_COMMAND_UNIT     = 33670,
     NPC_MAGNETIC_CORE           = 34068,
+    NPC_ROCKET                  = 34050,
     NPC_PROXIMITY_MINE          = 34362,
     NPC_RUNIC_COLOSSUS          = 32872,
     NPC_RUNE_GIANT              = 32873,
