@@ -87,28 +87,64 @@ enum ePhases
 };
 enum eEvents
 {
-    EVENT_SPEECH = 1,
-    EVENT_BERSERK,
-    EVENT_CHECK_ALIVE_PLAYERS,
-    EVENT_SUMMON_SHAMBLING_HORROR,
-    EVENT_SUMMON_DRUDGE_GHOULS,
-    EVENT_INFEST,
-    EVENT_NECROTIC_PLAGUE,
-    EVENT_SHADOW_TRAP,
+    // Lich King
+    EVENT_SPEECH                              = 1,
+    EVENT_BERSERK                             = 2,
+    EVENT_CHECK_ALIVE_PLAYERS                 = 3,
+    EVENT_SUMMON_SHAMBLING_HORROR             = 4,
+    EVENT_SUMMON_DRUDGE_GHOULS                = 5,
+    EVENT_INFEST                              = 6,
+    EVENT_NECROTIC_PLAGUE                     = 7,
+    EVENT_SHADOW_TRAP                         = 8,
     //Transition phase events
-    EVENT_SUMMON_RAGING_SPIRIT,
-    EVENT_SUMMON_ICE_SPHERE,
-    EVENT_TRANSITION_PHASE_END,
-    EVENT_PAIN_AND_SUFFERING,
+    EVENT_SUMMON_RAGING_SPIRIT                = 9,
+    EVENT_SUMMON_ICE_SPHERE                   = 10,
+    EVENT_TRANSITION_PHASE_END                = 11,
+    EVENT_PAIN_AND_SUFFERING                  = 12,
     //Phase three events
-    EVENT_SUMMON_VAL_KYR_SHADOWGUARD,
-    EVENT_DEFILE,
-    EVENT_SOUL_REAPER,
+    EVENT_SUMMON_VAL_KYR_SHADOWGUARD          = 13,
+    EVENT_DEFILE                              = 14,
+    EVENT_SOUL_REAPER                         = 15,
     //Phase five events
-    EVENT_SUMMON_VILE_SPIRITS,
-    EVENT_HARVEST_SOUL,
-    EVENT_KILL_FROSTMOURNE_PLAYERS
+    EVENT_SUMMON_VILE_SPIRITS                 = 16,
+    EVENT_HARVEST_SOUL                        = 17,
+    EVENT_KILL_FROSTMOURNE_PLAYERS            = 18,
+
+    // Valkyr Shadowguard
+    EVENT_MOVE_TO_PLATFORM_EDGE               = 19,
+    EVENT_SIPHON_LIFE                         = 20,
+    EVENT_CHECK_AT_PLATFORM_EDGE              = 21,
+    EVENT_CHARGE_PLAYER                       = 22,
+
+    // Vile Spirit
+    EVENT_BECOME_ACTIVE                       = 23,
+    EVENT_DESPAWN                             = 24,
+    EVENT_MOVE_RANDOM                         = 25,
+    EVENT_CHECK_PLAYER_IN_FROSTMOURNE_ROOM    = 26,
+
+    // Shambling Horror
+    EVENT_ENRAGE                              = 27,
+    EVENT_SHOCKWAVE                           = 28,
+
+    // Raging Spirit
+    EVENT_SOUL_SHRIEK                         = 29,
+
+    // Ice Sphere
+    EVENT_MOVE_FORWARD                        = 30,
+    EVENT_ACTIVATE                            = 31,
+
+    // Spirit Warden
+    EVENT_SOUL_RIP                            = 32,
+    EVENT_DESTROY_SOUL                        = 33,
+    EVENT_CHECK_SOUL_RIP_DISPELLED            = 34,
+
+    // Terenas Menethil
+    EVENT_GREET_PLAYER                        = 35, //Yell "You have come to bring Arthas to justice? To see the Lich King destroyed?"
+    EVENT_ENCOURAGE_PLAYER_TO_ESCAPE          = 36, //Yell "First, you must escape Frostmourne's hold or be damned as I am; trapped within this cursed blade for all eternity."
+    EVENT_ASK_PLAYER_FOR_AID                  = 37, //Yell "Aid me in destroying these tortured souls! Together we will loosen Frostmourne's hold and weaken the Lich King from within!"
+    EVENT_CHECK_SPIRIT_WARDEN_HEALTH          = 38,
 };
+
 enum Spells
 {
     SPELL_DEATH_GRIP                                       = 49560,
@@ -201,6 +237,10 @@ enum Spells
     SPELL_LIGHT_S_FAVOR                                    = 69382,
     SPELL_RESTORE_SOUL                                     = 72595,
     SPELL_FEIGN_DEATH                                      = 5384,
+    SPELL_SHOCKWAVE                                        = 72149,
+    SPELL_ENRAGE                                           = 72143,
+    SPELL_FRENZY                                           = 28747,
+    SPELL_SOUL_SHRIEK                                      = 69242,
 };
 
 enum eActions
@@ -224,6 +264,7 @@ enum eSetGuid
 
 enum ePoints
 {
+    POINT_MOVE_NEAR_RANDOM           = 1,
     POINT_START_EVENT_1              = 3659700,
     POINT_PLATFORM_CENTER            = 3659701,
     POINT_PLATFORM_END               = 3659702,
@@ -264,6 +305,7 @@ struct Position FrostmourneRoom[] =
     {495.0f, -2546.0f, 1051.0f, 1.5708f}, //Home position of the Spirit Warden
     {495.0f, -2502.0f, 1051.0f, 4.7124f}, //Home position of Terenas Menethil
 };
+
 /*struct Locations
 {
     float x,y,z;
@@ -280,24 +322,25 @@ static Locations TeleportPoint[]=
     {965.997f, 278.398f, 195.777f},
 };*/
 
-Player *SelectRandomPlayerFromList(TPlayerList &players)
+Player* SelectRandomPlayerFromList(TPlayerList& players)
 {
     if (players.empty())
         return NULL;
+
     TPlayerList::iterator it = players.begin();
     std::advance(it, urand(0, players.size()-1));
-    return *it;
+    return* it;
 }
 
-Player *SelectRandomPlayerInTheMap(Map *pMap)
+Player* SelectRandomPlayerInTheMap(Map* map)
 {
-    TPlayerList players = GetPlayersInTheMap(pMap);
+    TPlayerList players = GetPlayersInTheMap(map);
     return SelectRandomPlayerFromList(players);
 }
 
-Player *SelectRandomAttackablePlayerInTheMap(Map *pMap)
+Player* SelectRandomAttackablePlayerInTheMap(Map* map)
 {
-    TPlayerList players = GetAttackablePlayersInTheMap(pMap);
+    TPlayerList players = GetAttackablePlayersInTheMap(map);
     return SelectRandomPlayerFromList(players);
 }
 
@@ -438,7 +481,7 @@ class boss_the_lich_king : public CreatureScript
                 summons.DespawnAll();
             }
 
-            void JustDied(Unit* /*pKiller*/)
+            void JustDied(Unit* /*killer*/)
             {
                 if (!instance)
                     return;
@@ -691,12 +734,12 @@ class boss_the_lich_king : public CreatureScript
                 }
             }
 
-            void UpdateAI(const uint32 uiDiff)
+            void UpdateAI(const uint32 diff)
             {
                 if (GetPhase(events) != PHASE_6_ENDING && (!UpdateVictim() || !CheckInRoom()))
                     return;
 
-                events.Update(uiDiff);
+                events.Update(diff);
 
                 if (me->HasUnitState(UNIT_STAT_CASTING))
                     return;
@@ -918,7 +961,7 @@ class boss_the_lich_king : public CreatureScript
                     if (uiStage > 22)
                         return;
 
-                    if (uiEndingTimer <= uiDiff)
+                    if (uiEndingTimer <= diff)
                     {
                         switch(uiStage)
                         {
@@ -1111,7 +1154,7 @@ class boss_the_lich_king : public CreatureScript
                         }
 
                         ++uiStage;
-                    } else uiEndingTimer -= uiDiff;
+                    } else uiEndingTimer -= diff;
                 }
 
                 switch (GetPhase(events))
@@ -1125,10 +1168,8 @@ class boss_the_lich_king : public CreatureScript
             }
         private:
             InstanceScript* instance;
-
             uint8 uiStage;
             uint8 uiPhase;
-
             uint32 uiEndingTimer;
             uint32 uiSummonShamblingHorrorTimer;
             uint32 uiSummonDrudgeGhoulsTimer;
@@ -1364,7 +1405,6 @@ class npc_tirion_icc : public CreatureScript
             }
             private:
                 InstanceScript* instance;
-
                 uint64 uiLichKingGUID;
                 uint32 uiIntroTimer;
                 uint8 uiStage;
@@ -1448,18 +1488,8 @@ class npc_tirion_icc : public CreatureScript
 
 class npc_valkyr_shadowguard : public CreatureScript
 {
-
-enum eEvents
-{
-    EVENT_MOVE_TO_PLATFORM_EDGE = 1,
-    EVENT_SIPHON_LIFE,
-    EVENT_CHECK_AT_PLATFORM_EDGE,
-    EVENT_CHARGE_PLAYER
-};
-
-static const float Z_FLY;
-
     public:
+        static const float Z_FLY;
         npc_valkyr_shadowguard() : CreatureScript("npc_valkyr_shadowguard") { }
 
         struct npc_valkyr_shadowguardAI : public ScriptedAI
@@ -1641,14 +1671,12 @@ static const float Z_FLY;
                 }
             }
 
-            void UpdateAI(const uint32 uiDiff)
+            void UpdateAI(const uint32 diff)
             {
-                //if (!UpdateVictim() || !bCanCast)
-                //    return;
                 if (!me->isAlive() || me->HasUnitState(UNIT_STAT_CASTING))
                     return;
 
-                events.Update(uiDiff);
+                events.Update(diff);
 
                 while (uint32 eventId = events.ExecuteEvent())
                 {
@@ -1722,20 +1750,6 @@ const float npc_valkyr_shadowguard::Z_FLY = 1045.0f;
 
 class npc_vile_spirit : public CreatureScript
 {
-
-enum eEvents
-{
-    EVENT_BECOME_ACTIVE = 1,
-    EVENT_DESPAWN,
-    EVENT_MOVE_RANDOM,
-    EVENT_CHECK_PLAYER_IN_FROSTMOURNE_ROOM
-};
-
-enum ePoints
-{
-    POINT_MOVE_NEAR_RANDOM = 1
-};
-
     public:
         static const float Z_VILE_SPIRIT;
         npc_vile_spirit() : CreatureScript("npc_vile_spirit") { }
@@ -1756,7 +1770,7 @@ enum ePoints
                 me->GetPosition(x, y, z);
                 me->SetPosition(x, y, npc_vile_spirit::Z_VILE_SPIRIT, true);
                 Position randomPos;
-                float dist = 1.0f * rand_norm() * 10.0f;
+                float dist = 1.0f * (float)rand_norm() * 10.0f;
                 me->GetRandomNearPosition(randomPos, dist);
                 randomPos.m_positionZ = Z_VILE_SPIRIT;
                 me->GetMotionMaster()->MovePoint(POINT_MOVE_NEAR_RANDOM, randomPos);
@@ -1792,9 +1806,9 @@ enum ePoints
                 }
             }
 
-            void UpdateAI(const uint32 uiDiff)
+            void UpdateAI(const uint32 diff)
             {
-                events.Update(uiDiff);
+                events.Update(diff);
 
                 while (uint32 eventId = events.ExecuteEvent())
                 {
@@ -1803,7 +1817,7 @@ enum ePoints
                         case EVENT_MOVE_RANDOM:
                         {
                             Position randomPos;
-                            float dist = 1.0f * rand_norm() * 10.0f;
+                            float dist = 1.0f * (float)rand_norm() * 10.0f;
                             me->GetRandomNearPosition(randomPos, dist);
                             randomPos.m_positionZ = Z_VILE_SPIRIT;
                             me->GetMotionMaster()->MovePoint(POINT_MOVE_NEAR_RANDOM, randomPos);
@@ -1875,19 +1889,6 @@ const float npc_vile_spirit::Z_VILE_SPIRIT = 1050.0f;
 
 class npc_shambling_horror: public CreatureScript
 {
-    enum eEvents
-    {
-        EVENT_ENRAGE = 1,
-        EVENT_SHOCKWAVE
-    };
-
-    enum eSpells
-    {
-        SPELL_SHOCKWAVE                  = 72149,
-        SPELL_ENRAGE                     = 72143,
-        SPELL_FRENZY                     = 28747
-    };
-
     public:
         npc_shambling_horror(): CreatureScript("npc_shambling_horror") { }
 
@@ -1898,7 +1899,7 @@ class npc_shambling_horror: public CreatureScript
                 instance = creature->GetInstanceScript();
             }
         
-            void EnterCombat(Unit* who)
+            void EnterCombat(Unit* /*who*/)
             {
                 events.Reset();
                 events.ScheduleEvent(EVENT_ENRAGE, 15000);
@@ -1951,7 +1952,7 @@ class npc_shambling_horror: public CreatureScript
             }
     private:
         bool isFrenzied;
-        InstanceScript *instance;
+        InstanceScript* instance;
         EventMap events;
     };
 
@@ -1963,16 +1964,6 @@ class npc_shambling_horror: public CreatureScript
 
 class npc_raging_spirit: public CreatureScript
 {
-    enum eEvents
-    {
-        EVENT_SOUL_SHRIEK = 1
-    };
-
-    enum eSpells
-    {
-        SPELL_SOUL_SHRIEK                = 69242
-    };
-
     public:
         npc_raging_spirit(): CreatureScript("npc_raging_spirit") { }
 
@@ -1980,7 +1971,7 @@ class npc_raging_spirit: public CreatureScript
         {
             npc_raging_spiritAI(Creature* creature): ScriptedAI(creature) { }
 
-            void EnterCombat(Unit* who)
+            void EnterCombat(Unit* /*who*/)
             {
                 events.Reset();
                 events.ScheduleEvent(EVENT_SOUL_SHRIEK, 15000);
@@ -2025,12 +2016,6 @@ class npc_raging_spirit: public CreatureScript
 
 class npc_ice_sphere : public CreatureScript
 {
-    enum eEvents
-    {
-        EVENT_MOVE_FORWARD = 1,
-        EVENT_ACTIVATE
-    };
-
     public:
         npc_ice_sphere() : CreatureScript("npc_ice_sphere") { }
 
@@ -2060,7 +2045,7 @@ class npc_ice_sphere : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*pKiller*/)
+            void JustDied(Unit* /*killer*/)
             {
                 if (Unit* victim = ObjectAccessor::GetUnit(*me, m_victimGuid))
                     victim->RemoveAurasDueToSpell(SPELL_ICE_PULSE, me->GetGUID());
@@ -2073,9 +2058,9 @@ class npc_ice_sphere : public CreatureScript
                 me->DespawnOrUnsummon();
             }
 
-            void UpdateAI(const uint32 uiDiff)
+            void UpdateAI(const uint32 diff)
             {
-                events.Update(uiDiff);
+                events.Update(diff);
 
                 while (uint32 eventId = events.ExecuteEvent())
                 {
@@ -2188,7 +2173,7 @@ class npc_defile : public CreatureScript
                 }
             }*/
 
-            void UpdateAI(const uint32 uiDiff) {}
+            void UpdateAI(const uint32 diff) {}
     private:
         bool alreadyReset;
         int32 m_hitNumber, m_radiusMod;
@@ -2202,13 +2187,6 @@ class npc_defile : public CreatureScript
 
 class npc_spirit_warden : public CreatureScript
 {
-enum eEvents
-{
-    EVENT_SOUL_RIP = 1,
-    EVENT_DESTROY_SOUL,
-    EVENT_CHECK_SOUL_RIP_DISPELLED
-};
-
     public:
         npc_spirit_warden() : CreatureScript("npc_spirit_warden") { }
 
@@ -2228,12 +2206,12 @@ enum eEvents
                 me->SetReactState(REACT_PASSIVE);
             }
 
-            void DamageDealt(Unit* target, uint32& damage, DamageEffectType damageType)
+            void DamageDealt(Unit* /*target*/, uint32& damage, DamageEffectType /*damageType*/)
             {
                 me->CastCustomSpell(SPELL_DARK_HUNGER_HEAL_EFFECT, SPELLVALUE_BASE_POINT0, damage, me, true, NULL, NULL, me->GetGUID());
             }
             
-            void JustDied(Unit* /*pKiller*/)
+            void JustDied(Unit* /*killer*/)
             {
                 if (Player* player = me->FindNearestPlayer(80.0f, true))
                 {
@@ -2272,12 +2250,12 @@ enum eEvents
                 }
             }
 
-            void UpdateAI(const uint32 uiDiff)
+            void UpdateAI(const uint32 diff)
             {
                 if (!me->isAlive() || me->HasUnitState(UNIT_STAT_CASTING))
                     return;
 
-                events.Update(uiDiff);
+                events.Update(diff);
 
                 while (uint32 eventId = events.ExecuteEvent())
                 {
@@ -2334,14 +2312,6 @@ enum eEvents
 
 class npc_terenas_menethil : public CreatureScript
 {
-enum eEvents
-{
-    EVENT_GREET_PLAYER = 1, //Yell "You have come to bring Arthas to justice? To see the Lich King destroyed?"
-    EVENT_ENCOURAGE_PLAYER_TO_ESCAPE, //Yell "First, you must escape Frostmourne's hold or be damned as I am; trapped within this cursed blade for all eternity."
-    EVENT_ASK_PLAYER_FOR_AID, //Yell "Aid me in destroying these tortured souls! Together we will loosen Frostmourne's hold and weaken the Lich King from within!"
-    EVENT_CHECK_SPIRIT_WARDEN_HEALTH
-};
-
     public:
         npc_terenas_menethil() : CreatureScript("npc_terenas_menethil") { }
 
@@ -2379,13 +2349,13 @@ enum eEvents
                 }
             }
 
-            void DamageDealt(Unit* target, uint32& damage, DamageEffectType damageType)
+            void DamageDealt(Unit* /*target*/, uint32& damage, DamageEffectType /*damageType*/)
             {
                 //Damage scales with Terenas' health
-                damage = damage * (100 + me->GetHealthPct()) / 100;
+                damage = damage * (100 + (uint32)me->GetHealthPct()) / 100;
             }
 
-            void JustDied(Unit* /*pKiller*/)
+            void JustDied(Unit* /*killer*/)
             {
                 Player* player = me->FindNearestPlayer(80.0f, true);
                 player->CastSpell(player, SPELL_DESTROY_SOUL, true);
@@ -2397,12 +2367,12 @@ enum eEvents
                 events.Reset();
             }
 
-            void UpdateAI(const uint32 uiDiff)
+            void UpdateAI(const uint32 diff)
             {
                 if (!me->isAlive() || me->HasUnitState(UNIT_STAT_CASTING))
                     return;
 
-                events.Update(uiDiff);
+                events.Update(diff);
 
                 while (uint32 eventId = events.ExecuteEvent())
                 {
@@ -2814,7 +2784,7 @@ class spell_lich_king_necrotic_plague : public SpellScriptLoader
                 if (!(caster && caster->isAlive()) && caster->GetAI())
                     return;
 
-                Map *pMap = caster->GetMap();
+                Map *map = caster->GetMap();
                 //Radius increases by 10% per hit on heroic and by 5% if it's normal
                 m_radius = 8.0f + m_hitCount;
                 uint32 triggeredSpellId = SPELL_DEFILE_DAMAGE;
@@ -2823,10 +2793,10 @@ class spell_lich_king_necrotic_plague : public SpellScriptLoader
                 if (SpellEntry const* defileDamage = sSpellMgr->GetSpellForDifficultyFromSpell(sSpellStore.LookupEntry(SPELL_DEFILE_DAMAGE), caster))
                 {
                     triggeredSpellId = defileDamage->Id;
-                    triggeredSpellBaseDamage = (int32)(defileDamage->EffectBasePoints[EFFECT_0] * (1.0f + (pMap->IsHeroic() ? 0.1f : 0.05f) * m_hitCount));
+                    triggeredSpellBaseDamage = (int32)(defileDamage->EffectBasePoints[EFFECT_0] * (1.0f + (map->IsHeroic() ? 0.1f : 0.05f) * m_hitCount));
                 }
 
-                int hitDamage = (int32)(GetSpellInfo()->EffectBasePoints[EFFECT_0] * (1.0f + (pMap->IsHeroic() ? 0.1f : 0.05f) * m_hitCount));
+                int hitDamage = (int32)(GetSpellInfo()->EffectBasePoints[EFFECT_0] * (1.0f + (map->IsHeroic() ? 0.1f : 0.05f) * m_hitCount));
                 SetHitDamage(hitDamage);
 
                 if (SpellEntry const* defileIncrease = sSpellMgr->GetSpellForDifficultyFromSpell(sSpellStore.LookupEntry(SPELL_DEFILE_INCREASE), caster))
@@ -2877,7 +2847,7 @@ class spell_lich_king_defile : public SpellScriptLoader
                 if (!(caster && caster->isAlive()) && caster->GetAI())
                     return;
 
-                Map* pMap = caster->GetMap();
+                Map* map = caster->GetMap();
                 //Radius increases by 10% per hit on heroic and by 5% if it's normal
                 m_radius = 8.0f + m_hitCount;
                 //Find targest
@@ -2890,8 +2860,8 @@ class spell_lich_king_defile : public SpellScriptLoader
                 Cell cell(p);
                 cell.data.Part.reserved = ALL_DISTRICT;
                 cell.SetNoCreate();
-                cell.Visit(p, world_unit_searcher, *pMap, *caster, 100.0f);
-                cell.Visit(p, grid_unit_searcher, *pMap, *caster, 100.0f);
+                cell.Visit(p, world_unit_searcher, *map, *caster, 100.0f);
+                cell.Visit(p, grid_unit_searcher, *map, *caster, 100.0f);
 
                 if (targets.empty())
                     return;
@@ -2902,7 +2872,7 @@ class spell_lich_king_defile : public SpellScriptLoader
                 if (SpellEntry const* defileDamage = sSpellMgr->GetSpellForDifficultyFromSpell(sSpellStore.LookupEntry(SPELL_DEFILE_DAMAGE), caster))
                 {
                     triggeredSpellId = defileDamage->Id;
-                    triggeredSpellBaseDamage = (int32)(defileDamage->EffectBasePoints[EFFECT_0] * (1.0f + (pMap->IsHeroic() ? 0.1f : 0.05f) * m_hitCount));
+                    triggeredSpellBaseDamage = (int32)(defileDamage->EffectBasePoints[EFFECT_0] * (1.0f + (map->IsHeroic() ? 0.1f : 0.05f) * m_hitCount));
                 }
 
                 bool increaseRadius = false;
@@ -2969,10 +2939,10 @@ class spell_lich_king_infection : public SpellScriptLoader
             {
                 if (!GetTarget()->isAlive() || GetTarget()->GetHealthPct() >= 90)
                 {
-                    //Aura::ApplicationMap &appMap = const_cast<Aura::ApplicationMap&>(aurEff->GetBase()->GetApplicationMap());
-                    //Aura::ApplicationMap::iterator it = appMap.find(GetTarget()->GetGUID());
-                    //if (it != appMap.end())
-                    //    appMap.erase(it);
+                    //Aura::ApplicationMap &apmap = const_cast<Aura::ApplicationMap&>(aurEff->GetBase()->GetApplicationMap());
+                    //Aura::ApplicationMap::iterator it = apmap.find(GetTarget()->GetGUID());
+                    //if (it != apmap.end())
+                    //    apmap.erase(it);
                     PreventDefaultAction();
                     GetTarget()->RemoveAurasDueToSpell(aurEff->GetSpellProto()->Id);
                 }
@@ -2980,7 +2950,7 @@ class spell_lich_king_infection : public SpellScriptLoader
 
             void OnCalcAmount(AuraEffect const* aurEff, int32 & amount, bool & canBeRecalculated)
             {
-                amount = (int32)(1000.0f * powf(1.15f, aurEff->GetTickNumber()));
+                amount = (int32)(1000.0f * powf(1.15f, (float)aurEff->GetTickNumber()));
             }
 
             void Register()
