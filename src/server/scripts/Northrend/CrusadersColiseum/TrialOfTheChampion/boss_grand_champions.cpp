@@ -280,7 +280,7 @@ public:
                             if (vehicle)
                             {
                                 DoResetThreat();
-                                me->AddThreat(pVehicle, 1.0f);
+                                me->AddThreat(vehicle, 1.0f);
                                 DoCast(vehicle, SPELL_CHARGE);
                             }
                             break;
@@ -308,7 +308,7 @@ public:
                             if (vehicle)
                             {
                                 DoResetThreat();
-                                me->AddThreat(pVehicle, 1.0f);
+                                me->AddThreat(vehicle, 1.0f);
                                 DoCast(vehicle, SPELL_SHIELD_BREAKER);
                             }
                             break;

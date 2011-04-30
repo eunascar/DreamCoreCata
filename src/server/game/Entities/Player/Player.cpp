@@ -3084,7 +3084,7 @@ void Player::RefreshBot(uint32 diff)
         else if (!IsMounted() && m_bot->IsMounted())
         {
             m_bot->Unmount();
-            CreatureInfo const* cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
+            CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
             m_bot->SetSpeed(MOVE_RUN, cinfo->speed_run, true);
             m_bot->HasUnitMovementFlag(MOVEMENTFLAG_NONE);
         }
@@ -3165,7 +3165,7 @@ void Player::RefreshBot(uint32 diff)
             {
                 if (!m_bot->isAlive()) break;
 
-                CreatureInfo const* cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
+                CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(m_bot->GetEntry());
                 uint32 m_old_bot_form = m_bot->GetDisplayId();
 
                 if ((IsMounted() && HasAuraType(SPELL_AURA_FLY)) || canFly() || IsFlying() || isInFlight())

@@ -356,7 +356,7 @@ void AuctionHouseBot::addNewAuctions(Player* AHBplayer, AHBConfig* config)
                 continue;
             }
 
-            ItemPrototype const* prototype = sObjectMgr->GetItemPrototype(itemID);
+            ItemTemplate const* prototype = sObjectMgr->GetItemTemplate(itemID);
 
             if (prototype == NULL)
             {
@@ -576,7 +576,7 @@ void AuctionHouseBot::addNewAuctionBuyerBotBid(Player* AHBplayer, AHBConfig* con
         }
 
         // get item prototype
-        ItemPrototype const* prototype = sObjectMgr->GetItemPrototype(auction->item_template);
+        ItemTemplate const* prototype = sObjectMgr->GetItemTemplate(auction->item_template);
 
         // check which price we have to use, startbid or if it is bidded already
         uint32 currentprice;
@@ -914,9 +914,11 @@ void AuctionHouseBot::Initialize()
             if (debug_Out)
                 sLog->outString("AuctionHouseBot: \"%s\" failed", lootQuery);
 
-        for (uint32 itemID = 0; itemID < sItemStorage.MaxEntry; itemID++)
+        ItemTemplateContainer const* its = sObjectMgr->GetItemTemplateStore();
+
+        for (ItemTemplateContainer::const_iterator itemID = its->begin(); itemID != its->end(); ++itemID)
         {
-            ItemPrototype const* prototype = sObjectMgr->GetItemPrototype(itemID);
+            ItemTemplate const* prototype = sObjectMgr->GetItemTemplate(itemID->second.ItemId);
 
             if (prototype == NULL)
                 continue;
@@ -969,7 +971,7 @@ void AuctionHouseBot::Initialize()
 
                 for (unsigned int i = 0; (i < npcItems.size()) && (!isVendorItem); i++)
                 {
-                    if (itemID == npcItems[i])
+                    if (itemID->second.ItemId == npcItems[i])
                         isVendorItem = true;
                 }
 
@@ -983,7 +985,7 @@ void AuctionHouseBot::Initialize()
 
                 for (unsigned int i = 0; (i < npcItems.size()) && (!isVendorTG); i++)
                 {
-                    if (itemID == npcItems[i])
+                    if (itemID->second.ItemId == npcItems[i])
                         isVendorTG = true;
                 }
 
@@ -997,7 +999,7 @@ void AuctionHouseBot::Initialize()
 
                 for (unsigned int i = 0; (i < lootItems.size()) && (!isLootItem); i++)
                 {
-                    if (itemID == lootItems[i])
+                    if (itemID->second.ItemId == lootItems[i])
                         isLootItem = true;
                 }
 
@@ -1011,7 +1013,7 @@ void AuctionHouseBot::Initialize()
 
                 for (unsigned int i = 0; (i < lootItems.size()) && (!isLootTG); i++)
                 {
-                    if (itemID == lootItems[i])
+                    if (itemID->second.ItemId == lootItems[i])
                         isLootTG = true;
                 }
 
@@ -1026,13 +1028,13 @@ void AuctionHouseBot::Initialize()
 
                 for (unsigned int i = 0; (i < npcItems.size()) && (!isVendorItem); i++)
                 {
-                    if (itemID == npcItems[i])
+                    if (itemID->second.ItemId == npcItems[i])
                         isVendorItem = true;
                 }
 
                 for (unsigned int i = 0; (i < lootItems.size()) && (!isLootItem); i++)
                 {
-                    if (itemID == lootItems[i])
+                    if (itemID->second.ItemId == lootItems[i])
                         isLootItem = true;
                 }
 
@@ -1047,13 +1049,13 @@ void AuctionHouseBot::Initialize()
 
                 for (unsigned int i = 0; (i < npcItems.size()) && (!isVendorTG); i++)
                 {
-                    if (itemID == npcItems[i])
+                    if (itemID->second.ItemId == npcItems[i])
                         isVendorTG = true;
                 }
 
                 for (unsigned int i = 0; (i < lootItems.size()) && (!isLootTG); i++)
                 {
-                    if (itemID == lootItems[i])
+                    if (itemID->second.ItemId == lootItems[i])
                         isLootTG = true;
                 }
 
@@ -1399,45 +1401,45 @@ void AuctionHouseBot::Initialize()
             {
                 case AHB_GREY:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        greyTradeGoodsBin.push_back(itemID);
+                        greyTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        greyItemsBin.push_back(itemID);
+                        greyItemsBin.push_back(itemID->second.ItemId);
                     break;
                 case AHB_WHITE:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        whiteTradeGoodsBin.push_back(itemID);
+                        whiteTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        whiteItemsBin.push_back(itemID);
+                        whiteItemsBin.push_back(itemID->second.ItemId);
                     break;
                 case AHB_GREEN:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        greenTradeGoodsBin.push_back(itemID);
+                        greenTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        greenItemsBin.push_back(itemID);
+                        greenItemsBin.push_back(itemID->second.ItemId);
                     break;
                 case AHB_BLUE:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        blueTradeGoodsBin.push_back(itemID);
+                        blueTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        blueItemsBin.push_back(itemID);
+                        blueItemsBin.push_back(itemID->second.ItemId);
                     break;
                 case AHB_PURPLE:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        purpleTradeGoodsBin.push_back(itemID);
+                        purpleTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        purpleItemsBin.push_back(itemID);
+                        purpleItemsBin.push_back(itemID->second.ItemId);
                     break;
                 case AHB_ORANGE:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        orangeTradeGoodsBin.push_back(itemID);
+                        orangeTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        orangeItemsBin.push_back(itemID);
+                        orangeItemsBin.push_back(itemID->second.ItemId);
                     break;
                 case AHB_YELLOW:
                     if (prototype->Class == ITEM_CLASS_TRADE_GOODS)
-                        yellowTradeGoodsBin.push_back(itemID);
+                        yellowTradeGoodsBin.push_back(itemID->second.ItemId);
                     else
-                        yellowItemsBin.push_back(itemID);
+                        yellowItemsBin.push_back(itemID->second.ItemId);
                     break;
             }
         }
@@ -1483,7 +1485,7 @@ void AuctionHouseBot::IncrementItemCounts(AuctionEntry* ah)
     }
 
     // get item prototype
-    ItemPrototype const* prototype = sObjectMgr->GetItemPrototype(ah->item_template);
+    ItemTemplate const* prototype = sObjectMgr->GetItemTemplate(ah->item_template);
     AHBConfig* config;
     FactionTemplateEntry const* u_entry = sFactionTemplateStore.LookupEntry(ah->GetHouseFaction());
 
@@ -1522,7 +1524,7 @@ void AuctionHouseBot::IncrementItemCounts(AuctionEntry* ah)
 void AuctionHouseBot::DecrementItemCounts(AuctionEntry* ah, uint32 item_template)
 {
     // get item prototype
-    ItemPrototype const* prototype = sObjectMgr->GetItemPrototype(item_template);
+    ItemTemplate const* prototype = sObjectMgr->GetItemTemplate(item_template);
     AHBConfig* config;
     FactionTemplateEntry const* u_entry = sFactionTemplateStore.LookupEntry(ah->GetHouseFaction());
 
@@ -1900,7 +1902,7 @@ void AuctionHouseBot::LoadValues(AHBConfig* config)
 
                 if (item)
                 {
-                    ItemPrototype const* prototype = item->GetProto();
+                    ItemTemplate const* prototype = item->GetTemplate();
 
                     if (prototype)
                     {
