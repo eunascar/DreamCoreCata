@@ -156,6 +156,8 @@ enum eNPCs
 
 enum eGameObjects
 {
+    GO_ALGALON_CHEST_HERO   = 194822,
+    GO_ALGALON_CHEST        = 194821,
     GO_KOLOGARN_CHEST_HERO  = 195047,
     GO_KOLOGARN_CHEST       = 195046,
     GO_KOLOGARN_BRIDGE      = 194232,

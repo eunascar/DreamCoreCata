@@ -96,6 +96,7 @@ public:
         uint64 uiMimironImage;
         uint64 uiHodirImage;
 
+        uint64 uiAlgalonChestGUID;
         uint64 uiKologarnChestGUID;
         uint64 uiKologarnBridgeGUID;
         uint64 uiKologarnDoorGUID;
@@ -153,9 +154,9 @@ public:
             uiThorimImage           = 0;
             uiMimironImage          = 0;
             uiHodirImage            = 0;
+            uiAlgalonChestGUID      = 0;
             uiKologarnChestGUID     = 0;
             uiKologarnBridgeGUID    = 0;
-            uiKologarnChestGUID     = 0;
             uiThorimChestGUID       = 0;
             uiHodirChestGUID        = 0;
             uiMimironChestGUID      = 0;
@@ -415,6 +416,10 @@ public:
                 case GO_YOGG_GATE:
                     AddDoor(go, true);
                     break;
+                case GO_ALGALON_CHEST_HERO:
+                case GO_ALGALON_CHEST:
+                    uiAlgalonChestGUID = go->GetGUID();
+                    break;
                 case GO_KOLOGARN_CHEST_HERO:
                 case GO_KOLOGARN_CHEST:
                     uiKologarnChestGUID = go->GetGUID();
@@ -563,6 +568,11 @@ public:
                 case TYPE_ASSEMBLY:
                 case TYPE_AURIAYA:
                 case TYPE_YOGGSARON:
+                case TYPE_ALGALON:
+                    if (state == DONE)
+                        if (GameObject* go = instance->GetGameObject(uiAlgalonChestGUID))
+                            go->SetRespawnTime(go->GetRespawnDelay());
+                    break;
                 case TYPE_KOLOGARN:
                     if (state == DONE)
                     {
