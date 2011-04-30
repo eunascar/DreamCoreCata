@@ -125,7 +125,7 @@ public:
         void EnterCombat(Unit* /*who*/)
         {
             _EnterCombat();
-            DoScriptText(SAY_AGGRO,me);
+            DoScriptText(SAY_AGGRO, me);
             SentryDead = false;
             LivesCount = 0;
             events.ScheduleEvent(EVENT_SCREECH, 60000);
@@ -139,7 +139,7 @@ public:
         void KilledUnit(Unit* /*victim*/)
         {
             if (!(rand()%5))
-                DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
+                DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
 
         void JustDied(Unit * /*victim*/)

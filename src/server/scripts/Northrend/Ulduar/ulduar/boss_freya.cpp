@@ -247,7 +247,7 @@ public:
         void KilledUnit(Unit * /*victim*/)
         {
             if (!(rand()%5))
-                DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
+                DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
 
         void JustDied(Unit * /*victim*/)

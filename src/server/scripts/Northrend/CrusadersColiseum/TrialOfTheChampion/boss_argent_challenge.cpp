@@ -116,7 +116,7 @@ public:
         {
             pInstance = pCreature->GetInstanceScript();
             pCreature->SetReactState(REACT_PASSIVE);
-            pCreature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
+            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
 
         InstanceScript* pInstance;
@@ -200,7 +200,7 @@ public:
 
             if (uiVenganceTimer <= uiDiff)
             {
-                DoCast(me,SPELL_VENGEANCE);
+                DoCast(me, SPELL_VENGEANCE);
 
                 uiVenganceTimer = 10000;
             } else uiVenganceTimer -= uiDiff;
@@ -235,7 +235,7 @@ public:
 
             MemoryGUID = 0;
             pCreature->SetReactState(REACT_PASSIVE);
-            pCreature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_NON_ATTACKABLE);
+            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             pCreature->RestoreFaction();
         }
 
@@ -256,9 +256,9 @@ public:
         {
             me->RemoveAllAuras();
 
-            uiHolyFireTimer     = urand(9000,12000);
-            uiHolySmiteTimer    = urand(5000,7000);
-            uiRenewTimer        = urand(2000,5000);
+            uiHolyFireTimer     = urand(9000, 12000);
+            uiHolySmiteTimer    = urand(5000, 7000);
+            uiRenewTimer        = urand(2000, 5000);
 
             uiResetTimer        = 7000;
 
@@ -319,7 +319,7 @@ public:
         {
             if (bDone && uiResetTimer <= uiDiff)
             {
-                me->GetMotionMaster()->MovePoint(0, 746.843f, 695.68f, 412.339f);                
+                me->GetMotionMaster()->MovePoint(0, 746.843f, 695.68f, 412.339f);
                 bDone = false;
 
                 if (GameObject* go = GameObject::GetGameObject(*me, pInstance->GetData64(DATA_MAIN_GATE)))
@@ -336,7 +336,7 @@ public:
                 if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 250, true))
                 {
                     if (pTarget && pTarget->isAlive())
-                        DoCast(pTarget,SPELL_HOLY_FIRE);
+                        DoCast(pTarget, SPELL_HOLY_FIRE);
                 }
 
                 if (me->HasAura(SPELL_SHIELD))
@@ -350,7 +350,7 @@ public:
                 if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 250, true))
                 {
                     if (pTarget && pTarget->isAlive())
-                        DoCast(pTarget,SPELL_SMITE);
+                        DoCast(pTarget, SPELL_SMITE);
                 }
 
                 if (me->HasAura(SPELL_SHIELD))
@@ -369,7 +369,7 @@ public:
                     switch(uiTarget)
                     {
                         case 0:
-                            DoCast(me,SPELL_RENEW);
+                            DoCast(me, SPELL_RENEW);
                             break;
                         case 1:
                             if (Creature* pMemory = Unit::GetCreature(*me, MemoryGUID))
@@ -377,16 +377,16 @@ public:
                                     DoCast(pMemory, SPELL_RENEW);
                             break;
                     }
-                    uiRenewTimer = urand(15000,17000);
+                    uiRenewTimer = urand(15000, 17000);
                 } else uiRenewTimer -= uiDiff;
             }
 
             if (!bHealth && !HealthAbovePct(25))
             {
                 me->InterruptNonMeleeSpells(true);
-                DoCastAOE(SPELL_HOLY_NOVA,false);
+                DoCastAOE(SPELL_HOLY_NOVA, false);
                 DoCast(me, SPELL_SHIELD);
-                DoCastAOE(SPELL_CONFESS,false);
+                DoCastAOE(SPELL_CONFESS, false);
                 bHealth = true;
 
                 switch(urand(0, 24))
@@ -511,7 +511,7 @@ public:
 
             if (uiOldWoundsTimer <= uiDiff)
             {
-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM,0))
+                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0))
                 {
                     if (pTarget && pTarget->isAlive())
                         DoCast(pTarget, SPELL_OLD_WOUNDS);
@@ -542,7 +542,7 @@ public:
             if (me->isSummon())
                 if (Unit* pSummoner = CAST_SUM(me)->GetSummoner())
                     if (pSummoner && pSummoner->isAlive())
-                        CAST_CRE(pSummoner)->AI()->SetData(1,0);
+                        CAST_CRE(pSummoner)->AI()->SetData(1, 0);
         }
     };
 
@@ -633,13 +633,13 @@ public:
                     switch(uiType)
                     {
                         case 0:
-                            AddWaypoint(0,712.14f,628.42f,411.88f);
+                            AddWaypoint(0, 712.14f, 628.42f, 411.88f);
                             break;
                         case 1:
-                            AddWaypoint(0,742.44f,650.29f,411.79f);
+                            AddWaypoint(0, 742.44f, 650.29f, 411.79f);
                             break;
                         case 2:
-                            AddWaypoint(0,783.33f,615.29f,411.84f);
+                            AddWaypoint(0, 783.33f, 615.29f, 411.84f);
                             break;
                     }
                     break;
@@ -647,13 +647,13 @@ public:
                     switch(uiType)
                     {
                         case 0:
-                            AddWaypoint(0,713.12f,632.97f,411.90f);
+                            AddWaypoint(0, 713.12f, 632.97f, 411.90f);
                             break;
                         case 1:
-                            AddWaypoint(0,746.73f,650.24f,411.56f);
+                            AddWaypoint(0, 746.73f, 650.24f, 411.56f);
                             break;
                         case 2:
-                            AddWaypoint(0,781.32f,610.54f,411.82f);
+                            AddWaypoint(0, 781.32f, 610.54f, 411.82f);
                             break;
                     }
                     break;
@@ -661,19 +661,19 @@ public:
                     switch(uiType)
                     {
                         case 0:
-                            AddWaypoint(0,715.06f,637.07f,411.91f);
+                            AddWaypoint(0, 715.06f, 637.07f, 411.91f);
                             break;
                         case 1:
-                            AddWaypoint(0,750.72f,650.20f,411.77f);
+                            AddWaypoint(0, 750.72f, 650.20f, 411.77f);
                             break;
                         case 2:
-                            AddWaypoint(0,779.77f,607.03f,411.81f);
+                            AddWaypoint(0, 779.77f, 607.03f, 411.81f);
                             break;
                     }
                     break;
             }
 
-            Start(false,true,0);
+            Start(false, true, 0);
             uiWaypoint = uiType;
         }
 

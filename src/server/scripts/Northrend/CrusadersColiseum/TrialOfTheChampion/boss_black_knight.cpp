@@ -175,16 +175,16 @@ public:
 
             uiPhase = PHASE_UNDEAD;
 
-            uiIcyTouchTimer = urand(5000,9000);
-            uiPlagueStrikeTimer = urand(10000,13000);
-            uiDeathRespiteTimer = urand(15000,16000);
-            uiObliterateTimer = urand(17000,19000);
-            uiDesecration = urand(15000,16000);
+            uiIcyTouchTimer = urand(5000, 9000);
+            uiPlagueStrikeTimer = urand(10000, 13000);
+            uiDeathRespiteTimer = urand(15000, 16000);
+            uiObliterateTimer = urand(17000, 19000);
+            uiDesecration = urand(15000, 16000);
             uiDeathArmyCheckTimer = 7000;
             uiResurrectTimer = 4000;
             uiGhoulExplodeTimer = 8000;
-            uiDeathBiteTimer = urand (2000,4000);
-            uiMarkedDeathTimer = urand (5000,7000);
+            uiDeathBiteTimer = urand (2000, 4000);
+            uiMarkedDeathTimer = urand (5000, 7000);
             uiIntroTimer = 5000;
         }
 
@@ -229,7 +229,7 @@ public:
                             DoScriptText(SAY_DEATH, me);
                             break;
                     }
-                    DoCast(me,SPELL_BLACK_KNIGHT_RES,true);
+                    DoCast(me,SPELL_BLACK_KNIGHT_RES, true);
                     uiPhase++;
                     uiResurrectTimer = 4000;
                     bEventInProgress = false;
@@ -248,41 +248,44 @@ public:
                             DoCastVictim(SPELL_ICY_TOUCH_H);
                         else
                             DoCastVictim(SPELL_ICY_TOUCH);
-                        uiIcyTouchTimer = urand(5000,7000);
+                        uiIcyTouchTimer = urand(5000, 7000);
                     } else uiIcyTouchTimer -= uiDiff;
+
                     if (uiPlagueStrikeTimer <= uiDiff)
                     {
                         if (IsHeroic())
                             DoCastVictim(SPELL_PLAGUE_STRIKE);
                         else
                             DoCastVictim(SPELL_PLAGUE_STRIKE_2);
-                        uiPlagueStrikeTimer = urand(12000,15000);
+                        uiPlagueStrikeTimer = urand(12000, 15000);
                     } else uiPlagueStrikeTimer -= uiDiff;
+
                     if (uiObliterateTimer <= uiDiff)
                     {
                         if (IsHeroic())
                             DoCastVictim(SPELL_OBLITERATE_H);
                         else
                             DoCastVictim(SPELL_OBLITERATE);
-                        uiObliterateTimer = urand(17000,19000);
+                        uiObliterateTimer = urand(17000, 19000);
                     } else uiObliterateTimer -= uiDiff;
+
                     switch(uiPhase)
                     {
                         case PHASE_UNDEAD:
                         {
                             if (uiDeathRespiteTimer <= uiDiff)
                             {
-                                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
                                 {
                                     if (pTarget && pTarget->isAlive()) 
                                     {
                                         if (IsHeroic())
-                                            DoCast(pTarget,SPELL_DEATH_RESPITE_2);
+                                            DoCast(pTarget, SPELL_DEATH_RESPITE_2);
                                         else
-                                            DoCast(pTarget,SPELL_DEATH_RESPITE);
+                                            DoCast(pTarget, SPELL_DEATH_RESPITE);
                                     }
                                 }
-                                uiDeathRespiteTimer = urand(15000,16000);
+                                uiDeathRespiteTimer = urand(15000, 16000);
                             } else uiDeathRespiteTimer -= uiDiff;
                             break;
                         }
@@ -313,12 +316,12 @@ public:
                                     if (pTarget && pTarget->isAlive()) 
                                     {
                                         if (IsHeroic())
-                                            DoCast(pTarget,SPELL_DESECRATION_2);
+                                            DoCast(pTarget, SPELL_DESECRATION_2);
                                         else 
-                                            DoCast(pTarget,SPELL_DESECRATION);
+                                            DoCast(pTarget, SPELL_DESECRATION);
                                     }
                                 }
-                                uiDesecration = urand(15000,16000);
+                                uiDesecration = urand(15000, 16000);
                             } else uiDesecration -= uiDiff;
                             if (uiGhoulExplodeTimer <= uiDiff)
                             {
@@ -348,9 +351,9 @@ public:
                             if (pTarget && pTarget->isAlive())
                             {
                                 if (IsHeroic())
-                                    DoCast(pTarget,SPELL_MARKED_DEATH);
+                                    DoCast(pTarget, SPELL_MARKED_DEATH);
                                 else 
-                                    DoCast(pTarget,SPELL_MARKED_DEATH_2);
+                                    DoCast(pTarget, SPELL_MARKED_DEATH_2);
                             }
                         }
                         uiMarkedDeathTimer = urand (5000, 7000);
@@ -414,7 +417,7 @@ public:
 
             if (pInstance)
             {
-                pInstance->SetData(BOSS_BLACK_KNIGHT,DONE);
+                pInstance->SetData(BOSS_BLACK_KNIGHT, DONE);
 
                 if (IsHeroic())
                 {
@@ -492,7 +495,7 @@ public:
     {
         npc_black_knight_skeletal_gryphonAI(Creature* pCreature) : npc_escortAI(pCreature), vehicle(me->GetVehicleKit())
         {
-            Start(false,true,0,NULL);
+            Start(false, true, 0, NULL);
         }
 
         Vehicle* vehicle;
