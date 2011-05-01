@@ -534,7 +534,7 @@ class go_planetarium_access : public GameObjectScript
         {
             InstanceScript* instance = go->GetInstanceScript();
 
-            if (player->HasItemCount(ITEM_PLANETARIUM_KEY, 1) || player->HasItemCount(ITEM_PLANETARIUM_KEY, 1))
+            if (player->HasItemCount(ITEM_PLANETARIUM_KEY, 1) || player->HasItemCount(ITEM_PLANETARIUM_KEY_H, 1))
             {
                 instance->SetBossState(TYPE_ALGALON, SPECIAL);
                 go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
