@@ -131,6 +131,14 @@ enum eNPCs
     NPC_KEEPER_HODIR            = 33213,
     NPC_KEEPER_MIMIRON          = 33244,
     NPC_KEEPER_THORIM           = 33242,
+    NPC_COLLAPSING_STAR         = 32955,
+    NPC_BLACK_HOLE              = 32953,
+    NPC_LIVING_CONSTELLATION    = 33052,
+    NPC_DARK_MATTER             = 33089,
+    NPC_AZEROTH                 = 34246,
+    NPC_COSMIC_SMASH_TRIGGER    = 33104,
+    NPC_COSMIC_SMASH_TARGET     = 33105,
+    NPC_UNLEASHED_DARK_MATTER   = 34097,
     NPC_SALVAGED_CHOPPER        = 33062,
     NPC_ELVI_NIGHTFEATHER       = 33325,
     NPC_ELLIE_NIGHTFEATHER      = 32901,
@@ -230,6 +238,12 @@ enum eAchievementCriteria
     ACHIEVEMENT_CRITERIA_HOT_POCKET_25                   = 10431,
     ACHIEVEMENT_CRITERIA_QUICK_SHAVE_10                  = 10062, // Razorscale
     ACHIEVEMENT_CRITERIA_QUICK_SHAVE_25                  = 10063,
+};
+
+enum eItems
+{
+    ITEM_PLANETARIUM_KEY            = 45796,
+    ITEM_PLANETARIUM_KEY_H          = 45798,
 };
 
 #endif

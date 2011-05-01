@@ -46,18 +46,6 @@ enum Spells
     SPELL_BOSS_FINISHED             = 65184,
 };
 
-enum Creatures
-{
-    CREATURE_COLLAPSING_STAR        = 32955,
-    CREATURE_BLACK_HOLE             = 32953,
-    CREATURE_LIVING_CONSTELLATION   = 33052,
-    CREATURE_DARK_MATTER            = 33089,
-    CREATURE_AZEROTH                = 34246,
-    CREATURE_COSMIC_SMASH_TRIGGER   = 33104,
-    CREATURE_COSMIC_SMASH_TARGET    = 33105,
-    CREATURE_UNLEASHED_DARK_MATTER  = 34097
-};
-
 enum Yells
 {
     SAY_AGGRO                                   = -1603000,
@@ -213,7 +201,7 @@ class boss_algalon : public CreatureScript
 
                 for (uint8 i = starCount; i < 4; ++i)
                 {
-                    if (Creature* collapsingStar = me->SummonCreature(CREATURE_COLLAPSING_STAR, collapsingLocations[i], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3 * IN_MILLISECONDS))
+                    if (Creature* collapsingStar = me->SummonCreature(NPC_COLLAPSING_STAR, collapsingLocations[i], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3 * IN_MILLISECONDS))
                     {
                         ++starCount;
                         collapsingStar->SetReactState(REACT_PASSIVE);
@@ -227,7 +215,7 @@ class boss_algalon : public CreatureScript
             {
                 for (uint8 i = 0; i < 3; ++i)
                 {
-                    if (Creature* livingConstellation = me->SummonCreature(CREATURE_LIVING_CONSTELLATION, constellationLocations[i], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1 * IN_MILLISECONDS))
+                    if (Creature* livingConstellation = me->SummonCreature(NPC_LIVING_CONSTELLATION, constellationLocations[i], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1 * IN_MILLISECONDS))
                     {
                         livingConstellation->SetInCombatWithZone();
 
@@ -241,7 +229,7 @@ class boss_algalon : public CreatureScript
             {
                 for (uint8 i = 0; i < 4; ++i)
                 {
-                    if (Creature* darkMatter = me->SummonCreature(CREATURE_UNLEASHED_DARK_MATTER, collapsingLocations[i],
+                    if (Creature* darkMatter = me->SummonCreature(NPC_UNLEASHED_DARK_MATTER, collapsingLocations[i],
                         TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3*IN_MILLISECONDS))
                     {
                         if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO, 0))
@@ -259,9 +247,9 @@ class boss_algalon : public CreatureScript
             {
                 switch (summon->GetEntry())
                 {
-                    case CREATURE_COLLAPSING_STAR:
+                    case NPC_COLLAPSING_STAR:
                         --starCount;
-                        me->SummonCreature(CREATURE_BLACK_HOLE, summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ());
+                        me->SummonCreature(NPC_BLACK_HOLE, summon->GetPositionX(), summon->GetPositionY(), summon->GetPositionZ());
                         break;
                     default:
                         break;
@@ -296,7 +284,7 @@ class boss_algalon : public CreatureScript
 
                     // summon 4 unstable black holes
                     for (uint8 i = 0; i < 4; ++i)
-                        me->SummonCreature(CREATURE_BLACK_HOLE, collapsingLocations[i]);
+                        me->SummonCreature(NPC_BLACK_HOLE, collapsingLocations[i]);
                 }
 
                 if (HealthBelowPct(2))
@@ -406,7 +394,6 @@ class boss_algalon : public CreatureScript
                 }
 
                 DoMeleeAttackIfReady();
-                //EnterEvadeIfOutOfCombatArea(diff);
             }
         };
 
@@ -479,7 +466,7 @@ class npc_living_constellation : public CreatureScript
                 if (who->GetTypeId() != TYPEID_UNIT)
                     return;
 
-                if (who->GetEntry() == CREATURE_BLACK_HOLE && who->GetDistance(me) < 5.0f)
+                if (who->GetEntry() == NPC_BLACK_HOLE && who->GetDistance(me) < 5.0f)
                 {
                     who->ToCreature()->CastSpell(who, SPELL_DESPAWN_BLACK_HOLE, true);
                     who->ToCreature()->ForcedDespawn(1 * IN_MILLISECONDS);
@@ -547,7 +534,7 @@ class go_planetarium_access : public GameObjectScript
         {
             InstanceScript* instance = go->GetInstanceScript();
 
-            if (player->HasItemCount(45796, 1) || player->HasItemCount(45798, 1))
+            if (player->HasItemCount(ITEM_PLANETARIUM_KEY, 1) || player->HasItemCount(ITEM_PLANETARIUM_KEY, 1))
             {
                 instance->SetBossState(TYPE_ALGALON, SPECIAL);
                 go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
@@ -604,7 +591,7 @@ class spell_cosmic_smash_summon_trigger : public SpellScriptLoader
             void HandleScript(SpellEffIndex effIndex)
             {
                 PreventHitDefaultEffect(effIndex);
-                GetCaster()->SummonCreature(CREATURE_COSMIC_SMASH_TRIGGER, Locations[2], TEMPSUMMON_TIMED_DESPAWN, 7900);
+                GetCaster()->SummonCreature(NPC_COSMIC_SMASH_TRIGGER, Locations[2], TEMPSUMMON_TIMED_DESPAWN, 7900);
             }
 
             void Register()
@@ -632,7 +619,7 @@ class spell_cosmic_smash_summon_target : public SpellScriptLoader
             void HandleScript(SpellEffIndex effIndex)
             {
                 PreventHitDefaultEffect(effIndex);
-                GetCaster()->SummonCreature(CREATURE_COSMIC_SMASH_TARGET, GetCaster()->GetPositionX(), GetCaster()->GetPositionY(),
+                GetCaster()->SummonCreature(NPC_COSMIC_SMASH_TARGET, GetCaster()->GetPositionX(), GetCaster()->GetPositionY(),
                 GetCaster()->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 10*IN_MILLISECONDS);
             }
 
