@@ -20,6 +20,7 @@
 #include "QuestDef.h"
 #include "GameObjectAI.h"
 #include "ObjectMgr.h"
+#include "GroupMgr.h"
 #include "PoolMgr.h"
 #include "SpellMgr.h"
 #include "Spell.h"
@@ -283,7 +284,7 @@ void GameObject::Update(uint32 diff)
                     else if (Unit* owner = GetOwner())
                     {
                         if (owner->isInCombat())
-                            m_cooldownTime = time(NULL) + goInfo->trap.startDelay;
+                            m_cooldownTime = time(NULL) + goInfo->trap.cooldown;
                     }
                     m_lootState = GO_READY;
                     break;
@@ -331,7 +332,7 @@ void GameObject::Update(uint32 diff)
                     if (linkedRespawntime)             // Can't respawn, the master is dead
                     {
                         uint64 targetGuid = sObjectMgr->GetLinkedRespawnGuid(dbtableHighGuid);
-                        if (targetGuid == GetGUID()) // if linking self, never respawn (check delayed to next day)
+                        if (targetGuid == dbtableHighGuid) // if linking self, never respawn (check delayed to next day)
                             SetRespawnTime(DAY);
                         else
                             m_respawnTime = (now > linkedRespawntime ? now : linkedRespawntime)+urand(5, MINUTE); // else copy time from master and add a little
@@ -451,7 +452,7 @@ void GameObject::Update(uint32 diff)
                         if (goInfo->trap.spellId)
                             CastSpell(ok, goInfo->trap.spellId);
 
-                        m_cooldownTime = time(NULL) + goInfo->trap.cooldown ? goInfo->trap.cooldown :  uint32(4);   // template or 4 seconds
+                        m_cooldownTime = time(NULL) + (goInfo->trap.cooldown ? goInfo->trap.cooldown :  uint32(4));   // template or 4 seconds
 
                         if (goInfo->trap.type == 1)
                             SetLootState(GO_JUST_DEACTIVATED);
@@ -500,7 +501,7 @@ void GameObject::Update(uint32 diff)
                     {
                         if (m_groupLootTimer <= diff)
                         {
-                            Group* group = sObjectMgr->GetGroupByGUID(lootingGroupLowGUID);
+                            Group* group = sGroupMgr->GetGroupByGUID(lootingGroupLowGUID);
                             if (group)
                                 group->EndRoll(&loot);
                             m_groupLootTimer = 0;

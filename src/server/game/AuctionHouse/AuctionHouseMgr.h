@@ -74,6 +74,8 @@ struct AuctionEntry
     void DeleteFromDB(SQLTransaction& trans) const;
     void SaveToDB(SQLTransaction& trans) const;
     bool LoadFromDB(Field* fields);
+    bool LoadFromFieldList(Field* fields);
+
 };
 
 //this class is used as auctionhouse instance
@@ -155,6 +157,9 @@ class AuctionHouseMgr
         static AuctionHouseEntry const* GetAuctionHouseEntry(uint32 factionTemplateId);
 
     public:
+
+        // Used primarily at server start to avoid loading a list of expired auctions
+        void DeleteExpiredAuctionsAtStartup();
 
         //load first auction items, because of check if item exists, when loading
         void LoadAuctionItems();

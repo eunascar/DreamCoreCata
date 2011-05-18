@@ -169,11 +169,11 @@ void Cleanup(Creature* me, InstanceScript* instance, float radius)
     UnsummonSpecificCreaturesNearby(me, NPC_PORTAL_NORMAL_MODE_NPC, radius);
     UnsummonSpecificCreaturesNearby(me, NPC_DREAM_CLOUD, radius);
 
-    UnsummonSpecificCreaturesNearby(me, NPC_ZOMBIE, radius);
-    UnsummonSpecificCreaturesNearby(me, NPC_SKELETON, radius);
-    UnsummonSpecificCreaturesNearby(me, NPC_ARCHMAGE, radius);
-    UnsummonSpecificCreaturesNearby(me, NPC_SUPPRESSOR, radius);
-    UnsummonSpecificCreaturesNearby(me, NPC_ABOMINATION, radius);
+    UnsummonSpecificCreaturesNearby(me, NPC_BLISTERING_ZOMBIE, radius);
+    UnsummonSpecificCreaturesNearby(me, NPC_BLAZING_SKELETON, radius);
+    UnsummonSpecificCreaturesNearby(me, NPC_RISEN_ARCHMAGE, radius);
+    UnsummonSpecificCreaturesNearby(me, NPC_SUPPRESSER, radius);
+    UnsummonSpecificCreaturesNearby(me, NPC_GLUTTONOUS_ABOMINATION, radius);
     UnsummonSpecificCreaturesNearby(me, NPC_ROT_WORM, radius);
     UnsummonSpecificCreaturesNearby(me, NPC_COLUMN_OF_FROST, radius);
     UnsummonSpecificCreaturesNearby(me, NPC_MANA_VOID, radius);
@@ -407,19 +407,19 @@ class boss_valithria_dreamwalker : public CreatureScript
                 Unit *summonedMob = NULL;
 
                 if (!summonedMob)
-                    summonedMob = me->FindNearestCreature(NPC_ZOMBIE, 100.0f);
+                    summonedMob = me->FindNearestCreature(NPC_BLISTERING_ZOMBIE, 100.0f);
 
                 if (!summonedMob)
-                    summonedMob = me->FindNearestCreature(NPC_SKELETON, 100.0f);
+                    summonedMob = me->FindNearestCreature(NPC_BLAZING_SKELETON, 100.0f);
 
                 if (!summonedMob)
-                    summonedMob = me->FindNearestCreature(NPC_ARCHMAGE, 100.0f);
+                    summonedMob = me->FindNearestCreature(NPC_RISEN_ARCHMAGE, 100.0f);
 
                 if (!summonedMob)
-                    summonedMob = me->FindNearestCreature(NPC_SUPPRESSOR, 100.0f);
+                    summonedMob = me->FindNearestCreature(NPC_SUPPRESSER, 100.0f);
 
                 if (!summonedMob)
-                    summonedMob = me->FindNearestCreature(NPC_ABOMINATION, 100.0f);
+                    summonedMob = me->FindNearestCreature(NPC_GLUTTONOUS_ABOMINATION, 100.0f);
 
                 if (!summonedMob)
                     summonedMob = me->FindNearestCreature(NPC_ROT_WORM, 100.0f);
@@ -838,7 +838,7 @@ class npc_green_dragon_combat_trigger : public CreatureScript
                 uiSummonSuppressorTimer = 60000;
                 uint32 delayForKill4Mages = 0;
 
-                if (me->FindNearestCreature(NPC_ARCHMAGE, 100.0f, true))
+                if (me->FindNearestCreature(NPC_RISEN_ARCHMAGE, 100.0f, true))
                     delayForKill4Mages = RAID_MODE<uint32>(20000, 25000, 20000, 25000);
 
                 if (Is25ManRaid())
@@ -947,20 +947,20 @@ class npc_green_dragon_combat_trigger : public CreatureScript
                         case EVENT_SUMMON_ARCHMAGE:
                         {
                             if (bSummonArchmages)
-                                DoSummon(NPC_ARCHMAGE, Pos[uiArchmageGate]);
+                                DoSummon(NPC_RISEN_ARCHMAGE, Pos[uiArchmageGate]);
                             break;
                         }
                         case EVENT_SUMMON_ZOMBIE:
                         {
                             if (bSummonZombies)
-                                DoSummon(NPC_ZOMBIE, Pos[uiZombieGate]);
+                                DoSummon(NPC_BLISTERING_ZOMBIE, Pos[uiZombieGate]);
                             break;
                         }
                         case EVENT_SUMMON_ABOMINATION:
                         {
                             //One abomination at once
                             if (bSummonAbominations)
-                                DoSummon(NPC_ABOMINATION, Pos[urand(0, RAID_MODE(1, 3, 1, 3))]);
+                                DoSummon(NPC_GLUTTONOUS_ABOMINATION, Pos[urand(0, RAID_MODE(1, 3, 1, 3))]);
                             events.ScheduleEvent(EVENT_SUMMON_ABOMINATION, RAID_MODE<uint32>(60000, 50000, 60000, 50000));
                             break;
                         }
@@ -970,7 +970,7 @@ class npc_green_dragon_combat_trigger : public CreatureScript
                             if (bSummonSuppressors)
                             {
                                 for (uint8 i = 0; i < 4; ++i)
-                                    DoSummon(NPC_SUPPRESSOR, Pos[urand(0, RAID_MODE<uint8>(1, 3, 1, 3))]);
+                                    DoSummon(NPC_SUPPRESSER, Pos[urand(0, RAID_MODE<uint8>(1, 3, 1, 3))]);
 
                                 uiSummonSuppressorTimer -= 2000;
 
@@ -985,7 +985,7 @@ class npc_green_dragon_combat_trigger : public CreatureScript
                             //One Blazing Skeleton at once
                             if (bSummonSkeletons)
                             {
-                                DoSummon(NPC_SKELETON, Pos[urand(0, RAID_MODE<uint8>(1, 3, 1, 3))]);
+                                DoSummon(NPC_BLAZING_SKELETON, Pos[urand(0, RAID_MODE<uint8>(1, 3, 1, 3))]);
                                 uiSummonSkeletonTimer -= 5000;
 
                                 if (uiSummonSkeletonTimer < 5000)

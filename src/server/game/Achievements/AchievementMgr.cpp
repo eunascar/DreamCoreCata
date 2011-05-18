@@ -19,6 +19,8 @@
 #include "Common.h"
 #include "DBCEnums.h"
 #include "ObjectMgr.h"
+#include "ArenaTeamMgr.h"
+#include "GuildMgr.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include "DatabaseEnv.h"
@@ -82,7 +84,7 @@ bool AchievementCriteriaData::IsValid(AchievementCriteriaEntry const* criteria)
         case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE:
         case ACHIEVEMENT_CRITERIA_TYPE_WIN_BG:
         case ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING:
-        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:      // only hardcoded list
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:          // only hardcoded list
         case ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL:
         case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
         case ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE:
@@ -97,6 +99,9 @@ bool AchievementCriteriaData::IsValid(AchievementCriteriaEntry const* criteria)
         case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
         case ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE:
         case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
+        case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST:    // only Children's Week achievements
+        case ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM:                // only Children's Week achievements
+        case ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS:
             break;
         default:
             sLog->outErrorDb("Table `achievement_criteria_data` has data for non-supported criteria type (Entry: %u Type: %u), ignored.", criteria->ID, criteria->requiredType);
@@ -424,7 +429,7 @@ void AchievementMgr::ResetAchievementCriteria(AchievementCriteriaTypes type, uin
 {
     sLog->outDebug(LOG_FILTER_ACHIEVEMENTSYS, "AchievementMgr::ResetAchievementCriteria(%u, %u, %u)", type, miscvalue1, miscvalue2);
 
-    if (!sWorld->getBoolConfig(CONFIG_GM_ALLOW_ACHIEVEMENT_GAINS) && m_player->GetSession()->GetSecurity() > SEC_PLAYER)
+    if (m_player->GetSession()->GetSecurity() > AccountTypes(sWorld->getIntConfig(CONFIG_GM_LEVEL_ALLOW_ACHIEVEMENTS)))
         return;
 
     AchievementCriteriaEntryList const& achievementCriteriaList = sAchievementMgr->GetAchievementCriteriaByType(type);
@@ -635,7 +640,7 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
         sLog->outDebug(LOG_FILTER_ACHIEVEMENTSYS, "AchievementMgr::SendAchievementEarned(%u)", achievement->ID);
     #endif
 
-    if (Guild* guild = sObjectMgr->GetGuildById(GetPlayer()->GetGuildId()))
+    if (Guild* guild = sGuildMgr->GetGuildById(GetPlayer()->GetGuildId()))
     {
         Trinity::AchievementChatBuilder say_builder(*GetPlayer(), CHAT_MSG_GUILD_ACHIEVEMENT, LANG_ACHIEVEMENT_EARNED, achievement->ID);
         Trinity::LocalizedPacketDo<Trinity::AchievementChatBuilder> say_do(say_builder);
@@ -724,7 +729,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
 {
     sLog->outDebug(LOG_FILTER_ACHIEVEMENTSYS, "AchievementMgr::UpdateAchievementCriteria(%u, %u, %u)", type, miscValue1, miscValue2);
 
-    if (!sWorld->getBoolConfig(CONFIG_GM_ALLOW_ACHIEVEMENT_GAINS) && m_player->GetSession()->GetSecurity() > SEC_PLAYER)
+    if (m_player->GetSession()->GetSecurity() > AccountTypes(sWorld->getIntConfig(CONFIG_GM_LEVEL_ALLOW_ACHIEVEMENTS)))
         return;
 
     AchievementCriteriaEntryList const& achievementCriteriaList = sAchievementMgr->GetAchievementCriteriaByType(type);
@@ -741,7 +746,6 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
         switch (type)
         {
             // std. case: increment at 1
-            case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST:
             case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_TALENT_RESETS:
             case ACHIEVEMENT_CRITERIA_TYPE_LOSE_DUEL:
             case ACHIEVEMENT_CRITERIA_TYPE_CREATE_AUCTION:
@@ -787,7 +791,22 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
                 break;
 
             // specialized cases
+            case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST:
+            {
+                // AchievementMgr::UpdateAchievementCriteria might also be called on login - skip in this case
+                if (!miscValue1)
+                    continue;
 
+                if (achievement->categoryId == CATEGORY_CHILDRENS_WEEK)
+                {
+                    AchievementCriteriaDataSet const* data = sAchievementMgr->GetCriteriaDataSet(achievementCriteria);
+                    if (!data || !data->Meets(GetPlayer(), NULL))
+                        continue;
+                }
+
+                SetCriteriaProgress(achievementCriteria, 1, PROGRESS_ACCUMULATE);
+                break;
+            }
             case ACHIEVEMENT_CRITERIA_TYPE_WIN_BG:
             {
                 // AchievementMgr::UpdateAchievementCriteria might also be called on login - skip in this case
@@ -883,7 +902,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
                     continue;
 
                 uint32 counter =0;
-                for (RewardedQuestSet::const_iterator itr = GetPlayer()->getRewardedQuests().begin(); itr != GetPlayer()->getRewardedQuests().end(); itr++)
+                for (RewardedQuestSet::const_iterator itr = GetPlayer()->getRewardedQuests().begin(); itr != GetPlayer()->getRewardedQuests().end(); ++itr)
                 {
                     Quest const* quest = sObjectMgr->GetQuestTemplate(*itr);
                     if (quest && quest->GetZoneOrSort() >= 0 && uint32(quest->GetZoneOrSort()) == achievementCriteria->complete_quests_in_zone.zoneID)
@@ -1153,8 +1172,18 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
                 // AchievementMgr::UpdateAchievementCriteria might also be called on login - skip in this case
                 if (!miscValue1)
                     continue;
+
                 if (achievementCriteria->use_item.itemID != miscValue1)
                     continue;
+
+                // Children's Week achievements have extra requirements
+                if (achievement->categoryId == CATEGORY_CHILDRENS_WEEK)
+                {
+                    AchievementCriteriaDataSet const* data = sAchievementMgr->GetCriteriaDataSet(achievementCriteria);
+                    if (!data || !data->Meets(GetPlayer(), NULL))
+                        continue;
+                }
+
                 SetCriteriaProgress(achievementCriteria, 1, PROGRESS_ACCUMULATE);
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM:
@@ -1451,10 +1480,12 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
             }
             case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
             case ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL:
+            case ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS:
             {
                 // skip login update
                 if (!miscValue1)
                     continue;
+
                 // those requirements couldn't be found in the dbc
                 AchievementCriteriaDataSet const* data = sAchievementMgr->GetCriteriaDataSet(achievementCriteria);
                 if (!data || !data->Meets(GetPlayer(), unit))
@@ -1489,7 +1520,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
                 {
                     for (uint32 arena_slot = 0; arena_slot < MAX_ARENA_SLOT; ++arena_slot)
                         if (uint32 arena_team_id = GetPlayer()->GetArenaTeamId(arena_slot))
-                            if (ArenaTeam * at = sObjectMgr->GetArenaTeamById(arena_team_id))
+                            if (ArenaTeam * at = sArenaTeamMgr->GetArenaTeamById(arena_team_id))
                                 if (at->GetType() == reqTeamType)
                                 {
                                     SetCriteriaProgress(achievementCriteria, at->GetStats().Rating, PROGRESS_HIGHEST);
@@ -1512,7 +1543,6 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
             case ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA:
             case ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA:
             case ACHIEVEMENT_CRITERIA_TYPE_OWN_RANK:
-            case ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS:
             case ACHIEVEMENT_CRITERIA_TYPE_EARNED_PVP_TITLE:
             case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE:
             case ACHIEVEMENT_CRITERIA_TYPE_TOTAL:
@@ -1667,6 +1697,8 @@ bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achieve
             return progress->counter >= 9000;
         case ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS:
             return progress->counter >= achievementCriteria->use_lfg.dungeonsComplete;
+        case ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS:
+            return progress->counter >= achievementCriteria->get_killing_blow.killCount;
         // handle all statistic-only criteria here
         case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND:
         case ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP:
@@ -1944,7 +1976,7 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement, b
 {
     sLog->outDetail("AchievementMgr::CompletedAchievement(%u)", achievement->ID);
 
-    if (!sWorld->getBoolConfig(CONFIG_GM_ALLOW_ACHIEVEMENT_GAINS) && m_player->GetSession()->GetSecurity() > SEC_PLAYER && !ignoreGMAllowAchievementConfig)
+    if (m_player->GetSession()->GetSecurity() > AccountTypes(sWorld->getIntConfig(CONFIG_GM_LEVEL_ALLOW_ACHIEVEMENTS)) && !ignoreGMAllowAchievementConfig)
         return;
 
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || HasAchieved(achievement))
@@ -2246,7 +2278,6 @@ void AchievementGlobalMgr::LoadAchievementCriteriaData()
                     case 1276:
                     case 1277:
                     case 1282:
-                    case 1789:
                         break;
                     default:
                         continue;
@@ -2289,6 +2320,18 @@ void AchievementGlobalMgr::LoadAchievementCriteriaData()
             case ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL:
                 break;                                      // any cases
             case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:  // any cases
+                break;
+            case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST:
+            case ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM:        // only Children's Week achievements
+            {
+                AchievementEntry const* achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+                if (!achievement)
+                    continue;
+                if (achievement->categoryId != CATEGORY_CHILDRENS_WEEK)
+                    continue;
+                break;
+            }
+            case ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS:
                 break;
             default:                                        // type not use DB data, ignore
                 continue;

@@ -432,6 +432,7 @@ class Creature : public Unit, public GridObject<Creature>
         uint32 GetEquipmentId() const { return GetCreatureInfo()->equipmentId; }
 
         void SetCorpseDelay(uint32 delay) { m_corpseDelay = delay; }
+        uint32 GetCorpseDelay() const { return m_corpseDelay; }
         bool isRacialLeader() const { return GetCreatureInfo()->RacialLeader; }
         bool isCivilian() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_CIVILIAN; }
         bool isTrigger() const { return GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER; }
@@ -679,6 +680,7 @@ class Creature : public Unit, public GridObject<Creature>
         void ResetPlayerDamageReq() { m_PlayerDamageReq = GetHealth() / 2; }
         uint32 m_PlayerDamageReq;
 
+        uint32 GetOriginalEntry() const { return m_originalEntry; }
         void SetOriginalEntry(uint32 entry) { m_originalEntry = entry; }
 
         static float _GetDamageMod(int32 Rank);

@@ -21,6 +21,7 @@
 #include "WorldPacket.h"
 #include "World.h"
 #include "ObjectMgr.h"
+#include "GroupMgr.h"
 #include "SpellMgr.h"
 #include "Creature.h"
 #include "QuestDef.h"
@@ -303,7 +304,7 @@ bool Creature::InitEntry(uint32 Entry, uint32 /*team*/, const CreatureData *data
     }
 
     uint32 displayID = sObjectMgr->ChooseDisplayId(0, GetCreatureInfo(), data);
-    CreatureModelInfo const *minfo = sObjectMgr->GetCreatureModelRandomGender(displayID);
+    CreatureModelInfo const *minfo = sObjectMgr->GetCreatureModelRandomGender(&displayID);
     if (!minfo)                                             // Cancel load if no model defined
     {
         sLog->outErrorDb("Creature (Entry: %u) has no model defined in table `creature_template`, can't load. ", Entry);
@@ -461,8 +462,8 @@ void Creature::Update(uint32 diff)
                     Respawn();
                 else                                // the master is dead
                 {
-                    uint64 targetGuid = sObjectMgr->GetLinkedRespawnGuid(GetGUID());
-                    if (targetGuid == GetGUID()) // if linking self, never respawn (check delayed to next day)
+                    uint64 targetGuid = sObjectMgr->GetLinkedRespawnGuid(dbtableHighGuid);
+                    if (targetGuid == dbtableHighGuid) // if linking self, never respawn (check delayed to next day)
                         SetRespawnTime(DAY);
                     else
                         m_respawnTime = (now > linkedRespawntime ? now : linkedRespawntime)+urand(5, MINUTE); // else copy time from master and add a little
@@ -483,7 +484,7 @@ void Creature::Update(uint32 diff)
 
                 if (m_groupLootTimer <= diff)
                 {
-                    Group* group = sObjectMgr->GetGroupByGUID(lootingGroupLowGUID);
+                    Group* group = sGroupMgr->GetGroupByGUID(lootingGroupLowGUID);
                     if (group)
                         group->EndRoll(&loot);
                     m_groupLootTimer = 0;
@@ -781,8 +782,8 @@ bool Creature::Create(uint32 guidlow, Map *map, uint32 phaseMask, uint32 Entry, 
     }
 
     LoadCreaturesAddon();
-    uint32 displayID = 0;
-    CreatureModelInfo const *minfo = sObjectMgr->GetCreatureModelRandomGender(displayID = GetNativeDisplayId());
+    uint32 displayID = GetNativeDisplayId();
+    CreatureModelInfo const *minfo = sObjectMgr->GetCreatureModelRandomGender(&displayID);
     if (minfo && !isTotem())                               // Cancel load if no model defined or if totem
     {
         SetDisplayId(displayID);
@@ -980,7 +981,7 @@ Group *Creature::GetLootRecipientGroup() const
 {
     if (!m_lootRecipientGroup)
         return NULL;
-    return sObjectMgr->GetGroupByGUID(m_lootRecipientGroup);
+    return sGroupMgr->GetGroupByGUID(m_lootRecipientGroup);
 }
 
 void Creature::SetLootRecipient(Unit *unit)
@@ -1620,8 +1621,8 @@ void Creature::Respawn(bool force)
         else
             setDeathState(JUST_ALIVED);
 
-        uint32 displayID = 0;
-        CreatureModelInfo const *minfo = sObjectMgr->GetCreatureModelRandomGender(displayID = GetNativeDisplayId());
+        uint32 displayID = GetNativeDisplayId();
+        CreatureModelInfo const *minfo = sObjectMgr->GetCreatureModelRandomGender(&displayID);
         if (minfo)                                             // Cancel load if no model defined
         {
             SetDisplayId(displayID);
