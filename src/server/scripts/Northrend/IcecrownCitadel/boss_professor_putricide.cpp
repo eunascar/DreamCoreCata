@@ -312,15 +312,21 @@ class boss_professor_putricide : public CreatureScript
                     case POINT_FESTERGUT:
                         instance->SetBossState(DATA_FESTERGUT, IN_PROGRESS); // needed here for delayed gate close
                         me->SetSpeed(MOVE_RUN, _baseSpeed, true);
-                        DoAction(ACTION_FESTERGUT_GAS);
-                        if (Creature* festergut = Unit::GetCreature(*me, instance->GetData64(DATA_FESTERGUT)))
-                            festergut->CastSpell(festergut, SPELL_GASEOUS_BLIGHT_LARGE, false, NULL, NULL, festergut->GetGUID());
+                        if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                        {
+                            DoAction(ACTION_FESTERGUT_GAS);
+                            if (Creature* festergut = Unit::GetCreature(*me, instance->GetData64(DATA_FESTERGUT)))
+                                festergut->CastSpell(festergut, SPELL_GASEOUS_BLIGHT_LARGE, false, NULL, NULL, festergut->GetGUID());
+                        }
                         break;
                     case POINT_ROTFACE:
                         instance->SetBossState(DATA_ROTFACE, IN_PROGRESS);   // needed here for delayed gate close
                         me->SetSpeed(MOVE_RUN, _baseSpeed, true);
-                        DoAction(ACTION_ROTFACE_OOZE);
-                        events.ScheduleEvent(EVENT_ROTFACE_OOZE_FLOOD, 25000, 0, PHASE_ROTFACE);
+                        if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                        {
+                            DoAction(ACTION_ROTFACE_OOZE);
+                            events.ScheduleEvent(EVENT_ROTFACE_OOZE_FLOOD, 25000, 0, PHASE_ROTFACE);
+                        }
                         break;
                     case POINT_TABLE:
                         // stop attack
@@ -533,32 +539,44 @@ class boss_professor_putricide : public CreatureScript
                             EnterEvadeMode();
                             break;
                         case EVENT_ROTFACE_VILE_GAS:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
-                                DoCast(target, SPELL_VILE_GAS_H, true); // triggered, to skip LoS check
-                            events.ScheduleEvent(EVENT_ROTFACE_VILE_GAS, urand(15000, 20000), 0, PHASE_ROTFACE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                                    DoCast(target, SPELL_VILE_GAS_H, true); // triggered, to skip LoS check
+                                events.ScheduleEvent(EVENT_ROTFACE_VILE_GAS, urand(15000, 20000), 0, PHASE_ROTFACE);
+                            }
                             break;
                         case EVENT_ROTFACE_OOZE_FLOOD:
                             DoAction(ACTION_ROTFACE_OOZE);
                             events.ScheduleEvent(EVENT_ROTFACE_OOZE_FLOOD, 25000, 0, PHASE_ROTFACE);
                             break;
                         case EVENT_BERSERK:
-                            Talk(SAY_BERSERK);
-                            DoCast(me, SPELL_BERSERK2);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(SAY_BERSERK);
+                                DoCast(me, SPELL_BERSERK2);
+                            }
                             break;
                         case EVENT_SLIME_PUDDLE:
                         {
-                            std::list<Unit*> targets;
-                            SelectTargetList(targets, 2, SELECT_TARGET_RANDOM, 0.0f, true);
-                            if (!targets.empty())
-                                for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-                                    DoCast(*itr, SPELL_SLIME_PUDDLE_TRIGGER);
-                            events.ScheduleEvent(EVENT_SLIME_PUDDLE, 35000);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                std::list<Unit*> targets;
+                                SelectTargetList(targets, 2, SELECT_TARGET_RANDOM, 0.0f, true);
+                                if (!targets.empty())
+                                    for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+                                        DoCast(*itr, SPELL_SLIME_PUDDLE_TRIGGER);
+                                events.ScheduleEvent(EVENT_SLIME_PUDDLE, 35000);
+                            }
                             break;
                         }
                         case EVENT_UNSTABLE_EXPERIMENT:
-                            Talk(EMOTE_UNSTABLE_EXPERIMENT);
-                            DoCast(me, SPELL_UNSTABLE_EXPERIMENT);
-                            events.ScheduleEvent(EVENT_UNSTABLE_EXPERIMENT, urand(35000, 40000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(EMOTE_UNSTABLE_EXPERIMENT);
+                                DoCast(me, SPELL_UNSTABLE_EXPERIMENT);
+                                events.ScheduleEvent(EVENT_UNSTABLE_EXPERIMENT, urand(35000, 40000));
+                            }
                             break;
                         case EVENT_TEAR_GAS:
                             me->GetMotionMaster()->MovePoint(POINT_TABLE, tablePos);
@@ -571,43 +589,55 @@ class boss_professor_putricide : public CreatureScript
                             instance->DoRemoveAurasDueToSpellOnPlayers(71618);
                             break;
                         case EVENT_MALLEABLE_GOO:
-                            if (Is25ManRaid())
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                std::list<Unit*> targets;
-                                SelectTargetList(targets, 2, SELECT_TARGET_RANDOM, -7.0f, true);
-                                if (!targets.empty())
+                                if (Is25ManRaid())
                                 {
-                                    Talk(EMOTE_MALLEABLE_GOO);
-                                    for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-                                        DoCast(*itr, SPELL_MALLEABLE_GOO);
+                                    std::list<Unit*> targets;
+                                    SelectTargetList(targets, 2, SELECT_TARGET_RANDOM, -7.0f, true);
+                                    if (!targets.empty())
+                                    {
+                                        Talk(EMOTE_MALLEABLE_GOO);
+                                        for (std::list<Unit*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+                                            DoCast(*itr, SPELL_MALLEABLE_GOO);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, -7.0f, true))
+                                else
                                 {
-                                    Talk(EMOTE_MALLEABLE_GOO);
-                                    DoCast(target, SPELL_MALLEABLE_GOO);
+                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, -7.0f, true))
+                                    {
+                                        Talk(EMOTE_MALLEABLE_GOO);
+                                        DoCast(target, SPELL_MALLEABLE_GOO);
+                                    }
                                 }
+                                events.ScheduleEvent(EVENT_MALLEABLE_GOO, urand(25000, 30000));
                             }
-                            events.ScheduleEvent(EVENT_MALLEABLE_GOO, urand(25000, 30000));
                             break;
                         case EVENT_CHOKING_GAS_BOMB:
-                            Talk(EMOTE_CHOKING_GAS_BOMB);
-                            DoCast(me, SPELL_CHOKING_GAS_BOMB);
-                            events.ScheduleEvent(EVENT_CHOKING_GAS_BOMB, urand(35000, 40000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(EMOTE_CHOKING_GAS_BOMB);
+                                DoCast(me, SPELL_CHOKING_GAS_BOMB);
+                                events.ScheduleEvent(EVENT_CHOKING_GAS_BOMB, urand(35000, 40000));
+                            }
                             break;
                         case EVENT_UNBOUND_PLAGUE:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                me->CastCustomSpell(SPELL_UNBOUND_PLAGUE, SPELLVALUE_BASE_POINT0, 775, target);
-                                DoCast(target, SPELL_UNBOUND_PLAGUE_SEARCHER);
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                                {
+                                    me->CastCustomSpell(SPELL_UNBOUND_PLAGUE, SPELLVALUE_BASE_POINT0, 775, target);
+                                    DoCast(target, SPELL_UNBOUND_PLAGUE_SEARCHER);
+                                }
+                                events.ScheduleEvent(EVENT_UNBOUND_PLAGUE, 90000);
                             }
-                            events.ScheduleEvent(EVENT_UNBOUND_PLAGUE, 90000);
                             break;
                         case EVENT_MUTATED_PLAGUE:
-                            DoCastVictim(SPELL_MUTATED_PLAGUE);
-                            events.ScheduleEvent(EVENT_MUTATED_PLAGUE, 10000);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_MUTATED_PLAGUE);
+                                events.ScheduleEvent(EVENT_MUTATED_PLAGUE, 10000);
+                            }
                             break;
                         case EVENT_PHASE_TRANSITION:
                         {

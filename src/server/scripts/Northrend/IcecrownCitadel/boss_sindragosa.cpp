@@ -379,36 +379,57 @@ class boss_sindragosa : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BERSERK:
-                            DoScriptText(EMOTE_GENERIC_BERSERK_RAID, me);
-                            Talk(SAY_BERSERK);
-                            DoCast(me, SPELL_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoScriptText(EMOTE_GENERIC_BERSERK_RAID, me);
+                                Talk(SAY_BERSERK);
+                                DoCast(me, SPELL_BERSERK);
+                            }
                             break;
                         case EVENT_CLEAVE:
-                            DoCastVictim(SPELL_CLEAVE);
-                            events.ScheduleEvent(EVENT_CLEAVE, urand(15000, 20000), EVENT_GROUP_LAND_PHASE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_CLEAVE);
+                                events.ScheduleEvent(EVENT_CLEAVE, urand(15000, 20000), EVENT_GROUP_LAND_PHASE);
+                            }
                             break;
                         case EVENT_TAIL_SMASH:
-                            DoCast(me, SPELL_TAIL_SMASH);
-                            events.ScheduleEvent(EVENT_TAIL_SMASH, urand(27000, 32000), EVENT_GROUP_LAND_PHASE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_TAIL_SMASH);
+                                events.ScheduleEvent(EVENT_TAIL_SMASH, urand(27000, 32000), EVENT_GROUP_LAND_PHASE);
+                            }
                             break;
                         case EVENT_FROST_BREATH:
-                            DoCastVictim(_isThirdPhase ? SPELL_FROST_BREATH_P2 : SPELL_FROST_BREATH_P1);
-                            events.ScheduleEvent(EVENT_FROST_BREATH, urand(20000, 25000), EVENT_GROUP_LAND_PHASE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(_isThirdPhase ? SPELL_FROST_BREATH_P2 : SPELL_FROST_BREATH_P1);
+                                events.ScheduleEvent(EVENT_FROST_BREATH, urand(20000, 25000), EVENT_GROUP_LAND_PHASE);
+                            }
                             break;
                         case EVENT_UNCHAINED_MAGIC:
-                            Talk(SAY_UNCHAINED_MAGIC);
-                            DoCast(me, SPELL_UNCHAINED_MAGIC);
-                            events.ScheduleEvent(EVENT_UNCHAINED_MAGIC, urand(30000, 35000), EVENT_GROUP_LAND_PHASE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(SAY_UNCHAINED_MAGIC);
+                                DoCast(me, SPELL_UNCHAINED_MAGIC);
+                                events.ScheduleEvent(EVENT_UNCHAINED_MAGIC, urand(30000, 35000), EVENT_GROUP_LAND_PHASE);
+                            }
                             break;
                         case EVENT_ICY_GRIP:
-                            DoCast(me, SPELL_ICY_GRIP);
-                            events.ScheduleEvent(EVENT_ICY_GRIP, urand(70000, 75000), EVENT_GROUP_LAND_PHASE);
-                            events.ScheduleEvent(EVENT_BLISTERING_COLD, 1000, EVENT_GROUP_LAND_PHASE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_ICY_GRIP);
+                                events.ScheduleEvent(EVENT_ICY_GRIP, urand(70000, 75000), EVENT_GROUP_LAND_PHASE);
+                                events.ScheduleEvent(EVENT_BLISTERING_COLD, 1000, EVENT_GROUP_LAND_PHASE);
+                            }
                             break;
                         case EVENT_BLISTERING_COLD:
-                            Talk(EMOTE_WARN_BLISTERING_COLD);
-                            DoCast(me, SPELL_BLISTERING_COLD);
-                            events.ScheduleEvent(EVENT_BLISTERING_COLD_YELL, 5000, EVENT_GROUP_LAND_PHASE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(EMOTE_WARN_BLISTERING_COLD);
+                                DoCast(me, SPELL_BLISTERING_COLD);
+                                events.ScheduleEvent(EVENT_BLISTERING_COLD_YELL, 5000, EVENT_GROUP_LAND_PHASE);
+                            }
                             break;
                         case EVENT_BLISTERING_COLD_YELL:
                             Talk(SAY_BLISTERING_COLD);
@@ -425,32 +446,38 @@ class boss_sindragosa : public CreatureScript
                             events.ScheduleEvent(EVENT_LAND, 45000);
                             break;
                         case EVENT_ICE_TOMB:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -SPELL_ICE_TOMB_UNTARGETABLE))
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                Talk(EMOTE_WARN_FROZEN_ORB, target->GetGUID());
-                                DoCast(target, SPELL_ICE_TOMB_DUMMY, true);
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -SPELL_ICE_TOMB_UNTARGETABLE))
+                                {
+                                    Talk(EMOTE_WARN_FROZEN_ORB, target->GetGUID());
+                                    DoCast(target, SPELL_ICE_TOMB_DUMMY, true);
+                                }
+                                events.ScheduleEvent(EVENT_ICE_TOMB, urand(16000, 23000));
                             }
-                            events.ScheduleEvent(EVENT_ICE_TOMB, urand(16000, 23000));
                             break;
                         case EVENT_FROST_BOMB:
                         {
-                            float destX, destY, destZ;
-                            destX = float(rand_norm()) * 117.25f + 4339.25f;
-                            if (destX > 4371.5f && destX < 4432.0f)
-                                destY = float(rand_norm()) * 111.0f + 2429.0f;
-                            else
-                                destY = float(rand_norm()) * 31.23f + 2454.64f;
-                            destZ = 205.0f; // random number close to ground, get exact in next call
-                            me->UpdateGroundPositionZ(destX, destY, destZ);
-                            Position pos;
-                            pos.Relocate(destX, destY, destZ);
-                            if (TempSummon* summ = me->SummonCreature(NPC_FROST_BOMB, pos, TEMPSUMMON_TIMED_DESPAWN, 40000))
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                summ->CastSpell(summ, SPELL_FROST_BOMB_VISUAL, true);
-                                DoCast(summ, SPELL_FROST_BOMB_TRIGGER);
-                                //me->CastSpell(destX, destY, destZ, SPELL_FROST_BOMB_TRIGGER, false);
+                                float destX, destY, destZ;
+                                destX = float(rand_norm()) * 117.25f + 4339.25f;
+                                if (destX > 4371.5f && destX < 4432.0f)
+                                    destY = float(rand_norm()) * 111.0f + 2429.0f;
+                                else
+                                    destY = float(rand_norm()) * 31.23f + 2454.64f;
+                                destZ = 205.0f; // random number close to ground, get exact in next call
+                                me->UpdateGroundPositionZ(destX, destY, destZ);
+                                Position pos;
+                                pos.Relocate(destX, destY, destZ);
+                                if (TempSummon* summ = me->SummonCreature(NPC_FROST_BOMB, pos, TEMPSUMMON_TIMED_DESPAWN, 40000))
+                                {
+                                    summ->CastSpell(summ, SPELL_FROST_BOMB_VISUAL, true);
+                                    DoCast(summ, SPELL_FROST_BOMB_TRIGGER);
+                                    //me->CastSpell(destX, destY, destZ, SPELL_FROST_BOMB_TRIGGER, false);
+                                }
+                                events.ScheduleEvent(EVENT_FROST_BOMB, urand(5000, 10000));
                             }
-                            events.ScheduleEvent(EVENT_FROST_BOMB, urand(5000, 10000));
                             break;
                         }
                         case EVENT_LAND:

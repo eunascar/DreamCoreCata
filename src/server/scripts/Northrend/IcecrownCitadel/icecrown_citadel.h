@@ -115,6 +115,8 @@ enum DataTypes
     DATA_EDGE_DESTROY_WARNING       = 49,
     DATA_FROZEN_LAVAMAN             = 50,
     DATA_LAVAMAN_PILLARS            = 51,
+
+    DATA_INSTANCE_SPELL_VERIFICATION= 52,
 };
 
 enum CreaturesIds

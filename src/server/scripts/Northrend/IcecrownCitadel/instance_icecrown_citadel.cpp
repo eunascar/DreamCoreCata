@@ -144,6 +144,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                 BloodQuickeningState = NOT_STARTED;
                 BloodQuickeningTimer = 0;
                 BloodQuickeningMinutes = 0;
+                InstanceSpellVerification = 0;
             }
 
             void FillInitialWorldStates(WorldPacket& data)
@@ -569,6 +570,8 @@ class instance_icecrown_citadel : public InstanceMapScript
                         return BeenWaiting;
                     case DATA_NECK_DEEP_ACHIEVEMENT:
                         return NeckDeep;
+                    case DATA_INSTANCE_SPELL_VERIFICATION:
+                        return InstanceSpellVerification;
                     default:
                         break;
                 }
@@ -972,10 +975,12 @@ class instance_icecrown_citadel : public InstanceMapScript
                     }
                     case DATA_PORTAL_JOCKEY_ACHIEVEMENT:
                         IsPortalJockeyEligible = data ? true : false;
-                    case DATA_NECK_DEEP_ACHIEVEMENT:         
-                        NeckDeep = data;
                     case DATA_BEEN_WAITING_ACHIEVEMENT:         
                         NecroticStack = data;
+                    case DATA_NECK_DEEP_ACHIEVEMENT:         
+                        NeckDeep = data;
+                    case DATA_INSTANCE_SPELL_VERIFICATION:
+                        InstanceSpellVerification = data;
                     default:
                         break;
                 }
@@ -1294,6 +1299,7 @@ class instance_icecrown_citadel : public InstanceMapScript
             uint8 NeckDeep;
             uint8 NecroticStack;
             uint8 IsPortalJockeyEligible;
+            uint8 InstanceSpellVerification;
             bool IsBonedEligible;
             bool IsOozeDanceEligible;
             bool IsNauseaEligible;
@@ -1303,6 +1309,49 @@ class instance_icecrown_citadel : public InstanceMapScript
         InstanceScript* GetInstanceScript(InstanceMap* map) const
         {
             return new instance_icecrown_citadel_InstanceMapScript(map);
+        }
+};
+
+#define GOSSIP_VERIFICATION     "Remover los Spells de los Bosses de la Instancia"
+#define GOSSIP_NO_SPELLS        "Ya has removido los Spells de los Bosses de la Instancia"
+
+class verification_npc : public CreatureScript
+{
+    public:
+        verification_npc() : CreatureScript("verification_npc") { }
+
+        InstanceScript* instance;
+
+        bool OnGossipHello(Player* player, Creature* creature)
+        {
+            instance = creature->GetInstanceScript();
+
+            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_VERIFICATION, GOSSIP_SENDER_MAIN, 100);
+            else
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NO_SPELLS, GOSSIP_SENDER_MAIN, 101);
+
+            player->PlayerTalkClass->SendGossipMenu(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            
+            return true;
+        }
+
+        bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 sender, uint32 action)
+        {
+            if (sender != GOSSIP_SENDER_MAIN) return true;
+            if (!player->getAttackers().empty()) return true;
+
+            switch(action)
+            {
+                case 100:
+                    instance->SetData(DATA_INSTANCE_SPELL_VERIFICATION, 1);
+                    player->CLOSE_GOSSIP_MENU(); 
+                    break;
+                case 101:
+                    player->CLOSE_GOSSIP_MENU(); 
+                    break;
+            }
+            return true;
         }
 };
 
@@ -1404,4 +1453,5 @@ TPlayerList GetAttackablePlayersInTheMap(Map *pMap)
 void AddSC_instance_icecrown_citadel()
 {
     new instance_icecrown_citadel();
+    new verification_npc();
 }

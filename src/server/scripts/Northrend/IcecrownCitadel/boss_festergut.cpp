@@ -178,57 +178,72 @@ class boss_festergut : public CreatureScript
                     {
                         case EVENT_INHALE_BLIGHT:
                         {
-                            RemoveBlight();
-                            if (_inhaleCounter == 3)
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                Talk(EMOTE_WARN_PUNGENT_BLIGHT);
-                                Talk(SAY_PUNGENT_BLIGHT);
-                                DoCast(me, SPELL_PUNGENT_BLIGHT);
-                                _inhaleCounter = 0;
-                                if (Creature* professor = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PROFESSOR_PUTRICIDE)))
-                                    professor->AI()->DoAction(ACTION_FESTERGUT_GAS);
-                                events.RescheduleEvent(EVENT_GAS_SPORE, urand(20000, 25000));
-                            }
-                            else
-                            {
-                                DoCast(me, SPELL_INHALE_BLIGHT);
-                                // just cast and dont bother with target, conditions will handle it
-                                ++_inhaleCounter;
-                                if (_inhaleCounter < 3)
-                                    me->CastSpell(me, gaseousBlight[_inhaleCounter], true, NULL, NULL, me->GetGUID());
-                            }
+                                RemoveBlight();
+                                if (_inhaleCounter == 3)
+                                {
+                                    Talk(EMOTE_WARN_PUNGENT_BLIGHT);
+                                    Talk(SAY_PUNGENT_BLIGHT);
+                                    DoCast(me, SPELL_PUNGENT_BLIGHT);
+                                    _inhaleCounter = 0;
+                                    if (Creature* professor = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PROFESSOR_PUTRICIDE)))
+                                        professor->AI()->DoAction(ACTION_FESTERGUT_GAS);
+                                    events.RescheduleEvent(EVENT_GAS_SPORE, urand(20000, 25000));
+                                }
+                                else
+                                {
+                                    DoCast(me, SPELL_INHALE_BLIGHT);
+                                    // just cast and dont bother with target, conditions will handle it
+                                    ++_inhaleCounter;
+                                    if (_inhaleCounter < 3)
+                                        me->CastSpell(me, gaseousBlight[_inhaleCounter], true, NULL, NULL, me->GetGUID());
+                                }
 
-                            events.ScheduleEvent(EVENT_INHALE_BLIGHT, urand(33500, 35000));
+                                events.ScheduleEvent(EVENT_INHALE_BLIGHT, urand(33500, 35000));
+                            }
                             break;
                         }
                         case EVENT_VILE_GAS:
                         {
-                            std::list<Unit*> targets;
-                            uint32 minTargets = RAID_MODE<uint32>(3, 8, 3, 8);
-                            SelectTargetList(targets, minTargets, SELECT_TARGET_RANDOM, -5.0f, true);
-                            float minDist = 0.0f;
-                            if (targets.size() >= minTargets)
-                                minDist = -5.0f;
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                std::list<Unit*> targets;
+                                uint32 minTargets = RAID_MODE<uint32>(3, 8, 3, 8);
+                                SelectTargetList(targets, minTargets, SELECT_TARGET_RANDOM, -5.0f, true);
+                                float minDist = 0.0f;
+                                if (targets.size() >= minTargets)
+                                    minDist = -5.0f;
 
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, minDist, true))
-                                DoCast(target, SPELL_VILE_GAS);
-                            events.ScheduleEvent(EVENT_VILE_GAS, urand(28000, 35000));
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, minDist, true))
+                                    DoCast(target, SPELL_VILE_GAS);
+                                events.ScheduleEvent(EVENT_VILE_GAS, urand(28000, 35000));
+                            }
                             break;
                         }
                         case EVENT_GAS_SPORE:
-                            Talk(EMOTE_WARN_GAS_SPORE);
-                            Talk(EMOTE_GAS_SPORE);
-                            me->CastCustomSpell(SPELL_GAS_SPORE, SPELLVALUE_MAX_TARGETS, RAID_MODE<int32>(2, 3, 2, 3), me);
-                            events.ScheduleEvent(EVENT_GAS_SPORE, urand(40000, 45000));
-                            events.RescheduleEvent(EVENT_VILE_GAS, urand(28000, 35000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(EMOTE_WARN_GAS_SPORE);
+                                Talk(EMOTE_GAS_SPORE);
+                                me->CastCustomSpell(SPELL_GAS_SPORE, SPELLVALUE_MAX_TARGETS, RAID_MODE<int32>(2, 3, 2, 3), me);
+                                events.ScheduleEvent(EVENT_GAS_SPORE, urand(40000, 45000));
+                                events.RescheduleEvent(EVENT_VILE_GAS, urand(28000, 35000));
+                            }
                             break;
                         case EVENT_GASTRIC_BLOAT:
-                            DoCastVictim(SPELL_GASTRIC_BLOAT);
-                            events.ScheduleEvent(EVENT_GASTRIC_BLOAT, urand(15000, 17500));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_GASTRIC_BLOAT);
+                                events.ScheduleEvent(EVENT_GASTRIC_BLOAT, urand(15000, 17500));
+                            }
                             break;
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK2);
-                            Talk(SAY_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK2);
+                                Talk(SAY_BERSERK);
+                            }
                             break;
                         default:
                             break;
@@ -309,12 +324,18 @@ class npc_stinky_icc : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_DECIMATE:
-                            DoCastVictim(SPELL_DECIMATE);
-                            _events.ScheduleEvent(EVENT_DECIMATE, urand(20000, 25000));
+                            if (!_instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_DECIMATE);
+                                _events.ScheduleEvent(EVENT_DECIMATE, urand(20000, 25000));
+                            }
                             break;
                         case EVENT_MORTAL_WOUND:
-                            DoCastVictim(SPELL_MORTAL_WOUND);
-                            _events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(10000, 12500));
+                            if (!_instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_MORTAL_WOUND);
+                                _events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(10000, 12500));
+                            }
                             break;
                         default:
                             break;

@@ -437,37 +437,52 @@ class boss_deathbringer_saurfang : public CreatureScript
                             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
                             break;
                         case EVENT_SUMMON_BLOOD_BEAST:
-                            for (uint32 i10 = 0; i10 < 2; ++i10)
-                                DoCast(me, SPELL_SUMMON_BLOOD_BEAST+i10);
-                            if (Is25ManRaid())
-                                for (uint32 i25 = 0; i25 < 3; ++i25)
-                                    DoCast(me, SPELL_SUMMON_BLOOD_BEAST_25_MAN+i25);
-                            Talk(SAY_BLOOD_BEASTS);
-                            events.ScheduleEvent(EVENT_SUMMON_BLOOD_BEAST, 40000, 0, PHASE_COMBAT);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                for (uint32 i10 = 0; i10 < 2; ++i10)
+                                    DoCast(me, SPELL_SUMMON_BLOOD_BEAST+i10);
+                                if (Is25ManRaid())
+                                    for (uint32 i25 = 0; i25 < 3; ++i25)
+                                        DoCast(me, SPELL_SUMMON_BLOOD_BEAST_25_MAN+i25);
+                                Talk(SAY_BLOOD_BEASTS);
+                                events.ScheduleEvent(EVENT_SUMMON_BLOOD_BEAST, 40000, 0, PHASE_COMBAT);
+                            }
                             break;
                         case EVENT_BLOOD_NOVA:
                         {
-                            // select at range only
-                            Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, -10.0f, true);
-                            if (!target)
-                                target = SelectTarget(SELECT_TARGET_RANDOM, 1, 10.0f, true);    // noone? select melee
-                            if (target)
-                                DoCast(target, SPELL_BLOOD_NOVA_TRIGGER);
-                            events.ScheduleEvent(EVENT_BLOOD_NOVA, urand(20000, 25000), 0, PHASE_COMBAT);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                // select at range only
+                                Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, -10.0f, true);
+                                if (!target)
+                                    target = SelectTarget(SELECT_TARGET_RANDOM, 1, 10.0f, true);    // noone? select melee
+                                if (target)
+                                    DoCast(target, SPELL_BLOOD_NOVA_TRIGGER);
+                                events.ScheduleEvent(EVENT_BLOOD_NOVA, urand(20000, 25000), 0, PHASE_COMBAT);
+                            }
                             break;
                         }
                         case EVENT_RUNE_OF_BLOOD:
-                            DoCastVictim(SPELL_RUNE_OF_BLOOD);
-                            events.ScheduleEvent(EVENT_RUNE_OF_BLOOD, urand(20000, 25000), 0, PHASE_COMBAT);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_RUNE_OF_BLOOD);
+                                events.ScheduleEvent(EVENT_RUNE_OF_BLOOD, urand(20000, 25000), 0, PHASE_COMBAT);
+                            }
                             break;
                         case EVENT_BOILING_BLOOD:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -BOILING_BLOOD_HELPER))
-                                DoCast(target, SPELL_BOILING_BLOOD);
-                            events.ScheduleEvent(EVENT_BOILING_BLOOD, urand(15000, 20000), 0, PHASE_COMBAT);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -BOILING_BLOOD_HELPER))
+                                    DoCast(target, SPELL_BOILING_BLOOD);
+                                events.ScheduleEvent(EVENT_BOILING_BLOOD, urand(15000, 20000), 0, PHASE_COMBAT);
+                            }
                             break;
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK);
-                            Talk(SAY_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK);
+                                Talk(SAY_BERSERK);
+                            }
                             break;
                         default:
                             break;

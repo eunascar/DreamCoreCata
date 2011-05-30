@@ -163,7 +163,8 @@ class boss_blood_queen_lana_thel : public CreatureScript
                 Talk(SAY_AGGRO);
                 instance->SetBossState(DATA_BLOOD_QUEEN_LANA_THEL, IN_PROGRESS);
 
-                DoCast(me, SPELL_SHROUD_OF_SORROW, true);
+                if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                    DoCast(me, SPELL_SHROUD_OF_SORROW, true);
                 DoCast(me, SPELL_FRENZIED_BLOODTHIRST_VISUAL, true);
                 _creditBloodQuickening = instance->GetData(DATA_BLOOD_QUICKENING_STATE) == IN_PROGRESS;
             }
@@ -272,7 +273,8 @@ class boss_blood_queen_lana_thel : public CreatureScript
                         events.ScheduleEvent(EVENT_AIR_START_FLYING, 5000);
                         break;
                     case POINT_AIR:
-                        DoCast(me, SPELL_BLOODBOLT_WHIRL);
+                        if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            DoCast(me, SPELL_BLOODBOLT_WHIRL);
                         Talk(SAY_AIR_PHASE);
                         events.ScheduleEvent(EVENT_AIR_FLY_DOWN, 10000);
                         break;
@@ -311,90 +313,110 @@ class boss_blood_queen_lana_thel : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BERSERK:
-                            DoScriptText(EMOTE_GENERIC_BERSERK_RAID, me);
-                            Talk(SAY_BERSERK);
-                            DoCast(me, SPELL_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoScriptText(EMOTE_GENERIC_BERSERK_RAID, me);
+                                Talk(SAY_BERSERK);
+                                DoCast(me, SPELL_BERSERK);
+                            }
                             break;
                         case EVENT_VAMPIRIC_BITE:
                         {
-                            std::list<Player*> targets;
-                            SelectRandomTarget(false, &targets);
-                            if (!targets.empty())
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                Unit* target = targets.front();
-                                DoCast(target, SPELL_VAMPIRIC_BITE);
-                                Talk(SAY_VAMPIRIC_BITE);
-                                _vampires.insert(target->GetGUID());
+                                std::list<Player*> targets;
+                                SelectRandomTarget(false, &targets);
+                                if (!targets.empty())
+                                {
+                                    Unit* target = targets.front();
+                                    DoCast(target, SPELL_VAMPIRIC_BITE);
+                                    Talk(SAY_VAMPIRIC_BITE);
+                                    _vampires.insert(target->GetGUID());
+                                }
                             }
                             break;
                         }
                         case EVENT_BLOOD_MIRROR:
                         {
-                            // victim can be NULL when this is processed in the same update tick as EVENT_AIR_PHASE
-                            if (me->getVictim())
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                Player* newOfftank = SelectRandomTarget(true);
-                                if (_offtank != newOfftank)
+                                // victim can be NULL when this is processed in the same update tick as EVENT_AIR_PHASE
+                                if (me->getVictim())
                                 {
-                                    _offtank = newOfftank;
-                                    if (_offtank)
+                                    Player* newOfftank = SelectRandomTarget(true);
+                                    if (_offtank != newOfftank)
                                     {
-                                        _offtank->CastSpell(me->getVictim(), SPELL_BLOOD_MIRROR_DAMAGE, true);
-                                        me->getVictim()->CastSpell(_offtank, SPELL_BLOOD_MIRROR_DUMMY, true);
-                                        DoCastVictim(SPELL_BLOOD_MIRROR_VISUAL);
-                                        if (Item* shadowsEdge = _offtank->GetWeaponForAttack(BASE_ATTACK, true))
-                                            if (!_offtank->HasAura(SPELL_THIRST_QUENCHED) && shadowsEdge->GetEntry() == ITEM_SHADOW_S_EDGE && !_offtank->HasAura(SPELL_GUSHING_WOUND))
-                                                _offtank->CastSpell(_offtank, SPELL_GUSHING_WOUND, true);
-
+                                        _offtank = newOfftank;
+                                        if (_offtank)
+                                        {
+                                            _offtank->CastSpell(me->getVictim(), SPELL_BLOOD_MIRROR_DAMAGE, true);
+                                            me->getVictim()->CastSpell(_offtank, SPELL_BLOOD_MIRROR_DUMMY, true);
+                                            DoCastVictim(SPELL_BLOOD_MIRROR_VISUAL);
+                                            if (Item* shadowsEdge = _offtank->GetWeaponForAttack(BASE_ATTACK, true))
+                                                if (!_offtank->HasAura(SPELL_THIRST_QUENCHED) && shadowsEdge->GetEntry() == ITEM_SHADOW_S_EDGE && !_offtank->HasAura(SPELL_GUSHING_WOUND))
+                                                    _offtank->CastSpell(_offtank, SPELL_GUSHING_WOUND, true);
+                                        }
                                     }
                                 }
+                                events.ScheduleEvent(EVENT_BLOOD_MIRROR, 2500, EVENT_GROUP_CANCELLABLE);
                             }
-                            events.ScheduleEvent(EVENT_BLOOD_MIRROR, 2500, EVENT_GROUP_CANCELLABLE);
                             break;
                         }
                         case EVENT_DELIRIOUS_SLASH:
-                            if (_offtank && !me->HasByteFlag(UNIT_FIELD_BYTES_1, 3, 0x03))
-                                DoCast(_offtank, SPELL_DELIRIOUS_SLASH);
-                            events.ScheduleEvent(EVENT_DELIRIOUS_SLASH, urand(20000, 24000), EVENT_GROUP_NORMAL);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (_offtank && !me->HasByteFlag(UNIT_FIELD_BYTES_1, 3, 0x03))
+                                    DoCast(_offtank, SPELL_DELIRIOUS_SLASH);
+                                events.ScheduleEvent(EVENT_DELIRIOUS_SLASH, urand(20000, 24000), EVENT_GROUP_NORMAL);
+                            }
                             break;
                         case EVENT_PACT_OF_THE_DARKFALLEN:
                         {
-                            std::list<Player*> targets;
-                            SelectRandomTarget(false, &targets);
-                            uint32 targetCount = 2;
-                            // do not combine these checks! we want it incremented TWICE when both conditions are met
-                            if (IsHeroic())
-                                ++targetCount;
-                            if (Is25ManRaid())
-                                ++targetCount;
-                            Trinity::RandomResizeList<Player*>(targets, targetCount);
-                            if (targets.size() > 1)
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                Talk(SAY_PACT_OF_THE_DARKFALLEN);
-                                for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-                                    DoCast(*itr, SPELL_PACT_OF_THE_DARKFALLEN);
+                                std::list<Player*> targets;
+                                SelectRandomTarget(false, &targets);
+                                uint32 targetCount = 2;
+                                // do not combine these checks! we want it incremented TWICE when both conditions are met
+                                if (IsHeroic())
+                                    ++targetCount;
+                                if (Is25ManRaid())
+                                    ++targetCount;
+                                Trinity::RandomResizeList<Player*>(targets, targetCount);
+                                if (targets.size() > 1)
+                                {
+                                    Talk(SAY_PACT_OF_THE_DARKFALLEN);
+                                    for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+                                        DoCast(*itr, SPELL_PACT_OF_THE_DARKFALLEN);
+                                }
+                                events.ScheduleEvent(EVENT_PACT_OF_THE_DARKFALLEN, 30500, EVENT_GROUP_NORMAL);
                             }
-                            events.ScheduleEvent(EVENT_PACT_OF_THE_DARKFALLEN, 30500, EVENT_GROUP_NORMAL);
                             break;
                         }
                         case EVENT_SWARMING_SHADOWS:
-                            if (Player* target = SelectRandomTarget(false))
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                Talk(EMOTE_SWARMING_SHADOWS, target->GetGUID());
-                                Talk(SAY_SWARMING_SHADOWS);
-                                DoCast(target, SPELL_SWARMING_SHADOWS);
+                                if (Player* target = SelectRandomTarget(false))
+                                {
+                                    Talk(EMOTE_SWARMING_SHADOWS, target->GetGUID());
+                                    Talk(SAY_SWARMING_SHADOWS);
+                                    DoCast(target, SPELL_SWARMING_SHADOWS);
+                                }
+                                events.ScheduleEvent(EVENT_SWARMING_SHADOWS, 30500, EVENT_GROUP_NORMAL);
                             }
-                            events.ScheduleEvent(EVENT_SWARMING_SHADOWS, 30500, EVENT_GROUP_NORMAL);
                             break;
                         case EVENT_TWILIGHT_BLOODBOLT:
                         {
-                            std::list<Player*> targets;
-                            SelectRandomTarget(false, &targets);
-                            Trinity::RandomResizeList<Player*>(targets, uint32(Is25ManRaid() ? 4 : 2));
-                            for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-                                DoCast(*itr, SPELL_TWILIGHT_BLOODBOLT);
-                            DoCast(me, SPELL_TWILIGHT_BLOODBOLT_TARGET);
-                            events.ScheduleEvent(EVENT_TWILIGHT_BLOODBOLT, urand(10000, 15000), EVENT_GROUP_NORMAL);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                std::list<Player*> targets;
+                                SelectRandomTarget(false, &targets);
+                                Trinity::RandomResizeList<Player*>(targets, uint32(Is25ManRaid() ? 4 : 2));
+                                for (std::list<Player*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+                                    DoCast(*itr, SPELL_TWILIGHT_BLOODBOLT);
+                                DoCast(me, SPELL_TWILIGHT_BLOODBOLT_TARGET);
+                                events.ScheduleEvent(EVENT_TWILIGHT_BLOODBOLT, urand(10000, 15000), EVENT_GROUP_NORMAL);
+                            }
                             break;
                         }
                         case EVENT_AIR_PHASE:

@@ -159,60 +159,82 @@ class boss_lord_marrowgar : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BONE_SPIKE_GRAVEYARD:
-                            if (IsHeroic() || !me->HasAura(SPELL_BONE_STORM))
-                                DoCast(me, SPELL_BONE_SPIKE_GRAVEYARD);
-                            events.ScheduleEvent(EVENT_BONE_SPIKE_GRAVEYARD, urand(15000, 20000), EVENT_GROUP_SPECIAL);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (IsHeroic() || !me->HasAura(SPELL_BONE_STORM))
+                                    DoCast(me, SPELL_BONE_SPIKE_GRAVEYARD);
+                                events.ScheduleEvent(EVENT_BONE_SPIKE_GRAVEYARD, urand(15000, 20000), EVENT_GROUP_SPECIAL);
+                            }
                             break;
                         case EVENT_COLDFLAME:
-                            _coldflameLastPos.Relocate(me);
-                            if (!me->HasAura(SPELL_BONE_STORM))
-                                me->CastCustomSpell(SPELL_COLDFLAME_NORMAL, SPELLVALUE_MAX_TARGETS, 1, me);
-                            else
-                                DoCast(me, SPELL_COLDFLAME_BONE_STORM);
-                            events.ScheduleEvent(EVENT_COLDFLAME, 5000, EVENT_GROUP_SPECIAL);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                _coldflameLastPos.Relocate(me);
+                                if (!me->HasAura(SPELL_BONE_STORM))
+                                    me->CastCustomSpell(SPELL_COLDFLAME_NORMAL, SPELLVALUE_MAX_TARGETS, 1, me);
+                                else
+                                    DoCast(me, SPELL_COLDFLAME_BONE_STORM);
+                                events.ScheduleEvent(EVENT_COLDFLAME, 5000, EVENT_GROUP_SPECIAL);
+                            }
                             break;
                         case EVENT_WARN_BONE_STORM:
-                            _boneSlice = false;
-                            Talk(EMOTE_BONE_STORM);
-                            me->FinishSpell(CURRENT_MELEE_SPELL, false);
-                            DoCast(me, SPELL_BONE_STORM);
-                            events.DelayEvents(3000, EVENT_GROUP_SPECIAL);
-                            events.ScheduleEvent(EVENT_BONE_STORM_BEGIN, 3050);
-                            events.ScheduleEvent(EVENT_WARN_BONE_STORM, urand(90000, 95000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                _boneSlice = false;
+                                Talk(EMOTE_BONE_STORM);
+                                me->FinishSpell(CURRENT_MELEE_SPELL, false);
+                                DoCast(me, SPELL_BONE_STORM);
+                                events.DelayEvents(3000, EVENT_GROUP_SPECIAL);
+                                events.ScheduleEvent(EVENT_BONE_STORM_BEGIN, 3050);
+                                events.ScheduleEvent(EVENT_WARN_BONE_STORM, urand(90000, 95000));
+                            }
                             break;
                         case EVENT_BONE_STORM_BEGIN:
-                            if (Aura* pStorm = me->GetAura(SPELL_BONE_STORM))
-                                pStorm->SetDuration(int32(_boneStormDuration));
-                            me->SetSpeed(MOVE_RUN, _baseSpeed*3.0f, true);
-                            Talk(SAY_BONE_STORM);
-                            events.ScheduleEvent(EVENT_BONE_STORM_END, _boneStormDuration+1);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (Aura* pStorm = me->GetAura(SPELL_BONE_STORM))
+                                    pStorm->SetDuration(int32(_boneStormDuration));
+                                me->SetSpeed(MOVE_RUN, _baseSpeed*3.0f, true);
+                                Talk(SAY_BONE_STORM);
+                                events.ScheduleEvent(EVENT_BONE_STORM_END, _boneStormDuration+1);
+                            }
                             // no break here
                         case EVENT_BONE_STORM_MOVE:
                         {
-                            events.ScheduleEvent(EVENT_BONE_STORM_MOVE, _boneStormDuration/3);
-                            Unit* unit = SelectTarget(SELECT_TARGET_RANDOM, 1);
-                            if (!unit)
-                                unit = SelectTarget(SELECT_TARGET_RANDOM, 0);
-                            if (unit)
-                                me->GetMotionMaster()->MovePoint(POINT_TARGET_BONESTORM_PLAYER, unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                events.ScheduleEvent(EVENT_BONE_STORM_MOVE, _boneStormDuration/3);
+                                Unit* unit = SelectTarget(SELECT_TARGET_RANDOM, 1);
+                                if (!unit)
+                                    unit = SelectTarget(SELECT_TARGET_RANDOM, 0);
+                                if (unit)
+                                    me->GetMotionMaster()->MovePoint(POINT_TARGET_BONESTORM_PLAYER, unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ());
+                            }
                             break;
                         }
                         case EVENT_BONE_STORM_END:
-                            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
-                                me->GetMotionMaster()->MovementExpired();
-                            DoStartMovement(me->getVictim());
-                            me->SetSpeed(MOVE_RUN, _baseSpeed, true);
-                            events.CancelEvent(EVENT_BONE_STORM_MOVE);
-                            events.ScheduleEvent(EVENT_ENABLE_BONE_SLICE, 10000);
-                            if (!IsHeroic())
-                                events.RescheduleEvent(EVENT_BONE_SPIKE_GRAVEYARD, urand(15000, 20000), EVENT_GROUP_SPECIAL);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
+                                    me->GetMotionMaster()->MovementExpired();
+                                DoStartMovement(me->getVictim());
+                                me->SetSpeed(MOVE_RUN, _baseSpeed, true);
+                                events.CancelEvent(EVENT_BONE_STORM_MOVE);
+                                events.ScheduleEvent(EVENT_ENABLE_BONE_SLICE, 10000);
+                                if (!IsHeroic())
+                                    events.RescheduleEvent(EVENT_BONE_SPIKE_GRAVEYARD, urand(15000, 20000), EVENT_GROUP_SPECIAL);
+                            }
                             break;
                         case EVENT_ENABLE_BONE_SLICE:
-                            _boneSlice = true;
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                _boneSlice = true;
                             break;
                         case EVENT_ENRAGE:
-                            DoCast(me, SPELL_BERSERK, true);
-                            Talk(SAY_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK, true);
+                                Talk(SAY_BERSERK);
+                            }
                             break;
                     }
                 }
@@ -223,7 +245,8 @@ class boss_lord_marrowgar : public CreatureScript
 
                 // After 10 seconds since encounter start Bone Slice replaces melee attacks
                 if (_boneSlice && !me->GetCurrentSpell(CURRENT_MELEE_SPELL))
-                    DoCastVictim(SPELL_BONE_SLICE);
+                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                        DoCastVictim(SPELL_BONE_SLICE);
 
                 DoMeleeAttackIfReady();
             }

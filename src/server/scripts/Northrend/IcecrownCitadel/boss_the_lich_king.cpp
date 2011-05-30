@@ -711,14 +711,16 @@ class boss_the_lich_king : public CreatureScript
                         if (!HealthAbovePct(71) && !isSwitching)
                         {
                             isSwitching = true;
-                            DoAction(ACTION_PHASE_SWITCH_1);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                DoAction(ACTION_PHASE_SWITCH_1);
                             break;
                         }
                     case PHASE_3:
                         if (!HealthAbovePct(41) && !isSwitching)
                         {
                             isSwitching = true;
-                            DoAction(ACTION_PHASE_SWITCH_1);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                DoAction(ACTION_PHASE_SWITCH_1);
                             break;
                         }
                     case PHASE_5:
@@ -771,51 +773,60 @@ class boss_the_lich_king : public CreatureScript
                             switch (eventId)
                             {
                                 case EVENT_SPEECH:
-                                {
                                     DoScriptText(RAND(SAY_RANDOM_1, SAY_RANDOM_2), me);
                                     events.ScheduleEvent(EVENT_SPEECH, 33000, 0, PHASE_1);
                                     break;
-                                }
                                 case EVENT_SUMMON_SHAMBLING_HORROR:
-                                {
-                                    DoCast(SPELL_SUMMON_SHAMBLING_HORROR);
-                                    events.ScheduleEvent(EVENT_SUMMON_SHAMBLING_HORROR, 35000, 0, PHASE_1);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoCast(SPELL_SUMMON_SHAMBLING_HORROR);
+                                        events.ScheduleEvent(EVENT_SUMMON_SHAMBLING_HORROR, 35000, 0, PHASE_1);
+                                    }
                                     break;
-                                }
                                 case EVENT_SUMMON_DRUDGE_GHOULS:
-                                {
-                                    DoCast(SPELL_SUMMON_DRUDGE_GHOULS);
-                                    events.ScheduleEvent(EVENT_SUMMON_DRUDGE_GHOULS, 30000, 0, PHASE_1);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoCast(SPELL_SUMMON_DRUDGE_GHOULS);
+                                        events.ScheduleEvent(EVENT_SUMMON_DRUDGE_GHOULS, 30000, 0, PHASE_1);
+                                    }
                                     break;
-                                }
                                 case EVENT_INFEST:
                                 {
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_INFEST))
-                                        DoCast(target, SPELL_INFEST);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_INFEST))
+                                            DoCast(target, SPELL_INFEST);
 
-                                    events.ScheduleEvent(EVENT_INFEST, 20000, 0, PHASE_1);
+                                        events.ScheduleEvent(EVENT_INFEST, 20000, 0, PHASE_1);
+                                    }
                                     break;
                                 }
                                 case EVENT_NECROTIC_PLAGUE:
                                 {
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -EVENT_NECROTIC_PLAGUE))
-                                        DoCast(target, SPELL_NECROTIC_PLAGUE);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -EVENT_NECROTIC_PLAGUE))
+                                            DoCast(target, SPELL_NECROTIC_PLAGUE);
 
-                                    events.ScheduleEvent(EVENT_NECROTIC_PLAGUE, 25000, 0, PHASE_1);
+                                        events.ScheduleEvent(EVENT_NECROTIC_PLAGUE, 25000, 0, PHASE_1);
+                                    }
                                     break;
                                 }
                                 case EVENT_SHADOW_TRAP:
                                 {
-                                    ASSERT(IsHeroic());
-                                    //First, try to select somebody far away from the boss
-                                    Unit* target = NULL;
-                                    target = SelectTarget(SELECT_TARGET_RANDOM, 0, -5.0f, true);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        ASSERT(IsHeroic());
+                                        //First, try to select somebody far away from the boss
+                                        Unit* target = NULL;
+                                        target = SelectTarget(SELECT_TARGET_RANDOM, 0, -5.0f, true);
 
-                                    if (!target)
-                                        target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true);
+                                        if (!target)
+                                            target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true);
 
-                                    DoCast(target, SPELL_SUMMON_SHADOW_TRAP, true);
-                                    events.ScheduleEvent(EVENT_SHADOW_TRAP, 30000, 0, PHASE_1);
+                                        DoCast(target, SPELL_SUMMON_SHADOW_TRAP, true);
+                                        events.ScheduleEvent(EVENT_SHADOW_TRAP, 30000, 0, PHASE_1);
+                                    }
                                 }
                             }
                             break;
@@ -827,36 +838,48 @@ class boss_the_lich_king : public CreatureScript
                             {
                                 case EVENT_PAIN_AND_SUFFERING:
                                 {
-                                    if (Player* randomPlayer = SelectRandomAttackablePlayerInTheMap(me->GetMap()))
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                                     {
-                                        me->SetFacingToObject(randomPlayer);
-                                        DoCast(randomPlayer, RAID_MODE<uint32>(SPELL_PAIN_AND_SUFFERING_10N, SPELL_PAIN_AND_SUFFERING_25N, SPELL_PAIN_AND_SUFFERING_10H, SPELL_PAIN_AND_SUFFERING_25H), true);
-                                    }
+                                        if (Player* randomPlayer = SelectRandomAttackablePlayerInTheMap(me->GetMap()))
+                                        {
+                                            me->SetFacingToObject(randomPlayer);
+                                            DoCast(randomPlayer, RAID_MODE<uint32>(SPELL_PAIN_AND_SUFFERING_10N, SPELL_PAIN_AND_SUFFERING_25N, SPELL_PAIN_AND_SUFFERING_10H, SPELL_PAIN_AND_SUFFERING_25H), true);
+                                        }
 
-                                    events.ScheduleEvent(EVENT_PAIN_AND_SUFFERING, 1500, 0, GetPhase(events));
+                                        events.ScheduleEvent(EVENT_PAIN_AND_SUFFERING, 1500, 0, GetPhase(events));
+                                    }
                                     break;
                                 }
                                 case EVENT_SUMMON_RAGING_SPIRIT:
                                 {
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
-                                        DoCast(target, SPELL_SUMMON_RAGING_SPIRIT);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                                            DoCast(target, SPELL_SUMMON_RAGING_SPIRIT);
 
-                                    events.RescheduleEvent(EVENT_PAIN_AND_SUFFERING, 3000, 0, PHASE_2_TRANSITION);
-                                    events.ScheduleEvent(EVENT_SUMMON_RAGING_SPIRIT, RAID_MODE<uint32>(20000, 15000, 20000, 15000), 0, GetPhase(events));
+                                        events.RescheduleEvent(EVENT_PAIN_AND_SUFFERING, 3000, 0, PHASE_2_TRANSITION);
+                                        events.ScheduleEvent(EVENT_SUMMON_RAGING_SPIRIT, RAID_MODE<uint32>(20000, 15000, 20000, 15000), 0, GetPhase(events));
+                                    }
                                     break;
                                 }
                                 case EVENT_SUMMON_ICE_SPHERE:
                                 {
-                                    events.RescheduleEvent(EVENT_PAIN_AND_SUFFERING, 3000, 0, GetPhase(events));
-                                    DoCast(SPELL_SUMMON_ICE_SPEHERE);
-                                    events.ScheduleEvent(EVENT_SUMMON_ICE_SPHERE, urand(6000, 8000), 0, GetPhase(events));
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        events.RescheduleEvent(EVENT_PAIN_AND_SUFFERING, 3000, 0, GetPhase(events));
+                                        DoCast(SPELL_SUMMON_ICE_SPEHERE);
+                                        events.ScheduleEvent(EVENT_SUMMON_ICE_SPHERE, urand(6000, 8000), 0, GetPhase(events));
+                                    }
                                     break;
                                 }
                                 case EVENT_BERSERK:
                                 {
-                                    events.Reset();
-                                    DoScriptText(SAY_BERSERK, me);
-                                    DoCast(me, SPELL_BERSERK2);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        events.Reset();
+                                        DoScriptText(SAY_BERSERK, me);
+                                        DoCast(me, SPELL_BERSERK2);
+                                    }
                                     break;
                                 }
                             }
@@ -868,40 +891,55 @@ class boss_the_lich_king : public CreatureScript
                             {
                                 case EVENT_SUMMON_VAL_KYR_SHADOWGUARD:
                                 {
-                                    DoScriptText(SAY_SUMMON_VALKYR, me);
-                                    DoCast(me, SPELL_SUMMON_VALKYR);
-                                    events.ScheduleEvent(EVENT_SUMMON_VAL_KYR_SHADOWGUARD, urand(40000, 45000), 0, PHASE_3);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoScriptText(SAY_SUMMON_VALKYR, me);
+                                        DoCast(me, SPELL_SUMMON_VALKYR);
+                                        events.ScheduleEvent(EVENT_SUMMON_VAL_KYR_SHADOWGUARD, urand(40000, 45000), 0, PHASE_3);
+                                    }
                                     break;
                                 }
                                 case EVENT_DEFILE:
                                 {
-                                    DoScriptText(SAY_EMOTE_DEFILE, me);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoScriptText(SAY_EMOTE_DEFILE, me);
 
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
-                                        DoCast(target, SPELL_SUMMON_DEFILE);
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                                            DoCast(target, SPELL_SUMMON_DEFILE);
 
-                                    events.ScheduleEvent(EVENT_DEFILE, 35000, 0, PHASE_3);
+                                        events.ScheduleEvent(EVENT_DEFILE, 35000, 0, PHASE_3);
+                                    }
                                     break;
                                 }
                                 case EVENT_SOUL_REAPER:
                                 {
-                                    DoCastVictim(SPELL_SOUL_REAPER);
-                                    DoCast(SPELL_SOUL_REAPER_HASTE_AURA);
-                                    events.ScheduleEvent(EVENT_SOUL_REAPER, 30000, 0, PHASE_3);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoCastVictim(SPELL_SOUL_REAPER);
+                                        DoCast(SPELL_SOUL_REAPER_HASTE_AURA);
+                                        events.ScheduleEvent(EVENT_SOUL_REAPER, 30000, 0, PHASE_3);
+                                    }
                                     break;
                                 }
                                 case EVENT_INFEST:
                                 {
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_INFEST))
-                                        DoCast(target, SPELL_INFEST);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_INFEST))
+                                            DoCast(target, SPELL_INFEST);
 
-                                    events.ScheduleEvent(EVENT_INFEST, 20000, 0, PHASE_3);
+                                        events.ScheduleEvent(EVENT_INFEST, 20000, 0, PHASE_3);
+                                    }
                                     break;
                                 }
                                 case EVENT_BERSERK:
                                 {
-                                    DoScriptText(SAY_BERSERK, me);
-                                    DoCast(me, SPELL_BERSERK2);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoScriptText(SAY_BERSERK, me);
+                                        DoCast(me, SPELL_BERSERK2);
+                                    }
                                     break;
                                 }
                             }
@@ -913,41 +951,56 @@ class boss_the_lich_king : public CreatureScript
                             {
                                 case EVENT_DEFILE:
                                 {
-                                    DoScriptText(SAY_EMOTE_DEFILE, me);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoScriptText(SAY_EMOTE_DEFILE, me);
 
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
-                                        DoCast(target, SPELL_SUMMON_DEFILE);
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                                            DoCast(target, SPELL_SUMMON_DEFILE);
 
-                                    events.ScheduleEvent(EVENT_DEFILE, 35000, 0, PHASE_5);
+                                        events.ScheduleEvent(EVENT_DEFILE, 35000, 0, PHASE_5);
+                                    }
                                     break;
                                 }
                                 case EVENT_SOUL_REAPER:
                                 {
-                                    DoCastVictim(SPELL_SOUL_REAPER);
-                                    DoCast(SPELL_SOUL_REAPER_HASTE_AURA);
-                                    events.ScheduleEvent(EVENT_SOUL_REAPER, 30000, 0, PHASE_5);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoCastVictim(SPELL_SOUL_REAPER);
+                                        DoCast(SPELL_SOUL_REAPER_HASTE_AURA);
+                                        events.ScheduleEvent(EVENT_SOUL_REAPER, 30000, 0, PHASE_5);
+                                    }
                                     break;
                                 }
                                 case EVENT_SUMMON_VILE_SPIRITS:
                                 {
-                                    DoCast(me, SPELL_SUMMON_VILE_SPIRIT);
-                                    events.ScheduleEvent(EVENT_SUMMON_VILE_SPIRITS, 30000, 0, PHASE_5);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoCast(me, SPELL_SUMMON_VILE_SPIRIT);
+                                        events.ScheduleEvent(EVENT_SUMMON_VILE_SPIRITS, 30000, 0, PHASE_5);
+                                    }
                                     break;
                                 }
                                 case EVENT_HARVEST_SOUL:
                                 {
-                                    DoScriptText(SAY_HARVEST_SOUL, me);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoScriptText(SAY_HARVEST_SOUL, me);
 
-                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
-                                        DoCast(target, SPELL_HARVEST_SOULS);
+                                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
+                                            DoCast(target, SPELL_HARVEST_SOULS);
 
-                                    events.ScheduleEvent(EVENT_HARVEST_SOUL, 75000, 0, PHASE_5);
+                                        events.ScheduleEvent(EVENT_HARVEST_SOUL, 75000, 0, PHASE_5);
+                                    }
                                     break;
                                 }
                                 case EVENT_BERSERK:
                                 {
-                                    DoScriptText(SAY_BERSERK, me);
-                                    DoCast(me, SPELL_BERSERK2);
+                                    if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                    {
+                                        DoScriptText(SAY_BERSERK, me);
+                                        DoCast(me, SPELL_BERSERK2);
+                                    }
                                     break;
                                 }
                             }
@@ -995,6 +1048,7 @@ class boss_the_lich_king : public CreatureScript
                                 break;
                             }
                             case 2:
+                                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_OOC_NOT_ATTACKABLE);
                                 DoCast(me, SPELL_FURY_OF_FROSTMOURNE);
                                 uiEndingTimer = 11000;
                                 break;
@@ -1135,7 +1189,9 @@ class boss_the_lich_king : public CreatureScript
                                 DoScriptText(SAY_ENDING_12_KING, me);
                                 me->GetMotionMaster()->MovePoint(0, MovePos[6]);
 
+                                me->RemoveAurasDueToSpell(SPELL_SOUL_EFFECT);
                                 me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+                                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_OOC_NOT_ATTACKABLE);
                                 me->SetReactState(REACT_AGGRESSIVE);
 								
                                 if (uiTirionGUID)

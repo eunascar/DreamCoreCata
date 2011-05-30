@@ -540,20 +540,29 @@ class boss_prince_keleseth_icc : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK);
-                            Talk(EMOTE_KELESETH_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK);
+                                Talk(EMOTE_KELESETH_BERSERK);
+                            }
                             break;
                         case EVENT_SHADOW_RESONANCE:
-                            Talk(SAY_KELESETH_SPECIAL);
-                            DoCast(me, SPELL_SHADOW_RESONANCE);
-                            events.ScheduleEvent(EVENT_SHADOW_RESONANCE, urand(10000, 15000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(SAY_KELESETH_SPECIAL);
+                                DoCast(me, SPELL_SHADOW_RESONANCE);
+                                events.ScheduleEvent(EVENT_SHADOW_RESONANCE, urand(10000, 15000));
+                            }
                             break;
                         case EVENT_SHADOW_LANCE:
-                            if (_isEmpowered)
-                                DoCastVictim(SPELL_EMPOWERED_SHADOW_LANCE);
-                            else
-                                DoCastVictim(SPELL_SHADOW_LANCE);
-                            events.ScheduleEvent(EVENT_SHADOW_LANCE, 2000);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (_isEmpowered)
+                                    DoCastVictim(SPELL_EMPOWERED_SHADOW_LANCE);
+                                else
+                                    DoCastVictim(SPELL_SHADOW_LANCE);
+                                events.ScheduleEvent(EVENT_SHADOW_LANCE, 2000);
+                            }
                             break;
                         default:
                             break;
@@ -738,25 +747,34 @@ class boss_prince_taldaram_icc : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK);
-                            Talk(EMOTE_TALDARAM_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK);
+                                Talk(EMOTE_TALDARAM_BERSERK);
+                            }
                             break;
                         case EVENT_GLITTERING_SPARKS:
-                            DoCastVictim(SPELL_GLITTERING_SPARKS);
-                            events.ScheduleEvent(EVENT_GLITTERING_SPARKS, urand(15000, 50000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_GLITTERING_SPARKS);
+                                events.ScheduleEvent(EVENT_GLITTERING_SPARKS, urand(15000, 50000));
+                            }
                             break;
                         case EVENT_CONJURE_FLAME:
-                            if (_isEmpowered)
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                DoCast(me, SPELL_CONJURE_EMPOWERED_FLAME);
-                                events.ScheduleEvent(EVENT_CONJURE_FLAME, urand(15000, 25000));
+                                if (_isEmpowered)
+                                {
+                                    DoCast(me, SPELL_CONJURE_EMPOWERED_FLAME);
+                                    events.ScheduleEvent(EVENT_CONJURE_FLAME, urand(15000, 25000));
+                                }
+                                else
+                                {
+                                    DoCast(me, SPELL_CONJURE_FLAME);
+                                    events.ScheduleEvent(EVENT_CONJURE_FLAME, urand(20000, 30000));
+                                }
+                                Talk(SAY_TALDARAM_SPECIAL);
                             }
-                            else
-                            {
-                                DoCast(me, SPELL_CONJURE_FLAME);
-                                events.ScheduleEvent(EVENT_CONJURE_FLAME, urand(20000, 30000));
-                            }
-                            Talk(SAY_TALDARAM_SPECIAL);
                             break;
                         default:
                             break;
@@ -955,29 +973,38 @@ class boss_prince_valanar_icc : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK);
-                            Talk(SAY_VALANAR_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK);
+                                Talk(SAY_VALANAR_BERSERK);
+                            }
                             break;
                         case EVENT_KINETIC_BOMB:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
-                            {
-                                DoCast(target, SPELL_KINETIC_BOMB_TARGET);
-                                Talk(SAY_VALANAR_SPECIAL);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                {
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                                {
+                                    DoCast(target, SPELL_KINETIC_BOMB_TARGET);
+                                    Talk(SAY_VALANAR_SPECIAL);
+                                }
+                                events.ScheduleEvent(EVENT_KINETIC_BOMB, urand(18000, 24000));
                             }
-                            events.ScheduleEvent(EVENT_KINETIC_BOMB, urand(18000, 24000));
                             break;
                         case EVENT_SHOCK_VORTEX:
-                            if (_isEmpowered)
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                DoCast(me, SPELL_EMPOWERED_SHOCK_VORTEX);
-                                Talk(EMOTE_VALANAR_SHOCK_VORTEX);
-                                events.ScheduleEvent(EVENT_SHOCK_VORTEX, 30000);
-                            }
-                            else
-                            {
-                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
-                                    DoCast(target, SPELL_SHOCK_VORTEX);
-                                events.ScheduleEvent(EVENT_SHOCK_VORTEX, urand(18000, 23000));
+                                if (_isEmpowered)
+                                {
+                                    DoCast(me, SPELL_EMPOWERED_SHOCK_VORTEX);
+                                    Talk(EMOTE_VALANAR_SHOCK_VORTEX);
+                                    events.ScheduleEvent(EVENT_SHOCK_VORTEX, 30000);
+                                }
+                                else
+                                {
+                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                                        DoCast(target, SPELL_SHOCK_VORTEX);
+                                    events.ScheduleEvent(EVENT_SHOCK_VORTEX, urand(18000, 23000));
+                                }
                             }
                             break;
                         default:

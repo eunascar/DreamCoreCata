@@ -174,29 +174,38 @@ class boss_rotface : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_SLIME_SPRAY:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                DoSummon(NPC_OOZE_SPRAY_STALKER, *target, 8000, TEMPSUMMON_TIMED_DESPAWN);
-                                Talk(EMOTE_SLIME_SPRAY);
-                                DoCast(me, SPELL_SLIME_SPRAY);
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
+                                {
+                                    DoSummon(NPC_OOZE_SPRAY_STALKER, *target, 8000, TEMPSUMMON_TIMED_DESPAWN);
+                                    Talk(EMOTE_SLIME_SPRAY);
+                                    DoCast(me, SPELL_SLIME_SPRAY);
+                                }
+                                events.ScheduleEvent(EVENT_SLIME_SPRAY, 20000);
                             }
-                            events.ScheduleEvent(EVENT_SLIME_SPRAY, 20000);
                             break;
                         case EVENT_HASTEN_INFECTIONS:
-                            if (infectionStage++ < 4)
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                infectionCooldown -= 2000;
-                                events.ScheduleEvent(EVENT_HASTEN_INFECTIONS, 90000);
+                                if (infectionStage++ < 4)
+                                {
+                                    infectionCooldown -= 2000;
+                                    events.ScheduleEvent(EVENT_HASTEN_INFECTIONS, 90000);
+                                }
                             }
                             break;
                         case EVENT_MUTATED_INFECTION:
                         {
-                            Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -MUTATED_INFECTION);
-                            if (!target)
-                                target = SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, -MUTATED_INFECTION);
-                            if (target)
-                                me->CastCustomSpell(SPELL_MUTATED_INFECTION, SPELLVALUE_MAX_TARGETS, 1, target, false);
-                            events.ScheduleEvent(EVENT_MUTATED_INFECTION, infectionCooldown);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -MUTATED_INFECTION);
+                                if (!target)
+                                    target = SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, -MUTATED_INFECTION);
+                                if (target)
+                                    me->CastCustomSpell(SPELL_MUTATED_INFECTION, SPELLVALUE_MAX_TARGETS, 1, target, false);
+                                events.ScheduleEvent(EVENT_MUTATED_INFECTION, infectionCooldown);
+                            }
                             break;
                         }
                         default:
@@ -374,18 +383,27 @@ class npc_precious_icc : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_DECIMATE:
-                            DoCastVictim(SPELL_DECIMATE);
-                            _events.ScheduleEvent(EVENT_DECIMATE, urand(20000, 25000));
+                            if (!_instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_DECIMATE);
+                                _events.ScheduleEvent(EVENT_DECIMATE, urand(20000, 25000));
+                            }
                             break;
                         case EVENT_MORTAL_WOUND:
-                            DoCastVictim(SPELL_MORTAL_WOUND);
-                            _events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(10000, 12500));
+                            if (!_instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_MORTAL_WOUND);
+                                _events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(10000, 12500));
+                            }
                             break;
                         case EVENT_SUMMON_ZOMBIES:
-                            Talk(EMOTE_PRECIOUS_ZOMBIES);
-                            for (uint32 i = 0; i < 11; ++i)
-                                DoCast(me, SPELL_AWAKEN_PLAGUED_ZOMBIES, false);
-                            _events.ScheduleEvent(EVENT_SUMMON_ZOMBIES, urand(20000, 22000));
+                            if (!_instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(EMOTE_PRECIOUS_ZOMBIES);
+                                for (uint32 i = 0; i < 11; ++i)
+                                    DoCast(me, SPELL_AWAKEN_PLAGUED_ZOMBIES, false);
+                                _events.ScheduleEvent(EVENT_SUMMON_ZOMBIES, urand(20000, 22000));
+                            }
                             break;
                         default:
                             break;

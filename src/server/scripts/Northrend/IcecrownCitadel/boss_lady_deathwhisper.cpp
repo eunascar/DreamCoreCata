@@ -441,60 +441,94 @@ class boss_lady_deathwhisper : public CreatureScript
                             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             break;
                         case EVENT_DEATH_AND_DECAY:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
-                                DoCast(target, SPELL_DEATH_AND_DECAY);
-                            events.ScheduleEvent(EVENT_DEATH_AND_DECAY, urand(10000, 12000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
+                                    DoCast(target, SPELL_DEATH_AND_DECAY);
+                                events.ScheduleEvent(EVENT_DEATH_AND_DECAY, urand(10000, 12000));
+                            }
                             break;
                         case EVENT_DOMINATE_MIND_H:
-                            Talk(SAY_DOMINATE_MIND);
-                            for (uint8 i = 0; i < _dominateMindCount; i++)
-                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -SPELL_DOMINATE_MIND_H))
-                                    DoCast(target, SPELL_DOMINATE_MIND_H);
-                            events.ScheduleEvent(EVENT_DOMINATE_MIND_H, urand(40000, 45000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                Talk(SAY_DOMINATE_MIND);
+                                for (uint8 i = 0; i < _dominateMindCount; i++)
+                                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -SPELL_DOMINATE_MIND_H))
+                                        DoCast(target, SPELL_DOMINATE_MIND_H);
+                                events.ScheduleEvent(EVENT_DOMINATE_MIND_H, urand(40000, 45000));
+                            }
                             break;
                         case EVENT_P1_SUMMON_WAVE:
-                            SummonWaveP1();
-                            events.ScheduleEvent(EVENT_P1_SUMMON_WAVE, 60000, 0, PHASE_ONE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                SummonWaveP1();
+                                events.ScheduleEvent(EVENT_P1_SUMMON_WAVE, 60000, 0, PHASE_ONE);
+                            }
                             break;
                         case EVENT_P1_SHADOW_BOLT:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
-                                DoCast(target, SPELL_SHADOW_BOLT);
-                            events.ScheduleEvent(EVENT_P1_SHADOW_BOLT, urand(5000, 8000), 0, PHASE_ONE);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
+                                    DoCast(target, SPELL_SHADOW_BOLT);
+                                events.ScheduleEvent(EVENT_P1_SHADOW_BOLT, urand(5000, 8000), 0, PHASE_ONE);
+                            }
                             break;
                         case EVENT_P1_REANIMATE_CULTIST:
-                            ReanimateCultist();
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                                ReanimateCultist();
                             break;
                         case EVENT_P1_EMPOWER_CULTIST:
-                            EmpowerCultist();
-                            events.ScheduleEvent(EVENT_P1_EMPOWER_CULTIST, urand(18000, 25000));
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                EmpowerCultist();
+                                events.ScheduleEvent(EVENT_P1_EMPOWER_CULTIST, urand(18000, 25000));
+                            }
                             break;
                         case EVENT_P2_FROSTBOLT:
-                            DoCastVictim(SPELL_FROSTBOLT);
-                            events.ScheduleEvent(EVENT_P2_FROSTBOLT, urand(10000, 11000), 0, PHASE_TWO);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_FROSTBOLT);
+                                events.ScheduleEvent(EVENT_P2_FROSTBOLT, urand(10000, 11000), 0, PHASE_TWO);
+                            }
                             break;
                         case EVENT_P2_FROSTBOLT_VOLLEY:
-                            DoCastAOE(SPELL_FROSTBOLT_VOLLEY);
-                            events.ScheduleEvent(EVENT_P2_FROSTBOLT_VOLLEY, urand(13000, 15000), 0, PHASE_TWO);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastAOE(SPELL_FROSTBOLT_VOLLEY);
+                                events.ScheduleEvent(EVENT_P2_FROSTBOLT_VOLLEY, urand(13000, 15000), 0, PHASE_TWO);
+                            }
                             break;
                         case EVENT_P2_TOUCH_OF_INSIGNIFICANCE:
-                            DoCastVictim(SPELL_TOUCH_OF_INSIGNIFICANCE);
-                            events.ScheduleEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, urand(9000, 13000), 0, PHASE_TWO);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCastVictim(SPELL_TOUCH_OF_INSIGNIFICANCE);
+                                events.ScheduleEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, urand(9000, 13000), 0, PHASE_TWO);
+                            }
                             break;
                         case EVENT_P2_SUMMON_SHADE:
-                            if (Unit* shadeTarget = SelectTarget(SELECT_TARGET_RANDOM, 1))
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
                             {
-                                _nextVengefulShadeTargetGUID = shadeTarget->GetGUID();
-                                DoCast(shadeTarget, SPELL_SUMMON_SHADE);
+                                if (Unit* shadeTarget = SelectTarget(SELECT_TARGET_RANDOM, 1))
+                                {
+                                    _nextVengefulShadeTargetGUID = shadeTarget->GetGUID();
+                                    DoCast(shadeTarget, SPELL_SUMMON_SHADE);
+                                }
+                                events.ScheduleEvent(EVENT_P2_SUMMON_SHADE, urand(18000, 23000), 0, PHASE_TWO);
                             }
-                            events.ScheduleEvent(EVENT_P2_SUMMON_SHADE, urand(18000, 23000), 0, PHASE_TWO);
                             break;
                         case EVENT_P2_SUMMON_WAVE:
-                            SummonWaveP2();
-                            events.ScheduleEvent(EVENT_P2_SUMMON_WAVE, 60000, 0, PHASE_TWO);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                SummonWaveP2();
+                                events.ScheduleEvent(EVENT_P2_SUMMON_WAVE, 60000, 0, PHASE_TWO);
+                            }
                             break;
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK);
-                            Talk(SAY_BERSERK);
+                            if (!instance->GetData(DATA_INSTANCE_SPELL_VERIFICATION))
+                            {
+                                DoCast(me, SPELL_BERSERK);
+                                Talk(SAY_BERSERK);
+                            }
                             break;
                     }
                 }
