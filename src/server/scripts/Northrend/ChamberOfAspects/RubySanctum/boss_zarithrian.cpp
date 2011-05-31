@@ -71,7 +71,7 @@ class boss_zarithrian : public CreatureScript
 
         struct boss_zarithrianAI : public BossAI
         {
-            boss_zarithrianAI(Creature* creature) : BossAI(creature, DATA_ZARITHRIAN)
+            boss_zarithrianAI(Creature* creature) : BossAI(creature, DATA_GENERAL_ZARITHRIAN)
             {
                 ASSERT(instance);
                 pZarithrian = me;
@@ -79,7 +79,7 @@ class boss_zarithrian : public CreatureScript
 
             void Reset()
             {
-                instance->SetBossState(DATA_ZARITHRIAN, NOT_STARTED);
+                instance->SetBossState(DATA_GENERAL_ZARITHRIAN, NOT_STARTED);
                 events.Reset();
                 summons.DespawnAll();
                 summons.clear();
@@ -90,7 +90,7 @@ class boss_zarithrian : public CreatureScript
 
             void EnterCombat(Unit*)
             {
-                instance->SetBossState(DATA_ZARITHRIAN, IN_PROGRESS);
+                instance->SetBossState(DATA_GENERAL_ZARITHRIAN, IN_PROGRESS);
                 Talk(SAY_AGGRO);
             }
 
@@ -107,13 +107,13 @@ class boss_zarithrian : public CreatureScript
             void JustReachedHome()
             {
                 summons.DespawnAll();
-                instance->SetData(DATA_ZARITHRIAN, FAIL);
+                instance->SetData(DATA_GENERAL_ZARITHRIAN, FAIL);
             }
 
             void JustDied(Unit*)
             {
                 _JustDied();
-                instance->SetBossState(DATA_ZARITHRIAN, DONE);
+                instance->SetBossState(DATA_GENERAL_ZARITHRIAN, DONE);
                 Talk(SAY_DEATH);
             }
 

@@ -328,23 +328,23 @@ class priest_bot : public CreatureScript
 
             void ReceiveEmote(Player* player, uint32 emote)
             {
-                if (emote == TEXTEMOTE_RUDE)
+                if (emote == TEXT_EMOTE_RUDE)
                 {
                     me->AttackStop();
                     me->SetReactState(REACT_PASSIVE);
                     DoCast(me, SPELL_PETRIFY);
                 }
 
-                if (emote == TEXTEMOTE_ROAR)
+                if (emote == TEXT_EMOTE_ROAR)
                 {
                     me->RemoveAurasDueToSpell(SPELL_PETRIFY);
                     me->SetReactState(REACT_AGGRESSIVE);
                 }
 
-                if (emote == TEXTEMOTE_WAVE)
+                if (emote == TEXT_EMOTE_WAVE)
                     player->SetBotCommandState(COMMAND_FOLLOW);
 
-                if (emote == TEXTEMOTE_BOW)
+                if (emote == TEXT_EMOTE_BOW)
                 {
                     ((priest_botAI*)me->AI())->doCast(player, SPELL_PW_FORTITUDE, true);
                     ((priest_botAI*)me->AI())->doCast(player, SPELL_PRAYER_OF_SHADOW, false);

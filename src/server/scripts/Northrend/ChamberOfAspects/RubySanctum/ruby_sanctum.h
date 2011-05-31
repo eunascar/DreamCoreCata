@@ -37,6 +37,8 @@ enum DataTypes
     DATA_XERESTRASZA                        = 4,
     DATA_CRYSTAL_CHANNEL_TARGET             = 5,
     DATA_BALTHARUS_SHARED_HEALTH            = 6,
+    DATA_HALION_TWILIGHT                    = 7,
+    DATA_DAMAGE                             = 8,
 };
 
 enum SharedActions
@@ -69,7 +71,8 @@ enum CreaturesIds
     NPC_ORB_CARRIER                         = 40081,
     NPC_ORB_ROTATION_FOCUS                  = 40091,
     NPC_SHADOW_ORB_N                        = 40083,
-    NPC_SHADOW_ORB_S                        = 40100,
+    NPC_METEOR_STRIKE                       = 40041,
+    NPC_METEOR_FLAME                        = 40042,	
 
     // Xerestrasza
     NPC_XERESTRASZA                         = 40429,
@@ -83,6 +86,7 @@ enum GameObjectsIds
     GO_FIRE_FIELD                           = 203005,
     GO_FLAME_WALLS                          = 203006,
     GO_FLAME_RING                           = 203007,
+    GO_TWILIGHT_PORTAL_2                    = 202796
 };
 
 enum WorldStatesRS

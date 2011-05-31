@@ -44,6 +44,9 @@ class instance_ruby_sanctum : public InstanceMapScript
                 XerestraszaGUID         = 0;
                 BaltharusSharedHealth   = 0;
                 FlameWallsGUID          = 0;
+                DataDamage              = 0;
+                HalionTwilight          = 0;
+                HalionTwilightGUID      = 0;
             }
 
             void OnCreatureCreate(Creature* creature)
@@ -67,6 +70,9 @@ class instance_ruby_sanctum : public InstanceMapScript
                         break;
                     case NPC_XERESTRASZA:
                         XerestraszaGUID = creature->GetGUID();
+                        break;
+                    case NPC_HALION_TWILIGHT:
+                        HalionTwilightGUID = creature->GetGUID();
                         break;
                     default:
                         break;
@@ -116,6 +122,9 @@ class instance_ruby_sanctum : public InstanceMapScript
                         return CrystalChannelTargetGUID;
                     case DATA_XERESTRASZA:
                         return XerestraszaGUID;
+                    case DATA_HALION_TWILIGHT:
+                        return HalionTwilightGUID;
+                        break;
                     default:
                         break;
                 }
@@ -173,6 +182,12 @@ class instance_ruby_sanctum : public InstanceMapScript
                     case DATA_BALTHARUS_SHARED_HEALTH:
                         BaltharusSharedHealth = data;
                         break;
+                    case DATA_HALION_TWILIGHT:
+                        HalionTwilight = data;
+                        break;
+                    case DATA_DAMAGE:
+                        DataDamage = data;
+                        break; 
                 }
             }
 
@@ -182,6 +197,13 @@ class instance_ruby_sanctum : public InstanceMapScript
                 {
                     case DATA_BALTHARUS_SHARED_HEALTH:
                         return BaltharusSharedHealth;
+                        break;
+                    case DATA_HALION_TWILIGHT:
+                        return HalionTwilight;
+                        break;
+                    case DATA_DAMAGE:
+                        return DataDamage;
+                        break;
                     default:
                         break;
                 }
@@ -241,7 +263,10 @@ class instance_ruby_sanctum : public InstanceMapScript
             uint64 CrystalChannelTargetGUID;
             uint64 XerestraszaGUID;
             uint64 FlameWallsGUID;
+            uint64 HalionTwilightGUID;
             uint32 BaltharusSharedHealth;
+            uint32 HalionTwilight;
+            uint32 DataDamage;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const

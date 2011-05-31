@@ -123,6 +123,8 @@ enum Phases
     PHASE_3_MASK  = 1 << PHASE_3
 };
 
+static const Position SpawnPosHalion = {3144.93f, 527.233f, 72.8887f, 0.110395f};
+
 class boss_halion : public CreatureScript
 {
     public:
@@ -137,7 +139,7 @@ class boss_halion : public CreatureScript
 
             void Reset()
             {
-                if (instance->GetData(DATA_TWILIGHT_HALION) == IN_PROGRESS || instance->GetBossState(DATA_HALION) == IN_PROGRESS)
+                if (instance->GetData(DATA_HALION_TWILIGHT) == IN_PROGRESS || instance->GetBossState(DATA_HALION) == IN_PROGRESS)
                     return;
 
                 instance->SetBossState(DATA_HALION, NOT_STARTED);
@@ -196,7 +198,7 @@ class boss_halion : public CreatureScript
                 TwilightDamage = 0;
 
                 if (TwilightAura != 0)
-                    if (Creature* twilightHalion = me->GetCreature(*me, instance->GetData64(DATA_TWILIGHT_HALION)))
+                    if (Creature* twilightHalion = me->GetCreature(*me, instance->GetData64(DATA_HALION_TWILIGHT)))
                         twilightHalion->RemoveAurasDueToSpell(TwilightAura);
 
                 if (HalionAura != 0)
@@ -227,7 +229,7 @@ class boss_halion : public CreatureScript
                     idAura = 4;
 
                 if (Creature* halion = me->GetCreature(*me, instance->GetData64(DATA_HALION)))
-                    if (Creature* twilightHalion = me->GetCreature(*me, instance->GetData64(DATA_TWILIGHT_HALION)))
+                    if (Creature* twilightHalion = me->GetCreature(*me, instance->GetData64(DATA_HALION_TWILIGHT)))
                     {
                         halion->CastSpell(halion, sCorporeality[idAura].SpellId1, true);
                         twilightHalion->CastSpell(twilightHalion, sCorporeality[idAura].SpellId2, true);
@@ -250,7 +252,7 @@ class boss_halion : public CreatureScript
                 events.ScheduleEvent(EVENT_DPS, 5000, 0, PHASE_3);
 
                 if (Creature* halion = me->GetCreature(*me, instance->GetData64(DATA_HALION)))
-                    if (Creature* twilightHalion = me->GetCreature(*me, instance->GetData64(DATA_TWILIGHT_HALION)))
+                    if (Creature* twilightHalion = me->GetCreature(*me, instance->GetData64(DATA_HALION_TWILIGHT)))
                         halion->SetHealth(twilightHalion->GetHealth());
             }
 
@@ -265,7 +267,7 @@ class boss_halion : public CreatureScript
 
             void JustSummoned(Creature* summon)
             {
-                if (summon->GetEntry() == NPC_TWILIGHT_HALION)
+                if (summon->GetEntry() == NPC_HALION_TWILIGHT)
                 {
                     summon->SetPhaseMask(32, true);
                     summons.Summon(summon);
@@ -305,7 +307,7 @@ class boss_halion : public CreatureScript
                     if (instance->GetData(DATA_DAMAGE) > 0)
                         me->SetHealth(instance->GetData(DATA_DAMAGE));
                     else
-                        if (instance->GetData(DATA_TWILIGHT_HALION) == IN_PROGRESS)
+                        if (instance->GetData(DATA_HALION_TWILIGHT) == IN_PROGRESS)
                             me->SetHealth(1);
                 }
 
@@ -358,7 +360,7 @@ class boss_halion : public CreatureScript
                     Talk(SAY_PHASE2);
                     DoCast(me, SPELL_SUMMON_TWILIGHT_PORTAL);
                     DoCast(me, SPELL_TWILIGHT_DIVISION);
-                    me->SummonCreature(NPC_TWILIGHT_HALION, SpawnPosHalion);
+                    me->SummonCreature(NPC_HALION_TWILIGHT, SpawnPosHalion);
                     me->SetReactState(REACT_PASSIVE);
                     me->AttackStop();
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -424,7 +426,7 @@ class boss_twilight_halion : public CreatureScript
                 if (Creature* halion = me->GetCreature(*me, instance->GetData64(DATA_HALION)))
                     me->SetHealth(halion->GetHealth());
 
-                instance->SetData(DATA_TWILIGHT_HALION, IN_PROGRESS);
+                instance->SetData(DATA_HALION_TWILIGHT, IN_PROGRESS);
             }
 
             void UpdateAI(const uint32 diff)
@@ -522,7 +524,7 @@ class boss_twilight_halion : public CreatureScript
 
             void JustReachedHome()
             {
-                instance->SetData(DATA_TWILIGHT_HALION, FAIL);
+                instance->SetData(DATA_HALION_TWILIGHT, FAIL);
 
                 if (instance->GetBossState(DATA_HALION) == SPECIAL)
                     instance->SetBossState(DATA_HALION, FAIL);
@@ -536,7 +538,7 @@ class boss_twilight_halion : public CreatureScript
 
             void JustDied(Unit* /*killer*/)
             {
-                instance->SetData(DATA_TWILIGHT_HALION,DONE);
+                instance->SetData(DATA_HALION_TWILIGHT,DONE);
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_AURA_TWILIGHT);
             }
 
