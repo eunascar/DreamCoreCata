@@ -96,7 +96,7 @@ public:
 
     struct boss_auriaya_AI : public BossAI
     {
-        boss_auriaya_AI(Creature *creature) : BossAI(creature, TYPE_AURIAYA)
+        boss_auriaya_AI(Creature *creature) : BossAI(creature, BOSS_AURIAYA)
         {
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
@@ -312,7 +312,7 @@ public:
             if (!UpdateVictim())
                 me->DespawnOrUnsummon();
             
-            if (instance && instance->GetBossState(TYPE_AURIAYA) != IN_PROGRESS)
+            if (instance && instance->GetBossState(BOSS_AURIAYA) != IN_PROGRESS)
                 me->DespawnOrUnsummon();
 
             if (PounceTimer <= uiDiff)
@@ -373,7 +373,7 @@ public:
                     RushTimer = 42000;
                     RessTimer = 30000;
                     if (instance)
-                        if (Creature *pAuriaya = me->GetCreature(*me, instance->GetData64(TYPE_AURIAYA)))
+                        if (Creature *pAuriaya = me->GetCreature(*me, instance->GetData64(BOSS_AURIAYA)))
                             pAuriaya->AI()->DoAction(ACTION_NINE_LIVES);
                 }
             }
@@ -467,7 +467,7 @@ public:
         void JustDied(Unit* /*victim*/)
         {
             if (instance)
-                if (Creature *pAuriaya = me->GetCreature(*me, instance->GetData64(TYPE_AURIAYA)))
+                if (Creature *pAuriaya = me->GetCreature(*me, instance->GetData64(BOSS_AURIAYA)))
                     pAuriaya->AI()->DoAction(ACTION_CRAZY_CAT_LADY);
         }
     };
@@ -503,7 +503,7 @@ public:
     
         void UpdateAI(const uint32 uiDiff)
         {
-            if (instance && instance->GetBossState(TYPE_AURIAYA) != IN_PROGRESS)
+            if (instance && instance->GetBossState(BOSS_AURIAYA) != IN_PROGRESS)
                 me->DespawnOrUnsummon();
         }
     };

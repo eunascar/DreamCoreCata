@@ -407,7 +407,7 @@ public:
 
     struct boss_sara_AI : public BossAI
     {
-        boss_sara_AI(Creature* creature) : BossAI(creature, TYPE_YOGGSARON)
+        boss_sara_AI(Creature* creature) : BossAI(creature, BOSS_YOGGSARON)
         {
             me->ApplySpellImmune(0, IMMUNITY_ID, SPELL_RESILIENCE_OF_NATURE, true);
             me->ApplySpellImmune(0, IMMUNITY_ID, SPELL_FURY_OF_THE_STORMS, true);
@@ -443,7 +443,7 @@ public:
                     }
                 }
                 // Reset Yogg-Saron
-                for (uint8 data = DATA_YOGGSARON_BRAIN; data <= TYPE_YOGGSARON; ++data)
+                for (uint8 data = DATA_YOGGSARON_BRAIN; data <= BOSS_YOGGSARON; ++data)
                 {
                     if (Creature* creature = Creature::GetCreature((*me), instance->GetData64(data)))
                         creature->AI()->EnterEvadeMode();
@@ -725,7 +725,7 @@ public:
 
     struct boss_yoggsaron_AI : public BossAI
     {
-        boss_yoggsaron_AI(Creature* creature) : BossAI(creature, TYPE_YOGGSARON)
+        boss_yoggsaron_AI(Creature* creature) : BossAI(creature, BOSS_YOGGSARON)
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
@@ -1019,7 +1019,7 @@ public:
 
     struct boss_brain_yoggsaron_AI : public BossAI
     {
-        boss_brain_yoggsaron_AI(Creature* creature) : BossAI(creature, TYPE_YOGGSARON)
+        boss_brain_yoggsaron_AI(Creature* creature) : BossAI(creature, BOSS_YOGGSARON)
         {
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);

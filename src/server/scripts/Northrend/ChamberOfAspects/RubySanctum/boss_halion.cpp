@@ -337,7 +337,7 @@ class boss_halion : public CreatureScript
                                 break;
                             case EVENT_DPS:
                                 CastCorporeality();
-                                events.ScheduleEvent(EVENT_DPS, 5000,0,PHASE_3);
+                                events.ScheduleEvent(EVENT_DPS, 5000, 0, PHASE_3);
                                 break;
                             case EVENT_CAST_FIERY_COMBUSTION:
                                 Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0);
@@ -351,19 +351,19 @@ class boss_halion : public CreatureScript
                     }
                 }
 
-               /* if ((events.GetPhaseMask() & PHASE_1_MASK) && me->HealthBelowPct(75))
+                if ((events.GetPhaseMask() & PHASE_1_MASK) && me->HealthBelowPct(75))
                 {
                     events.SetPhase(PHASE_2);
                     instance->SetBossState(DATA_HALION, SPECIAL);
                     Talk(SAY_PHASE2);
                     DoCast(me, SPELL_SUMMON_TWILIGHT_PORTAL);
                     DoCast(me, SPELL_TWILIGHT_DIVISION);
-                    me->SummonCreature(NPC_TWILIGHT_HALION,SpawnPosHalion);
+                    me->SummonCreature(NPC_TWILIGHT_HALION, SpawnPosHalion);
                     me->SetReactState(REACT_PASSIVE);
                     me->AttackStop();
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                     me->SetVisible(false);
-                }*/
+                }
 
                 DoMeleeAttackIfReady();
             }

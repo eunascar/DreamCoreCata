@@ -114,7 +114,7 @@ class boss_algalon : public CreatureScript
 
         struct boss_algalonAI : public BossAI
         {
-            boss_algalonAI(Creature* creature) : BossAI(creature, TYPE_ALGALON)
+            boss_algalonAI(Creature* creature) : BossAI(creature, BOSS_ALGALON)
             {
                 summon = false;
 
@@ -156,7 +156,7 @@ class boss_algalon : public CreatureScript
                 _EnterCombat();
                 me->setFaction(14);
 
-                instance->SetBossState(TYPE_ALGALON, IN_PROGRESS);
+                instance->SetBossState(BOSS_ALGALON, IN_PROGRESS);
 
                 if (summon)
                 {
@@ -290,7 +290,7 @@ class boss_algalon : public CreatureScript
 
                 if (HealthBelowPct(2))
                 {
-                    instance->SetBossState(TYPE_ALGALON, DONE);
+                    instance->SetBossState(BOSS_ALGALON, DONE);
 
                     // All of them. or random?
                     DoScriptText(SAY_DEATH_1, me);
@@ -400,7 +400,7 @@ class boss_algalon : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
-            return new boss_algalonAI(creature);
+            return GetUlduarAI<boss_algalonAI>(creature);
         }
 };
 
@@ -537,7 +537,7 @@ class go_planetarium_access : public GameObjectScript
 
             if (player->HasItemCount(ITEM_PLANETARIUM_KEY, 1) || player->HasItemCount(ITEM_PLANETARIUM_KEY_H, 1))
             {
-                instance->SetBossState(TYPE_ALGALON, SPECIAL);
+                instance->SetBossState(BOSS_ALGALON, SPECIAL);
                 go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
                 go->SetGoState(GO_STATE_ACTIVE);
             }

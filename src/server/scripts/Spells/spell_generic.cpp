@@ -569,8 +569,8 @@ class spell_gen_animal_blood : public SpellScriptLoader
 
             void Register()
             {
-                OnEffectApply += AuraEffectRemoveFn(spell_gen_animal_blood_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
-                OnEffectRemove += AuraEffectRemoveFn(spell_gen_animal_blood_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply += AuraEffectRemoveFn(spell_gen_animal_blood_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectRemove += AuraEffectRemoveFn(spell_gen_animal_blood_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -1010,30 +1010,6 @@ class spell_gen_turkey_marker : public SpellScriptLoader
                     GetTarget()->CastSpell(GetTarget(), SPELL_TURKEY_VENGEANCE, true, NULL, aurEff, GetCasterGUID());
             }
 
-            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-            {
-                if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_STACK)
-                    return;
-
-                // find our new aura which replaces this one aura is inserted to m_ownedAuras before old removal takes place
-                Aura* newAura = GetTarget()->GetOwnedAura(GetId(), 0, 0, 0, GetAura());
-                // this should never happen
-                if (!newAura)
-                    return;
-
-                std::list<AuraScript*> const& loadedScripts = newAura->m_loadedScripts;
-
-                // find the new aura's script and give it our stored stack apply times
-                for (std::list<AuraScript*>::const_iterator itr = loadedScripts.begin(); itr != loadedScripts.end(); ++itr)
-                {
-                    if (spell_gen_turkey_marker_AuraScript* scr = dynamic_cast<spell_gen_turkey_marker_AuraScript*>(*itr))
-                    {
-                        scr->_applyTimes.splice(scr->_applyTimes.begin(), _applyTimes);
-                        break;
-                    }
-                }
-            }
-
             void OnPeriodic(AuraEffect const* /*aurEff*/)
             {
                 if (_applyTimes.empty())
@@ -1041,14 +1017,12 @@ class spell_gen_turkey_marker : public SpellScriptLoader
 
                 // pop stack if it expired for us
                 if (_applyTimes.front() + GetMaxDuration() < getMSTime())
-                    if (ModStackAmount(-1))
-                        GetTarget()->RemoveOwnedAura(GetAura(), AURA_REMOVE_BY_EXPIRE);
+                    ModStackAmount(-1, AURA_REMOVE_BY_EXPIRE);
             }
 
             void Register()
             {
-                OnEffectApply += AuraEffectApplyFn(spell_gen_turkey_marker_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectRemove += AuraEffectRemoveFn(spell_gen_turkey_marker_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+                AfterEffectApply += AuraEffectApplyFn(spell_gen_turkey_marker_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
                 OnEffectPeriodic += AuraEffectPeriodicFn(spell_gen_turkey_marker_AuraScript::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
 
@@ -1058,6 +1032,33 @@ class spell_gen_turkey_marker : public SpellScriptLoader
         AuraScript* GetAuraScript() const
         {
             return new spell_gen_turkey_marker_AuraScript();
+        }
+};
+
+class spell_gen_lifeblood : public SpellScriptLoader
+{
+    public:
+        spell_gen_lifeblood() : SpellScriptLoader("spell_gen_lifeblood") { }
+
+        class spell_gen_lifeblood_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_gen_lifeblood_AuraScript);
+
+            void CalculateAmount(AuraEffect const* aurEff, int32& amount, bool& /*canBeRecalculated*/)
+            {
+                if (Unit* owner = GetUnitOwner())
+                    amount += int32(CalculatePctF(owner->GetMaxHealth(), 1.5f / aurEff->GetTotalTicks()));
+            }
+
+            void Register()
+            {
+                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_lifeblood_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
+            }
+        };
+
+        AuraScript* GetAuraScript() const
+        {
+            return new spell_gen_lifeblood_AuraScript();
         }
 };
 
@@ -1085,4 +1086,5 @@ void AddSC_generic_spell_scripts()
     new spell_generic_clone_weapon();
     new spell_gen_seaforium_blast();
     new spell_gen_turkey_marker();
+    new spell_gen_lifeblood();
 }

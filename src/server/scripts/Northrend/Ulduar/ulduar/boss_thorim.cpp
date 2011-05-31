@@ -253,12 +253,12 @@ public:
 
     CreatureAI* GetAI(Creature* creature) const
     {
-        return new boss_thorimAI(creature);
+        return GetUlduarAI<boss_thorimAI>(creature);
     }
 
     struct boss_thorimAI : public BossAI
     {
-        boss_thorimAI(Creature* creature) : BossAI(creature, TYPE_THORIM)
+        boss_thorimAI(Creature* creature) : BossAI(creature, BOSS_THORIM)
         {
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
@@ -534,7 +534,7 @@ public:
 
         void JustDied(Unit* /*victim*/)
         {
-            if (Creature* pThorim = me->GetCreature(*me, instance->GetData64(TYPE_THORIM)))
+            if (Creature* pThorim = me->GetCreature(*me, instance->GetData64(BOSS_THORIM)))
                 pThorim->AI()->DoAction(INCREASE_PREADDS_COUNT);
         }
 

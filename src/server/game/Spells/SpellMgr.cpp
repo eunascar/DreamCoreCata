@@ -427,7 +427,7 @@ uint32 CalculatePowerCost(SpellEntry const * spellInfo, Unit const * caster, Spe
     return powerCost;
 }
 
-Unit* GetTriggeredSpellCaster(SpellEntry const * spellInfo, Unit * caster, Unit * target)
+bool IsSpellRequiringFocusedTarget(SpellEntry const * spellInfo)
 {
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS; ++i)
     {
@@ -437,8 +437,15 @@ Unit* GetTriggeredSpellCaster(SpellEntry const * spellInfo, Unit * caster, Unit 
             || SpellTargetType[spellInfo->EffectImplicitTargetB[i]] == TARGET_TYPE_CHANNEL
             || SpellTargetType[spellInfo->EffectImplicitTargetA[i]] == TARGET_TYPE_DEST_TARGET
             || SpellTargetType[spellInfo->EffectImplicitTargetB[i]] == TARGET_TYPE_DEST_TARGET)
-            return caster;
+            return true;
     }
+    return false;
+}
+
+Unit* GetTriggeredSpellCaster(SpellEntry const * spellInfo, Unit * caster, Unit * target)
+{
+    if (IsSpellRequiringFocusedTarget(spellInfo))
+        return caster;
     return target;
 }
 
@@ -3118,8 +3125,6 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
     return true;
 }
 
-//-----------TRINITY-------------
-
 bool SpellMgr::CanAurasStack(Aura const *aura1, Aura const *aura2, bool sameCaster) const
 {
     SpellEntry const *spellInfo_1 = aura1->GetSpellProto();
@@ -3637,6 +3642,11 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
             ++count;
             break;
+        case 8494: // Mana Shield (rank 2)
+            // because of bug in dbc
+            spellInfo->procChance = 0;
+            ++count;
+            break;
         case 32182: // Heroism
             spellInfo->excludeCasterAuraSpell = 57723; // Exhaustion
             ++count;
@@ -3855,6 +3865,11 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->Stances = 1 << (FORM_TREE - 1);
             ++count;
             break;
+        case 47569: // Improved Shadowform (Rank 1)
+            // with this spell atrribute aura can be stacked several times
+            spellInfo->Attributes &= ~SPELL_ATTR0_NOT_SHAPESHIFT;
+            ++count;
+            break;
         case 30421: // Nether Portal - Perseverence
             spellInfo->EffectBasePoints[2] += 30000;
             ++count;
@@ -3906,10 +3921,6 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
             ++count;
             break;
-        case 25771: // Forbearance - wrong mechanic immunity in DBC since 3.0.x
-            spellInfo->EffectMiscValue[0] = MECHANIC_IMMUNE_SHIELD;
-            ++count;
-            break;
         case 64321: // Potent Pheromones
             // spell should dispel area aura, but doesn't have the attribute
             // may be db data bug, or blizz may keep reapplying area auras every update with checking immunity
@@ -3934,11 +3945,6 @@ void SpellMgr::LoadSpellCustomAttr()
         case 74439: // Machine Gun
         case 63278: // Mark of the Faceless
             mSpellCustomAttr[i] |= SPELL_ATTR0_CU_IGNORE_ARMOR;
-            ++count;
-            break;
-        // Strength of the Pack
-        case 64381:
-            spellInfo->StackAmount = 4;
             ++count;
             break;
         case 63675: // Improved Devouring Plague
@@ -3999,6 +4005,15 @@ void SpellMgr::LoadSpellCustomAttr()
         //
         case 63342: // Focused Eyebeam Summon Trigger
             spellInfo->MaxAffectedTargets = 1;
+            ++count;
+            break;
+        case 62716: // Growth of Nature
+        case 65584: // Growth of Nature
+            spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
+            ++count;
+            break;
+        case 64381: // Strength of the Pack
+            spellInfo->StackAmount = 4;
             ++count;
             break;
         case 64145: // Diminish Power
@@ -4113,7 +4128,26 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 71266: // Swarming Shadows
-            spellInfo->AreaGroupId = 0;
+        case 72890: // Swarming Shadows
+            spellInfo->AreaGroupId = 0; // originally, these require area 4522, which is... outside of Icecrown Citadel
+            ++count;
+            break;
+        case 70588: // Suppression
+        case 70602: // Corruption
+            spellInfo->AttributesEx |= SPELL_ATTR1_STACK_FOR_DIFF_CASTERS;
+            ++count;
+            break;
+        case 70715: // Column of Frost (visual marker)
+            spellInfo->DurationIndex = 32; // 6 seconds (missing)
+            ++count;
+            break;
+        case 71085: // Mana Void (periodic aura)
+            spellInfo->DurationIndex = 9; // 30 seconds (missing)
+            ++count;
+            break;
+        case 70936: // Summon Suppressor
+            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ANY;
+            spellInfo->EffectImplicitTargetB[0] = 0;
             ++count;
             break;
         case 71357: // Order Whelp
@@ -4129,10 +4163,6 @@ void SpellMgr::LoadSpellCustomAttr()
             spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_TARGET_ANY;
             spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
             spellInfo->Effect[1] = 0;
-            ++count;
-            break;
-        case 51590: // Toss Ice Boulder
-            spellInfo->MaxAffectedTargets = 1;
             ++count;
             break;
         default:

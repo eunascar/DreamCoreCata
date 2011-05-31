@@ -4,7 +4,7 @@
 --
 -- Host: localhost    Database: world
 -- ------------------------------------------------------
--- Server version	5.1.36
+-- Server version    5.1.36
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18215,7 +18215,9 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment
 ( 70877, 72151, 2, 'Blood-Queen: Frenzied Bloodthirst 10man'),
 ( 71474, 72648, 2, 'Blood-Queen: Frenzied Bloodthirst 25man'),
 ( 71474, 72650, 2, 'Blood-Queen: Frenzied Bloodthirst 25man'),
-( 70923, 70924, 2, 'Blood-Queen: Uncontrollable Frenzy'),
+( 70923, 70924, 1, 'Blood-Queen: Uncontrollable Frenzy damage buff'),
+(-70923,-70924, 0, 'Blood-Queen: Uncontrollable Frenzy remove 10man'),
+(-70923,-73015, 0, 'Blood-Queen: Uncontrollable Frenzy remove 25man'),
 ( 71446, 71447, 1, 'Blood-Queen: Bloodbolt Splash'),
 ( 71478, 71481, 1, 'Blood-Queen: Bloodbolt Splash'),
 ( 71479, 71482, 1, 'Blood-Queen: Bloodbolt Splash'),
@@ -18519,7 +18521,7 @@ INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFam
 ( 16620, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  30), -- Proc Self Invulnerability
 ( 16624, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000040,   0,   0,   0), -- Thorium Shield Spike
 ( 16850, 0x00,   7, 0x00000004, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Celestial Focus (Rank 1)
-( 16864, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00010000,   2,   0,   0), -- Omen of Clarity
+( 16864, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00010000,   0,   6,  10), -- Omen of Clarity
 ( 16923, 0x00,   7, 0x00000004, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Celestial Focus (Rank 2)
 ( 16924, 0x00,   7, 0x00000004, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Celestial Focus (Rank 3)
 ( 16952, 0x00,   7, 0x00039000, 0x00000400, 0x00000000, 0x00000000, 0x00000002,   0,   0,   0), -- Blood Frenzy (Rank 1)
@@ -18580,7 +18582,6 @@ INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFam
 ( 20925, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000040,   0,   0,   0), -- Holy Shield (Rank 1)
 ( 20927, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000040,   0,   0,   0), -- Holy Shield (Rank 2)
 ( 20928, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000040,   0,   0,   0), -- Holy Shield (Rank 3)
-( 21084, 0x01,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Seal of Righteousness
 ( 21185, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  10), -- Spinal Reaper
 ( 21882, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000002,   0,   0,   0), -- Judgement Smite
 ( 21890, 0x00,   4, 0x2A764EEF, 0x0000036C, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Warrior's Wrath
@@ -18937,9 +18938,9 @@ INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFam
 ( 46951, 0x00,   4, 0x00000400, 0x00000040, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Sword and Board (Rank 1)
 ( 46952, 0x00,   0, 0x00000400, 0x00000040, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Sword and Board (Rank 2)
 ( 46953, 0x00,   0, 0x00000400, 0x00000040, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Sword and Board (Rank 3)
-( 47195, 0x00,   5, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  30), -- Eradication (Rank 1)
-( 47196, 0x00,   5, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  30), -- Eradication (Rank 2)
-( 47197, 0x00,   5, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,  30), -- Eradication (Rank 3)
+( 47195, 0x00,   5, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Eradication (Rank 1)
+( 47196, 0x00,   5, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Eradication (Rank 2)
+( 47197, 0x00,   5, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Eradication (Rank 3)
 ( 47201, 0x00,   5, 0x00004009, 0x00040000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Everlasting Affliction (1)
 ( 47202, 0x00,   5, 0x00004009, 0x00040000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Everlasting Affliction (2)
 ( 47203, 0x00,   5, 0x00004009, 0x00040000, 0x00000000, 0x00000000, 0x00000000,   0,   0,   0), -- Everlasting Affliction (3)

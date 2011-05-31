@@ -85,11 +85,11 @@ public:
                 }
         }
 
-        void SetData(uint32 type, uint32 data)
+        void SetData(uint32 type, uint32 /*data*/)
         {
             switch(type)
             {
-                case EVENT_WARD_KEEPER: WardKeeperDeath++; break; 
+                case EVENT_WARD_KEEPER: WardKeeperDeath++; break;
             }
         }
 

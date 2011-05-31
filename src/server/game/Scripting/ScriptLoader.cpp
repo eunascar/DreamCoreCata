@@ -72,9 +72,7 @@ void AddSC_wp_commandscript();
 #ifdef SCRIPTS
 //world
 void AddSC_areatrigger_scripts();
-void AddSC_boss_emeriss();
-void AddSC_boss_taerar();
-void AddSC_boss_ysondre();
+void AddSC_emerald_dragons();
 void AddSC_generic_creature();
 void AddSC_go_scripts();
 void AddSC_guards();
@@ -432,11 +430,6 @@ void AddSC_boss_malygos();              // The Nexus: Eye of Eternity
 void AddSC_instance_eye_of_eternity();
 void AddSC_boss_sartharion();            //Obsidian Sanctum
 void AddSC_instance_obsidian_sanctum();
-void AddSC_boss_baltharus();             //Ruby Sanctum
-void AddSC_boss_zarithrian();
-void AddSC_boss_ragefire();
-void AddSC_boss_halion();
-void AddSC_instance_ruby_sanctum();
 void AddSC_boss_bjarngrim();             //Ulduar Halls of Lightning
 void AddSC_boss_loken();
 void AddSC_boss_ionar();
@@ -454,13 +447,13 @@ void AddSC_boss_xt002();
 void AddSC_boss_kologarn();
 void AddSC_boss_assembly_of_iron();
 void AddSC_boss_auriaya();
-void AddSC_boss_freya();
-void AddSC_boss_hodir();
 void AddSC_boss_thorim();
 void AddSC_boss_general_vezax();
 void AddSC_boss_yoggsaron();
 void AddSC_ulduar_teleporter();
 void AddSC_boss_mimiron();
+void AddSC_boss_hodir();
+void AddSC_boss_freya();
 void AddSC_boss_algalon();
 void AddSC_instance_ulduar();
 void AddSC_boss_keleseth();              //Utgarde Keep
@@ -519,6 +512,12 @@ void AddSC_boss_the_lich_king();
 void AddSC_icecrown_citadel_teleport();
 void AddSC_instance_icecrown_citadel();
 void AddSC_icecrown_citadel();
+void AddSC_instance_ruby_sanctum();      // Ruby Sanctum
+void AddSC_ruby_sanctum();
+void AddSC_boss_baltharus_the_warborn();
+void AddSC_boss_saviana_ragefire();
+void AddSC_boss_zarithrian();
+void AddSC_boss_halion();
 
 void AddSC_dalaran();
 void AddSC_borean_tundra();
@@ -700,9 +699,7 @@ void AddWorldScripts()
 {
 #ifdef SCRIPTS
     AddSC_areatrigger_scripts();
-    AddSC_boss_emeriss();
-    AddSC_boss_taerar();
-    AddSC_boss_ysondre();
+    AddSC_emerald_dragons();
     AddSC_generic_creature();
     AddSC_go_scripts();
     AddSC_guards();
@@ -1159,11 +1156,6 @@ void AddNorthrendScripts()
     AddSC_instance_eye_of_eternity();
     AddSC_boss_sartharion();            //Obsidian Sanctum
     AddSC_instance_obsidian_sanctum();
-    AddSC_boss_baltharus();             //Ruby Sanctum
-    AddSC_boss_zarithrian();
-    AddSC_boss_ragefire();
-    AddSC_boss_halion();
-    AddSC_instance_ruby_sanctum();
     AddSC_boss_bjarngrim();             //Ulduar Halls of Lightning
     AddSC_boss_loken();
     AddSC_boss_ionar();
@@ -1181,13 +1173,13 @@ void AddNorthrendScripts()
     AddSC_boss_kologarn();
     AddSC_boss_assembly_of_iron();
     AddSC_boss_auriaya();
-    AddSC_boss_freya();
-    AddSC_boss_hodir();
     AddSC_boss_thorim();
     AddSC_boss_general_vezax();
     AddSC_boss_yoggsaron();
     AddSC_ulduar_teleporter();
     AddSC_boss_mimiron();
+    AddSC_boss_hodir();
+    AddSC_boss_freya();
     AddSC_boss_algalon();
     AddSC_instance_ulduar();
     AddSC_boss_keleseth();              //Utgarde Keep
@@ -1246,6 +1238,12 @@ void AddNorthrendScripts()
     AddSC_icecrown_citadel_teleport();
     AddSC_instance_icecrown_citadel();
     AddSC_icecrown_citadel();
+    AddSC_instance_ruby_sanctum();      // Ruby Sanctum
+    AddSC_ruby_sanctum();
+    AddSC_boss_baltharus_the_warborn();
+    AddSC_boss_saviana_ragefire();
+    AddSC_boss_zarithrian();
+    AddSC_boss_halion();
 
     AddSC_dalaran();
     AddSC_borean_tundra();

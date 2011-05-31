@@ -206,7 +206,7 @@ class boss_mimiron : public CreatureScript
 
         struct boss_mimironAI : public BossAI
         {
-            boss_mimironAI(Creature* creature) : BossAI(creature, TYPE_MIMIRON)
+            boss_mimironAI(Creature* creature) : BossAI(creature, BOSS_MIMIRON)
             {
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
@@ -224,7 +224,7 @@ class boss_mimiron : public CreatureScript
                 me->SetReactState(REACT_PASSIVE);
 
                 instance->SetData(DATA_MIMIRON_ELEVATOR, GO_STATE_ACTIVE);
-                instance->SetBossState(TYPE_MIMIRON, NOT_STARTED);
+                instance->SetBossState(BOSS_MIMIRON, NOT_STARTED);
 
                 for (uint8 data = DATA_LEVIATHAN_MK_II; data <= DATA_AERIAL_UNIT; ++data)
                 {
@@ -257,7 +257,7 @@ class boss_mimiron : public CreatureScript
 
                 if (instance)
                 {
-                    instance->SetBossState(TYPE_MIMIRON, DONE);
+                    instance->SetBossState(BOSS_MIMIRON, DONE);
 
                     if (MimironHardMode)
                     {
@@ -410,7 +410,7 @@ class boss_mimiron : public CreatureScript
                                         phase = PHASE_COMBAT;
                                     }
 
-                                    instance->SetBossState(TYPE_MIMIRON, IN_PROGRESS);
+                                    instance->SetBossState(BOSS_MIMIRON, IN_PROGRESS);
                                 }
                                 break;
                             default:
@@ -703,7 +703,7 @@ class boss_leviathan_mk : public CreatureScript
 
         struct boss_leviathan_mkAI : public BossAI
         {
-            boss_leviathan_mkAI(Creature* creature) : BossAI(creature, TYPE_MIMIRON), vehicle(me->GetVehicleKit()), phase(PHASE_NULL)
+            boss_leviathan_mkAI(Creature* creature) : BossAI(creature, BOSS_MIMIRON), vehicle(me->GetVehicleKit()), phase(PHASE_NULL)
             {
             }
 
@@ -739,14 +739,14 @@ class boss_leviathan_mk : public CreatureScript
             void JustReachedHome()
             {
                 if (instance)
-                    instance->SetBossState(TYPE_MIMIRON, FAIL);
+                    instance->SetBossState(BOSS_MIMIRON, FAIL);
             }
 
             void KilledUnit(Unit* who)
             {
                 if (!(rand() % 5))
                     if (instance)
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                         {
                             if (phase == PHASE_LEVIATHAN_SOLO)
                                 DoScriptText(RAND(SAY_MKII_SLAY_1, SAY_MKII_SLAY_2), pMimiron);
@@ -769,7 +769,7 @@ class boss_leviathan_mk : public CreatureScript
                         events.SetPhase(PHASE_NULL);
                         phase = PHASE_NULL;
 
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_VX001);
 
                         if (Creature* turret = CAST_CRE(vehicle->GetPassenger(SEAT_TURRET)))
@@ -792,7 +792,7 @@ class boss_leviathan_mk : public CreatureScript
                         events.SetPhase(PHASE_NULL);
                         phase = PHASE_NULL;
 
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_DEATH_TIMER);
                     }
             }
@@ -941,7 +941,7 @@ class boss_leviathan_mk_turret : public CreatureScript
                 if (!UpdateVictim())
                     return;
 
-                if (instance->GetBossState(TYPE_MIMIRON) == IN_PROGRESS)
+                if (instance->GetBossState(BOSS_MIMIRON) == IN_PROGRESS)
                 {
                     if (uiNapalmShell <= diff)
                     {
@@ -974,7 +974,7 @@ class boss_vx_001 : public CreatureScript
 
         struct boss_vx_001AI : public BossAI
         {
-            boss_vx_001AI(Creature* creature) : BossAI(creature, TYPE_MIMIRON), vehicle(me->GetVehicleKit()), phase(PHASE_NULL)
+            boss_vx_001AI(Creature* creature) : BossAI(creature, BOSS_MIMIRON), vehicle(me->GetVehicleKit()), phase(PHASE_NULL)
             {
                 ASSERT(vehicle);
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
@@ -993,7 +993,7 @@ class boss_vx_001 : public CreatureScript
                 phase = PHASE_NULL;
                 events.SetPhase(PHASE_NULL);
 
-                if (Creature* mimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                if (Creature* mimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                     if (mimiron->IsOnVehicle(me))
                     {
                         mimiron->ExitVehicle();
@@ -1005,7 +1005,7 @@ class boss_vx_001 : public CreatureScript
             {
                 if (!(rand() % 5))
                     if (instance)
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                         {
                             if (phase == PHASE_VX001_SOLO)
                                 DoScriptText(RAND(SAY_VX001_SLAY_1, SAY_VX001_SLAY_2), pMimiron);
@@ -1077,7 +1077,7 @@ class boss_vx_001 : public CreatureScript
                         phase = PHASE_NULL;
                         events.SetPhase(PHASE_NULL);
 
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_AERIAL);
                     }
 
@@ -1093,7 +1093,7 @@ class boss_vx_001 : public CreatureScript
                         events.SetPhase(PHASE_NULL);
                         phase = PHASE_NULL;
 
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_DEATH_TIMER);
                     }
             }
@@ -1182,7 +1182,7 @@ class boss_aerial_unit : public CreatureScript
 
         struct boss_aerial_unitAI : public BossAI
         {
-            boss_aerial_unitAI(Creature* creature) : BossAI(creature, TYPE_MIMIRON), vehicle(me->GetVehicleKit()), phase(PHASE_NULL)
+            boss_aerial_unitAI(Creature* creature) : BossAI(creature, BOSS_MIMIRON), vehicle(me->GetVehicleKit()), phase(PHASE_NULL)
             {
                 ASSERT(vehicle);
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
@@ -1209,7 +1209,7 @@ class boss_aerial_unit : public CreatureScript
             {
                 if (!(rand() % 5))
                     if (instance)
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                         {
                             if (phase == PHASE_AERIAL_SOLO)
                                 DoScriptText(RAND(SAY_AERIAL_SLAY_1, SAY_AERIAL_SLAY_2), pMimiron);
@@ -1385,7 +1385,7 @@ class boss_aerial_unit : public CreatureScript
                         phase = PHASE_NULL;
                         events.SetPhase(PHASE_NULL);
 
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_V0L7R0N);
                     }
 
@@ -1402,7 +1402,7 @@ class boss_aerial_unit : public CreatureScript
                         events.SetPhase(PHASE_NULL);
                         phase = PHASE_NULL;
 
-                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(TYPE_MIMIRON)))
+                        if (Creature* pMimiron = me->GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
                             pMimiron->AI()->DoAction(DO_ACTIVATE_DEATH_TIMER);
                     }
             }
@@ -1667,7 +1667,7 @@ class npc_mimiron_flame_spread : public CreatureScript
 
             void UpdateAI(const uint32 uiDiff)
             {
-                if (instance && instance->GetBossState(TYPE_MIMIRON) != IN_PROGRESS)
+                if (instance && instance->GetBossState(BOSS_MIMIRON) != IN_PROGRESS)
                     me->DespawnOrUnsummon();
             }
         private:
@@ -1745,8 +1745,8 @@ class go_not_push_button : public GameObjectScript
             if (!instance)
                 return false;
 
-            if ((instance->GetBossState(TYPE_MIMIRON) != IN_PROGRESS || instance->GetBossState(TYPE_MIMIRON) != DONE) && player)
-                if (Creature* pMimiron = player->GetCreature((*player), instance->GetData64(TYPE_MIMIRON)))
+            if ((instance->GetBossState(BOSS_MIMIRON) != IN_PROGRESS || instance->GetBossState(BOSS_MIMIRON) != DONE) && player)
+                if (Creature* pMimiron = player->GetCreature((*player), instance->GetData64(BOSS_MIMIRON)))
                     pMimiron->AI()->DoAction(DO_ACTIVATE_HARD_MODE);
 
             return true;

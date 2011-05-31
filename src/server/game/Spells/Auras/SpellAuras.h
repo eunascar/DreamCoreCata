@@ -40,6 +40,7 @@ class AuraApplication
     friend void Unit::_ApplyAura(AuraApplication * aurApp, uint8 effMask);
     friend void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMode);
     friend void Unit::_ApplyAuraEffect(Aura * aura, uint8 effIndex);
+    friend void Unit::RemoveAura(AuraApplication * aurApp, AuraRemoveMode mode);
     friend AuraApplication * Unit::_CreateAuraApplication(Aura * aura, uint8 effMask);
     private:
         Unit * const m_target;
@@ -78,6 +79,7 @@ class AuraApplication
 
 class Aura
 {
+    friend Aura * Unit::_TryStackingOrRefreshingExistingAura(SpellEntry const * newAura, uint8 effMask, int32 *baseAmount, Item * castItem, uint64 casterGUID);
     public:
         typedef std::map<uint64, AuraApplication *> ApplicationMap;
 
@@ -129,8 +131,8 @@ class Aura
         bool DropCharge();
 
         uint8 GetStackAmount() const { return m_stackAmount; }
-        void SetStackAmount(uint8 num, bool applied = true);
-        bool ModStackAmount(int32 num); // return true if last charge dropped
+        void SetStackAmount(uint8 num);
+        void ModStackAmount(int32 num, AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
 
         uint8 GetCasterLevel() const { return m_casterLevel; }
 
@@ -170,6 +172,8 @@ class Aura
         void LoadScripts();
         bool CallScriptEffectApplyHandlers(AuraEffect const * aurEff, AuraApplication const * aurApp, AuraEffectHandleModes mode);
         bool CallScriptEffectRemoveHandlers(AuraEffect const * aurEff, AuraApplication const * aurApp, AuraEffectHandleModes mode);
+        void CallScriptAfterEffectApplyHandlers(AuraEffect const * aurEff, AuraApplication const * aurApp, AuraEffectHandleModes mode);
+        void CallScriptAfterEffectRemoveHandlers(AuraEffect const * aurEff, AuraApplication const * aurApp, AuraEffectHandleModes mode);
         bool CallScriptEffectPeriodicHandlers(AuraEffect const * aurEff, AuraApplication const * aurApp);
         void CallScriptEffectUpdatePeriodicHandlers(AuraEffect * aurEff);
         void CallScriptEffectCalcAmountHandlers(AuraEffect const * aurEff, int32 & amount, bool & canBeRecalculated);
