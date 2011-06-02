@@ -25,6 +25,8 @@
 #define RSScriptName "instance_ruby_sanctum"
 uint32 const EncounterCount = 4;
 
+Position const SpawnPosHalion = {3144.93f, 527.233f, 72.8887f, 0.110395f};
+
 enum DataTypes
 {
     // Encounter States/Boss GUIDs
@@ -72,7 +74,8 @@ enum CreaturesIds
     NPC_ORB_ROTATION_FOCUS                  = 40091,
     NPC_SHADOW_ORB_N                        = 40083,
     NPC_METEOR_STRIKE                       = 40041,
-    NPC_METEOR_FLAME                        = 40042,	
+    NPC_METEOR_FLAME                        = 40042,
+    NPC_SUMMON_HALION                       = 40044,
 
     // Xerestrasza
     NPC_XERESTRASZA                         = 40429,
@@ -86,6 +89,8 @@ enum GameObjectsIds
     GO_FIRE_FIELD                           = 203005,
     GO_FLAME_WALLS                          = 203006,
     GO_FLAME_RING                           = 203007,
+    GO_TWILIGHT_RING                        = 203624,
+    GO_TWILIGHT_PORTAL_1                    = 202794,
     GO_TWILIGHT_PORTAL_2                    = 202796
 };
 

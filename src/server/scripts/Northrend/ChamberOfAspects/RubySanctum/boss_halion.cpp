@@ -123,8 +123,6 @@ enum Phases
     PHASE_3_MASK  = 1 << PHASE_3
 };
 
-static const Position SpawnPosHalion = {3144.93f, 527.233f, 72.8887f, 0.110395f};
-
 class boss_halion : public CreatureScript
 {
     public:
@@ -353,7 +351,7 @@ class boss_halion : public CreatureScript
                     }
                 }
 
-                if ((events.GetPhaseMask() & PHASE_1_MASK) && me->HealthBelowPct(75))
+                /*if ((events.GetPhaseMask() & PHASE_1_MASK) && me->HealthBelowPct(75))
                 {
                     events.SetPhase(PHASE_2);
                     instance->SetBossState(DATA_HALION, SPECIAL);
@@ -365,7 +363,7 @@ class boss_halion : public CreatureScript
                     me->AttackStop();
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                     me->SetVisible(false);
-                }
+                }*/
 
                 DoMeleeAttackIfReady();
             }
