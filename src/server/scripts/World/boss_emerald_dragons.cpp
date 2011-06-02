@@ -60,35 +60,23 @@ enum EmeraldDragonSpells
 // Emerald Dragon Eventlists (shared and specials)
 //
 
-enum EmeraldDragonEvents
+enum Events
 {
+    // General for all dragons
     EVENT_SEEPING_FOG               = 1,
     EVENT_NOXIOUS_BREATH            = 2,
     EVENT_TAIL_SWEEP                = 3,
-};
-
-enum YsondreEvents
-{
-    EVENT_LIGHTNING_WAVE            = 11,
-    EVENT_SUMMON_DRUID_SPIRITS      = 12,
-};
-
-enum LethonEvents
-{
-    EVENT_SHADOW_BOLT_WHIRL         = 21,
-    EVENT_DRAW_SPIRIT               = 22,
-};
-
-enum EmerissEvents
-{
-    EVENT_VOLATILE_INFECTION        = 31,
-    EVENT_CORRUPTION_OF_EARTH       = 32,
-};
-
-enum TaerarEvents
-{
-    EVENT_ARCANE_BLAST              = 41,
-    EVENT_BELLOWING_ROAR            = 42,
+    // Ysondre
+    EVENT_LIGHTNING_WAVE            = 4,
+    EVENT_SUMMON_DRUID_SPIRITS      = 5,
+    // Lethon
+    EVENT_SHADOW_BOLT_WHIRL         = 6,
+    // Emeriss
+    EVENT_VOLATILE_INFECTION        = 7,
+    EVENT_CORRUPTION_OF_EARTH       = 8,
+    // Taerar
+    EVENT_ARCANE_BLAST              = 9,
+    EVENT_BELLOWING_ROAR            = 10,
 };
 
 /*
@@ -114,8 +102,8 @@ struct emerald_dragonAI : public WorldBossAI
         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NON_ATTACKABLE);
         me->SetReactState(REACT_AGGRESSIVE);
         events.ScheduleEvent(EVENT_TAIL_SWEEP, 4000);
-        events.ScheduleEvent(EVENT_NOXIOUS_BREATH, 8000);
-        events.ScheduleEvent(EVENT_SEEPING_FOG, urand(10000, 20000));
+        events.ScheduleEvent(EVENT_NOXIOUS_BREATH, urand(7500, 15000));
+        events.ScheduleEvent(EVENT_SEEPING_FOG, urand(12500, 20000));
     }
 
     // Test if the player has been killed before, and if so, put them to sleep
@@ -123,13 +111,13 @@ struct emerald_dragonAI : public WorldBossAI
     {
         if (who && me->IsHostileTo(who))
             if (who->HasAura(SPELL_MARK_OF_NATURE_AURA) && !who->HasAura(SPELL_AURA_OF_NATURE))
-                DoCast(who, SPELL_AURA_OF_NATURE, true);
+                who->CastSpell(who, SPELL_AURA_OF_NATURE, true);
     }
 
     // Target killed during encounter, mark them as suspectible for Aura Of Nature
     void KilledUnit(Unit* who)
     {
-        DoCast(who, SPELL_MARK_OF_NATURE, true);
+        who->CastSpell(who, SPELL_MARK_OF_NATURE, true);
     }
 
     // Execute and reschedule base events shared between all Emerald Dragons
@@ -138,15 +126,19 @@ struct emerald_dragonAI : public WorldBossAI
         switch (eventId)
         {
             case EVENT_SEEPING_FOG:
+                // Seeping Fog appears only as "pairs", and only ONE pair at any given time!
+                // Despawntime is 2 minutes, so reschedule it for new cast after 2 minutes + a minor "random time" (30 seconds at max)
                 DoCast(me, SPELL_SEEPING_FOG_LEFT, true);
                 DoCast(me, SPELL_SEEPING_FOG_RIGHT, true);
-                events.ScheduleEvent(EVENT_SEEPING_FOG, urand(60000,120000));
+                events.ScheduleEvent(EVENT_SEEPING_FOG, urand(120000,150000));
                 break;
             case EVENT_NOXIOUS_BREATH:
+                // Noxious Breath is cast on random intervals, no less than 7.5 seconds between
                 DoCast(me, SPELL_NOXIOUS_BREATH);
-                events.ScheduleEvent(EVENT_NOXIOUS_BREATH, urand(15000, 20000));
+                events.ScheduleEvent(EVENT_NOXIOUS_BREATH, urand(7500, 15000));
                 break;
             case EVENT_TAIL_SWEEP:
+                // Tail Sweep is cast every two seconds, no matter what goes on in front of the dragon
                 DoCast(me, SPELL_TAIL_SWEEP);
                 events.ScheduleEvent(EVENT_TAIL_SWEEP, 2000);
                 break;
@@ -166,16 +158,17 @@ struct emerald_dragonAI : public WorldBossAI
         while (uint32 eventId = events.ExecuteEvent())
             ExecuteEvent(eventId);
 
+        std::list<HostileReference*> threats = me->getThreatManager().getThreatList();
+        if (Unit* target = threats.front()->getTarget())
+            if ((target->GetTypeId() == TYPEID_PLAYER) && (me->GetDistance(target) > 20.0f))
+                DoCast(target, SPELL_SUMMON_PLAYER);
+
         DoMeleeAttackIfReady();
     }
 };
 
 /*
  * --- Dream Fog NPC
- *
- * TODO:
- * - Change to random targets on random intervals(?)
- * - Check if targets are selected based on threatlevel(?)
  *
  */
 
@@ -208,11 +201,13 @@ class npc_dream_fog : public CreatureScript
                     if (target)
                     {
                         _roamTimer = urand(15000, 30000);
+                        me->GetMotionMaster()->Clear(false);
                         me->GetMotionMaster()->MoveChase(target, 0.1f);
                     }
                     else
                     {
-                        _roamTimer = 5000;
+                        _roamTimer = 2500;
+                        me->GetMotionMaster()->Clear(false);
                         me->GetMotionMaster()->MoveRandom(25.0f);
                     }
                     me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
@@ -327,7 +322,7 @@ class boss_ysondre : public CreatureScript
                 {
                     Talk(SAY_YSONDRE_SUMMON_DRUIDS);
 
-                    for (int i = 0 ; i < 10 ; ++i)
+                    for (uint8 i = 0 ; i < 10 ; ++i)
                         DoCast(me, SPELL_SUMMON_DRUID_SPIRITS, true);
                     ++_stage;
                 }
@@ -436,7 +431,7 @@ class npc_demented_druid : public CreatureScript
                             _events.ScheduleEvent(EVENT_DRUID_SILENCE, urand(15000,20000));
                             break;
                         case EVENT_DRUID_CURSE_OF_THORNS:
-                            DoCastVictim(SPELL_SILENCE);
+                            DoCast(me, SPELL_CURSE_OF_THORNS, true);
                             _events.ScheduleEvent(EVENT_DRUID_CURSE_OF_THORNS, urand(15000,20000));
                             break;
                     }
@@ -748,8 +743,8 @@ class boss_taerar : public CreatureScript
 
                     Talk(SAY_TAERAR_SUMMON_SHADES);
 
-                    int count = sizeof(TaerarShadeSpells) / sizeof(uint32);
-                    for (int i = 0; i < count; ++i)
+                    uint32 count = sizeof(TaerarShadeSpells) / sizeof(uint32);
+                    for (uint32 i = 0; i < count; ++i)
                         DoCastVictim(TaerarShadeSpells[i], true);
                     _shades += count;
 
