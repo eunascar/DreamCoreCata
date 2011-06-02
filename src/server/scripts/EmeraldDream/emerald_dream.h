@@ -23,14 +23,28 @@ uint32 const EncounterCount = 4;
 
 enum Data
 {
-    DATA_EMERALD_DREAM,
-    DATA_HYOTON,
-    DATA_FIREMIST,
-    DATA_KRITYUS,
-    DATA_UMBRA,
-    DATA_AQUA_GHOST,
-    DATA_AQUA_LEKION,
-    DATA_PYRO_DRAKE,
+    DATA_HYOTON           = 0,
+    DATA_FIREMIST         = 1,
+    DATA_KRITYUS          = 2,
+    DATA_UMBRA            = 3,
+    DATA_AQUA_GHOST       = 4,
+    DATA_AQUA_LEKION      = 5,
+    DATA_PYRO_DRAKE       = 6,
+    DATA_ISIDORUS         = 7,
+    DATA_EMERALD_DREAM    = 8,
+};
+
+enum EmeraldStates
+{
+    EMERALD_AQUA_DONE        = 1,
+    EMERALD_HYOTON_START     = 2,
+    EMERALD_HYOTON_DONE      = 3,
+    EMERALD_DRAKE_ZONE       = 4,
+    EMERALD_DRAKE_DONE       = 5,
+    EMERALD_MAZE_DONE        = 6,
+    EMERALD_FIREMIST_DONE    = 7,
+    EMERALD_KRITYUS_DONE     = 8,
+    EMERALD_UMBRA_DONE       = 9,    
 };
 
 enum Creatures

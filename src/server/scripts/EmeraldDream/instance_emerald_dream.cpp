@@ -27,25 +27,13 @@ static Position Locations[] =
     {-3009.255127f, -3151.516846f, 143.045319f, 1.623513f}     //Final Laberinto
 };
 
-enum Locations
+enum Options
 {
     PYRO        = 200,
     HYOTON      = 201,
     KRITYUS     = 202,
-    FIREMIST    = 203
-};
-
-enum EmeraldStates
-{
-    EMERALD_AQUA_DONE        = 1,
-    EMERALD_HYOTON_START     = 2,
-    EMERALD_HYOTON_DONE      = 3,
-    EMERALD_DRAKE_ZONE       = 4,
-    EMERALD_DRAKE_DONE       = 5,
-    EMERALD_MAZE_DONE        = 6,
-    EMERALD_FIREMIST_DONE    = 7,
-    EMERALD_KRITYUS_DONE     = 8,
-    EMERALD_UMBRA_DONE       = 9,    
+    FIREMIST    = 203,
+    UMBRA       = 204
 };
 
 class instance_emerald_dream : public InstanceMapScript
@@ -178,8 +166,6 @@ class instance_emerald_dream : public InstanceMapScript
                             }
                         }
                         break;
-                    case DATA_UMBRA:
-                        break;
                 }
 
                 return true;
@@ -216,6 +202,8 @@ class instance_emerald_dream : public InstanceMapScript
                         return krityusGUID;
                     case DATA_UMBRA:
                         return umbraGUID;
+                    case DATA_ISIDORUS:
+                        return isidorusGUID;
     		    }
                 return 0;
             }
@@ -410,6 +398,9 @@ class npc_emerald_announcer : public CreatureScript
             if (!instance)
                 return false;
 
+            if (player->isGameMaster())
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Opcion GM: Ir Directamente a Umbra", GOSSIP_SENDER_MAIN, UMBRA);
+
             if (instance->GetBossState(DATA_HYOTON) == DONE || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Siguiente Desafio: Pyro Emerald Legion", GOSSIP_SENDER_MAIN, PYRO);
 
@@ -422,6 +413,7 @@ class npc_emerald_announcer : public CreatureScript
 
         bool OnGossipSelect(Player* player, Creature* creature, uint32 uiSender, uint32 uiAction)
         {
+            InstanceScript* instance = creature->GetInstanceScript();
             player->PlayerTalkClass->ClearMenus();
 
             if (uiSender != GOSSIP_SENDER_MAIN)
@@ -436,6 +428,12 @@ class npc_emerald_announcer : public CreatureScript
                     player->TeleportTo(player->GetMapId(),Locations[1].GetPositionX(),Locations[1].GetPositionY(),Locations[1].GetPositionZ(),Locations[1].GetOrientation());
                     player->CLOSE_GOSSIP_MENU();
                     creature->CastSpell(player,SPELL_PARACHUTE, true);
+                    instance->SetData(DATA_EMERALD_DREAM, EMERALD_DRAKE_ZONE);
+                    break;
+                case UMBRA:
+                    instance->SetBossState(DATA_KRITYUS, DONE);
+                    instance->SetData(DATA_EMERALD_DREAM, EMERALD_KRITYUS_DONE);
+                    player->CLOSE_GOSSIP_MENU();
                     break;
                 case SPECIAL:                   
                     player->CLOSE_GOSSIP_MENU();

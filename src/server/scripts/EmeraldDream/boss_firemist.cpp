@@ -41,10 +41,7 @@ class boss_firemist : public CreatureScript
 
         struct boss_firemistAI : public BossAI
         {
-    	    boss_firemistAI(Creature* creature) : BossAI(creature, DATA_FIREMIST)
-    	    {
-    	        instance = me->GetInstanceScript();
-    	    }
+    	    boss_firemistAI(Creature* creature) : BossAI(creature, DATA_FIREMIST) { }
  
             EventMap events;
 
@@ -99,9 +96,6 @@ class boss_firemist : public CreatureScript
 
     		DoMeleeAttackIfReady();
     	    }
-
-        private:
-            InstanceScript* instance;
         };
 
         CreatureAI* GetAI(Creature* creature) const

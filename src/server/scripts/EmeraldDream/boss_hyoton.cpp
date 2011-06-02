@@ -41,10 +41,7 @@ class boss_hyoton : public CreatureScript
 
         struct boss_hyotonAI : public BossAI
         {
-    	    boss_hyotonAI(Creature* creature) : BossAI(creature, DATA_HYOTON)
-    	    {
-    	        instance = me->GetInstanceScript();
-    	    }
+    	    boss_hyotonAI(Creature* creature) : BossAI(creature, DATA_HYOTON) { }
 
             EventMap events;
 
@@ -99,9 +96,6 @@ class boss_hyoton : public CreatureScript
 
     		    DoMeleeAttackIfReady();
     	    }
-
-        private:
-            InstanceScript* instance;
         };
 
         CreatureAI* GetAI(Creature* creature) const

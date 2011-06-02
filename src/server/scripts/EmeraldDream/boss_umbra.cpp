@@ -44,7 +44,7 @@ enum eSpells
 
 enum eYells
 {
-// Isidorus
+    //Isidorus
     SAY_LAUGH                = 0,
     SAY_INTRO_1              = 1,
     SAY_INTRO_2              = 2,
@@ -53,16 +53,13 @@ enum eYells
     SAY_INTRO_5              = 5,
     SAY_OUTRO_1              = 6,
     SAY_REVERENCE_EMOTE_2    = 7,
-// Umbra
+    //Umbra
     SAY_INTRO_4              = 0,
     SAY_AGROO                = 1
 };
 
 #define UMBRA           200 
 #define MODEL_PRIEST    23158
-
-Creature* pUmbra;
-Creature* pIsidorus;
 
 class boss_umbra : public CreatureScript
 {
@@ -74,11 +71,7 @@ class boss_umbra : public CreatureScript
 
         struct boss_umbraAI : public BossAI
         {
-    	    boss_umbraAI(Creature* creature) : BossAI(creature, DATA_UMBRA)
-    	    {
-    	        instance = me->GetInstanceScript();
-                pUmbra = me;
-    	    }
+    	    boss_umbraAI(Creature* creature) : BossAI(creature, DATA_UMBRA) { }
         
             EventMap events;
 
@@ -103,18 +96,22 @@ class boss_umbra : public CreatureScript
 
     	    void JustDied(Unit*)
     	    {
-                pIsidorus->setDeathState(JUST_ALIVED);
+                if (Creature* Isidorus = me->GetCreature(*me, instance->GetData64(DATA_ISIDORUS)))
+                    Isidorus->setDeathState(JUST_ALIVED);
 
                 DoCast(me, AURA_VISUAL_1, false);
                 DoCast(me, AURA_VISUAL_2, false);
 
-                if(instance)
+                if (instance)
+    	        {
                     instance->SetBossState(DATA_UMBRA, DONE);
+                    instance->SetData(DATA_EMERALD_DREAM, EMERALD_UMBRA_DONE);
+    	        }
     	    }
 
     	    void UpdateAI(const uint32 diff)
     	    {
-    	        if(!UpdateVictim())
+    	        if (!UpdateVictim())
     	            return;
 
                 events.Update(diff);
@@ -144,8 +141,6 @@ class boss_umbra : public CreatureScript
     	    }
 
         private:
-            InstanceScript* instance;
-           
             uint32 uiTimer;
         };
 
@@ -165,7 +160,6 @@ class npc_emerald_isidorus : public CreatureScript
     	    npc_emerald_isidorusAI(Creature* creature) : ScriptedAI(creature)
     	    {
     	        instance = me->GetInstanceScript();
-                pIsidorus = me;
     	    }
 
             bool bIntro;
@@ -188,7 +182,7 @@ class npc_emerald_isidorus : public CreatureScript
 
             void Intro ()
             {
-                if(uiTimer)
+                if (uiTimer)
                 {
                     switch(uiPhase)
                     {
@@ -230,13 +224,19 @@ class npc_emerald_isidorus : public CreatureScript
                             ++uiPhase;
                             break;
                         case 7:
-                            pUmbra->SetVisible(true);
-                            pUmbra->SetUInt32Value(UNIT_NPC_EMOTESTATE, 15);
+                            if (Creature* Umbra = me->GetCreature(*me, instance->GetData64(DATA_UMBRA)))
+                            {
+                                Umbra->SetVisible(true);
+                                Umbra->SetUInt32Value(UNIT_NPC_EMOTESTATE, 15);
+                            }
+
                             uiTimer = 2000;
                             ++uiPhase;
                             break;
                         case 8:
-                            pUmbra->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+                            if (Creature* Umbra = me->GetCreature(*me, instance->GetData64(DATA_UMBRA)))
+                                Umbra->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+
                             Talk(SAY_INTRO_2);
                             uiTimer = 10000;
                             ++uiPhase;
@@ -258,8 +258,13 @@ class npc_emerald_isidorus : public CreatureScript
                             break;
                         case 12:
                             Talk(SAY_INTRO_5);
-                            pUmbra->SetReactState(REACT_AGGRESSIVE);
-                            pUmbra->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+                            if (Creature* Umbra = me->GetCreature(*me, instance->GetData64(DATA_UMBRA)))
+                            {
+                                Umbra->SetReactState(REACT_AGGRESSIVE);
+                                Umbra->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            }
+
                             me->setDeathState(JUST_DIED);
                             uiTimer = 5000;
                             ++uiPhase;
@@ -270,12 +275,14 @@ class npc_emerald_isidorus : public CreatureScript
 
             void Final ()
             {
-                if(uiTimer)
+                if (uiTimer)
                 {
                     switch(uiPhasef)
                     {
                         case 1:
-                            pIsidorus->SetDisplayId(MODEL_PRIEST); 
+                            if (Creature* Isidorus = me->GetCreature(*me, instance->GetData64(DATA_ISIDORUS)))
+                                Isidorus->SetDisplayId(MODEL_PRIEST); 
+
                             Talk(SAY_OUTRO_1);
                             uiTimer = 8000;
                             ++uiPhasef;
@@ -329,7 +336,7 @@ class npc_emerald_isidorus : public CreatureScript
             if (!instance)
                 return false;
 
-            if ((instance->GetBossState(DATA_HYOTON) == DONE && instance->GetBossState(DATA_FIREMIST) == DONE && instance->GetBossState(DATA_UMBRA) == NOT_STARTED) || player->isGameMaster())
+            if ((instance->GetData(DATA_EMERALD_DREAM) == EMERALD_KRITYUS_DONE) || player->isGameMaster())
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Proseguir con el Siguiente Evento", GOSSIP_SENDER_MAIN, UMBRA);
             
             player->SEND_GOSSIP_MENU(10600, creature->GetGUID());

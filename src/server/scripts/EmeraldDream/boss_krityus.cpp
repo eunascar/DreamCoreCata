@@ -29,10 +29,7 @@ class boss_krityus : public CreatureScript
 
         struct boss_krityusAI : public BossAI
         {
-    	    boss_krityusAI(Creature* creature) : BossAI(creature, DATA_KRITYUS)
-    	    {
-    	        instance = me->GetInstanceScript();
-    	    }
+    	    boss_krityusAI(Creature* creature) : BossAI(creature, DATA_KRITYUS) { }
 
     	    void Reset()
     	    {
@@ -46,20 +43,20 @@ class boss_krityus : public CreatureScript
 
             void JustDied(Unit*)
     	    {
-                if(instance)
+                if (instance)
+    	        {
                     instance->SetBossState(DATA_KRITYUS, DONE);
+                    instance->SetData(DATA_EMERALD_DREAM, EMERALD_KRITYUS_DONE);
+    	        }
     	    }
 
     	    void UpdateAI(const uint32 /*diff*/)
     	    {
-    	        if(!UpdateVictim())
+    	        if (!UpdateVictim())
     	            return;
 
     		    DoMeleeAttackIfReady();
     	    }
-
-        private:
-            InstanceScript* instance;
         };
 
         CreatureAI* GetAI(Creature* creature) const
